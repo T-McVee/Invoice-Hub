@@ -24,7 +24,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                if (darkQuery.matches) {
+                  document.documentElement.classList.add('dark');
+                }
+                darkQuery.addEventListener('change', (e) => {
+                  document.documentElement.classList.toggle('dark', e.matches);
+                });
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>

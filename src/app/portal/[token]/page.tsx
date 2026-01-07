@@ -1,3 +1,11 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
 interface PortalPageProps {
   params: Promise<{ token: string }>;
 }
@@ -6,15 +14,22 @@ export default async function PortalPage({ params }: PortalPageProps) {
   const { token } = await params;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 p-8">
       <div className="mx-auto max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">Client Portal</h1>
-        <p className="text-gray-600">
-          Access your timesheets and invoices here.
-        </p>
-        <p className="mt-4 text-sm text-gray-400">Token: {token}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Client Portal</CardTitle>
+            <CardDescription>
+              Access your timesheets and invoices here.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Token: <code className="rounded bg-muted px-1.5 py-0.5">{token}</code>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-
