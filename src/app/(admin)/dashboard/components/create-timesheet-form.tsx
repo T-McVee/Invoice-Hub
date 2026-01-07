@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { FileSpreadsheet, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  FileSpreadsheet,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
+} from 'lucide-react';
 import { MonthPicker } from './month-picker';
 import { ClientSelector } from './client-selector';
 import { Timesheet } from '@/types';
@@ -71,17 +77,21 @@ export function CreateTimesheetForm() {
   const isDisabled = mutation.isPending || !clientId;
 
   return (
-    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-border bg-muted/50">
+    <div className="glass rounded-2xl overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <FileSpreadsheet className="h-5 w-5 text-primary" />
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <FileSpreadsheet className="h-4 w-4 text-primary" />
+          </div>
           Create Timesheet
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1 ml-10">
           Generate a timesheet from Toggl time entries
         </p>
       </div>
 
+      {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         <ClientSelector
           value={clientId}
@@ -98,10 +108,11 @@ export function CreateTimesheetForm() {
         <button
           type="submit"
           disabled={isDisabled}
-          className="w-full py-3 px-4 rounded-xl bg-primary text-primary-foreground font-medium
+          className="group w-full py-3.5 px-4 rounded-xl bg-primary text-primary-foreground font-semibold
                      hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring 
-                     focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-colors flex items-center justify-center gap-2"
+                     focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 
+                     disabled:cursor-not-allowed transition-all duration-300
+                     flex items-center justify-center gap-2 hover-lift"
         >
           {mutation.isPending ? (
             <>
@@ -110,7 +121,7 @@ export function CreateTimesheetForm() {
             </>
           ) : (
             <>
-              <FileSpreadsheet className="h-5 w-5" />
+              <Sparkles className="h-5 w-5 group-hover:scale-110 transition-transform" />
               Create Timesheet
             </>
           )}
@@ -119,15 +130,17 @@ export function CreateTimesheetForm() {
 
       {/* Success message */}
       {lastCreated && (
-        <div className="px-6 pb-6">
-          <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+        <div className="px-6 pb-6 animate-scale-in">
+          <div className="rounded-xl bg-success/10 border border-success/20 p-4">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="h-5 w-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div className="h-8 w-8 rounded-lg bg-success/20 flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="h-5 w-5 text-success" />
+              </div>
               <div>
-                <p className="font-medium text-emerald-500">
+                <p className="font-semibold text-success">
                   Timesheet created successfully!
                 </p>
-                <div className="mt-2 text-sm text-emerald-400 space-y-1">
+                <div className="mt-2 text-sm text-success/80 space-y-1">
                   <p>
                     <span className="font-medium">Total Hours:</span>{' '}
                     {lastCreated.summary.totalHours}h
@@ -151,12 +164,14 @@ export function CreateTimesheetForm() {
 
       {/* Error message */}
       {mutation.isError && (
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 animate-scale-in">
           <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+              <div className="h-8 w-8 rounded-lg bg-destructive/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-destructive" />
+              </div>
               <div>
-                <p className="font-medium text-destructive">
+                <p className="font-semibold text-destructive">
                   Failed to create timesheet
                 </p>
                 <p className="mt-1 text-sm text-destructive/80">

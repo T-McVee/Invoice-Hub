@@ -67,7 +67,7 @@ export function MonthPicker({ value, onChange, disabled }: MonthPickerProps) {
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-foreground flex items-center gap-2">
-        <Calendar className="h-4 w-4" />
+        <Calendar className="h-4 w-4 text-muted-foreground" />
         Month
       </label>
       <div className="flex items-center gap-2">
@@ -75,8 +75,9 @@ export function MonthPicker({ value, onChange, disabled }: MonthPickerProps) {
           type="button"
           onClick={handlePrevMonth}
           disabled={disabled}
-          className="p-2 rounded-lg border border-input bg-background hover:bg-accent 
-                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-3 rounded-xl border border-border bg-card/50 hover:bg-card hover:border-primary/50
+                     disabled:opacity-50 disabled:cursor-not-allowed transition-all
+                     focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
         >
           <ChevronLeft className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -86,9 +87,11 @@ export function MonthPicker({ value, onChange, disabled }: MonthPickerProps) {
             value={month}
             onChange={handleMonthChange}
             disabled={disabled}
-            className="flex-1 px-3 py-2 rounded-lg border border-input bg-background 
+            className="flex-1 px-4 py-3 rounded-xl border border-border bg-card/50 
                        text-foreground font-medium focus:outline-none focus:ring-2 
-                       focus:ring-ring disabled:opacity-50"
+                       focus:ring-ring focus:ring-offset-2 focus:ring-offset-background
+                       disabled:opacity-50 transition-all cursor-pointer
+                       hover:border-primary/50 hover:bg-card"
           >
             {MONTH_NAMES.map((name, idx) => (
               <option key={idx} value={idx + 1}>
@@ -101,9 +104,11 @@ export function MonthPicker({ value, onChange, disabled }: MonthPickerProps) {
             value={year}
             onChange={handleYearChange}
             disabled={disabled}
-            className="w-24 px-3 py-2 rounded-lg border border-input bg-background 
+            className="w-28 px-4 py-3 rounded-xl border border-border bg-card/50 
                        text-foreground font-medium focus:outline-none focus:ring-2 
-                       focus:ring-ring disabled:opacity-50"
+                       focus:ring-ring focus:ring-offset-2 focus:ring-offset-background
+                       disabled:opacity-50 transition-all cursor-pointer
+                       hover:border-primary/50 hover:bg-card"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -117,8 +122,9 @@ export function MonthPicker({ value, onChange, disabled }: MonthPickerProps) {
           type="button"
           onClick={handleNextMonth}
           disabled={disabled || isNextDisabled}
-          className="p-2 rounded-lg border border-input bg-background hover:bg-accent 
-                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-3 rounded-xl border border-border bg-card/50 hover:bg-card hover:border-primary/50
+                     disabled:opacity-50 disabled:cursor-not-allowed transition-all
+                     focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>

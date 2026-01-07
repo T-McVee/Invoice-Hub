@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Building2, Loader2 } from 'lucide-react';
+import { Building2, Loader2, ChevronDown, AlertTriangle } from 'lucide-react';
 import { Client } from '@/types';
 
 interface ClientSelectorProps {
@@ -37,10 +37,11 @@ export function ClientSelector({
     return (
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
+          <Building2 className="h-4 w-4 text-muted-foreground" />
           Client
         </label>
-        <div className="px-3 py-2 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-destructive/30 bg-destructive/5 text-destructive text-sm">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
           Failed to load clients
         </div>
       </div>
@@ -50,12 +51,12 @@ export function ClientSelector({
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-foreground flex items-center gap-2">
-        <Building2 className="h-4 w-4" />
+        <Building2 className="h-4 w-4 text-muted-foreground" />
         Client
       </label>
-      <div className="relative">
+      <div className="relative group">
         {isLoading && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <div className="absolute right-12 top-1/2 -translate-y-1/2 z-10">
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         )}
@@ -63,10 +64,12 @@ export function ClientSelector({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled || isLoading}
-          className="w-full px-3 py-2 rounded-lg border border-input bg-background 
+          className="w-full px-4 py-3 pr-10 rounded-xl border border-border bg-card/50 
                      text-foreground font-medium focus:outline-none focus:ring-2 
-                     focus:ring-ring disabled:opacity-50
-                     appearance-none cursor-pointer"
+                     focus:ring-ring focus:ring-offset-2 focus:ring-offset-background
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     appearance-none cursor-pointer transition-all
+                     hover:border-primary/50 hover:bg-card"
         >
           <option value="">Select a client...</option>
           {clients?.map((client) => (
@@ -75,22 +78,8 @@ export function ClientSelector({
             </option>
           ))}
         </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-          {!isLoading && (
-            <svg
-              className="h-4 w-4 text-muted-foreground"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          )}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+          <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         </div>
       </div>
     </div>

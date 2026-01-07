@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { DM_Sans, JetBrains_Mono } from 'next/font/google';
 import { Providers } from '@/components/providers';
 import './globals.css';
 
-const geistSans = Geist({
+const dmSans = DM_Sans({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  weight: ['400', '500', '600'],
 });
 
 export const metadata: Metadata = {
@@ -30,19 +32,20 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                if (darkQuery.matches) {
-                  document.documentElement.classList.add('dark');
+                function setTheme() {
+                  const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                  document.documentElement.classList.toggle('dark', darkQuery.matches);
                 }
-                darkQuery.addEventListener('change', (e) => {
-                  document.documentElement.classList.toggle('dark', e.matches);
-                });
+                setTheme();
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setTheme);
               })();
             `,
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
