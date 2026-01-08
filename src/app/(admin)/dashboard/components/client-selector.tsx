@@ -1,8 +1,7 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { Building2, Loader2, ChevronDown, AlertTriangle } from 'lucide-react';
-import { Client } from '@/types';
+import { useClients } from '@/lib/hooks';
 
 interface ClientSelectorProps {
   value: string;
@@ -10,28 +9,12 @@ interface ClientSelectorProps {
   disabled?: boolean;
 }
 
-async function fetchClients(): Promise<Client[]> {
-  const response = await fetch('/api/clients');
-  if (!response.ok) {
-    throw new Error('Failed to fetch clients');
-  }
-  const data = await response.json();
-  return data.clients;
-}
-
 export function ClientSelector({
   value,
   onChange,
   disabled,
 }: ClientSelectorProps) {
-  const {
-    data: clients,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['clients'],
-    queryFn: fetchClients,
-  });
+  const { clients, isLoading, error } = useClients();
 
   if (error) {
     return (
@@ -72,7 +55,7 @@ export function ClientSelector({
                      hover:border-primary/50 hover:bg-card"
         >
           <option value="">Select a client...</option>
-          {clients?.map((client) => (
+          {clients.map((client) => (
             <option key={client.id} value={client.id}>
               {client.name}
             </option>

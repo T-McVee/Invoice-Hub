@@ -3,8 +3,12 @@
 export interface Client {
   id: string;
   name: string;
-  togglProjectId: string;
-  contacts: Contact[];
+  togglClientId: string | null; // Toggl client ID (for importing)
+  togglProjectId: string | null; // Toggl project ID (for time entries)
+  timesheetRecipients: string[]; // Email addresses for timesheet notifications
+  invoiceRecipients: string[]; // Email addresses for invoice notifications
+  notes: string | null; // Optional notes/metadata
+  contacts: Contact[]; // Legacy contacts (kept for compatibility)
   createdAt: Date;
   updatedAt: Date;
 }

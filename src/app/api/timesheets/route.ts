@@ -37,6 +37,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
 
+    // Check client has a Toggl project ID configured
+    if (!client.togglProjectId) {
+      return NextResponse.json(
+        { error: 'Client does not have a Toggl project ID configured' },
+        { status: 400 }
+      );
+    }
+
     // Check for duplicate timesheet
     const existing = getTimesheetByClientAndMonth(clientId, month);
     if (existing) {

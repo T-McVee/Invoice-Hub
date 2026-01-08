@@ -3,36 +3,98 @@
 
 import { Client, Timesheet } from '@/types';
 
-// Mock clients - configure your actual client here or via environment variables
-export const mockClients: Client[] = [
-  {
-    id: 'client-1',
-    name: 'Acme Corporation',
-    togglProjectId: process.env.TOGGL_PROJECT_ID || '123456789',
-    contacts: [
-      {
-        id: 'contact-1',
-        clientId: 'client-1',
-        name: 'John Smith',
-        email: 'john@acme.com',
-        role: 'both',
-      },
-    ],
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-];
+// In-memory client store
+const clients: Map<string, Client> = new Map();
+
+// Initialize with default client if TOGGL_PROJECT_ID is set
+const defaultClient: Client = {
+  id: 'client-1',
+  name: 'Acme Corporation',
+  togglClientId: null,
+  togglProjectId: process.env.TOGGL_PROJECT_ID || null,
+  timesheetRecipients: [],
+  invoiceRecipients: [],
+  notes: null,
+  contacts: [
+    {
+      id: 'contact-1',
+      clientId: 'client-1',
+      name: 'John Smith',
+      email: 'john@acme.com',
+      role: 'both',
+    },
+  ],
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+};
+clients.set(defaultClient.id, defaultClient);
 
 // In-memory timesheet store (reset on server restart)
 const timesheets: Map<string, Timesheet> = new Map();
 
+// Client CRUD operations
+
 export function getClients(): Client[] {
-  return mockClients;
+  return Array.from(clients.values()).sort(
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+  );
 }
 
 export function getClientById(id: string): Client | undefined {
-  return mockClients.find((c) => c.id === id);
+  return clients.get(id);
 }
+
+export function getClientByTogglClientId(
+  togglClientId: string
+): Client | undefined {
+  return Array.from(clients.values()).find(
+    (c) => c.togglClientId === togglClientId
+  );
+}
+
+export function createClient(
+  data: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>
+): Client {
+  const id = `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const now = new Date();
+  const client: Client = {
+    ...data,
+    id,
+    createdAt: now,
+    updatedAt: now,
+  };
+  clients.set(id, client);
+  return client;
+}
+
+export function updateClient(
+  id: string,
+  updates: Partial<Omit<Client, 'id' | 'createdAt'>>
+): Client | undefined {
+  const existing = clients.get(id);
+  if (!existing) return undefined;
+
+  const updated: Client = {
+    ...existing,
+    ...updates,
+    updatedAt: new Date(),
+  };
+  clients.set(id, updated);
+  return updated;
+}
+
+export function deleteClient(id: string): boolean {
+  // Check if client has associated timesheets
+  const hasTimesheets = Array.from(timesheets.values()).some(
+    (t) => t.clientId === id
+  );
+  if (hasTimesheets) {
+    return false; // Cannot delete client with timesheets
+  }
+  return clients.delete(id);
+}
+
+// Timesheet operations
 
 export function getTimesheets(): Timesheet[] {
   return Array.from(timesheets.values()).sort(
@@ -77,4 +139,3 @@ export function updateTimesheet(
   timesheets.set(id, updated);
   return updated;
 }
-

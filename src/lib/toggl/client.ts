@@ -21,6 +21,19 @@ interface TogglProject {
   workspace_id: number;
 }
 
+/**
+ * Toggl Client entity from the API
+ * Docs: https://engineering.toggl.com/docs/api/clients
+ */
+export interface TogglClient {
+  id: number;
+  wid: number; // workspace_id
+  name: string;
+  at: string; // last updated timestamp
+  archived: boolean;
+  notes?: string;
+}
+
 export interface TimeEntrySummary {
   totalSeconds: number;
   totalHours: number;
@@ -147,6 +160,34 @@ export async function fetchTimesheetPdf(
   const filename = `timesheet-${month}-${projectId}.pdf`;
 
   return { pdfBuffer, filename };
+}
+
+/**
+ * Fetch all clients from the Toggl workspace
+ * Docs: https://engineering.toggl.com/docs/api/clients#get-list-clients
+ */
+export async function fetchClients(): Promise<TogglClient[]> {
+  const workspaceId = getWorkspaceId();
+
+  const response = await fetch(
+    `${TOGGL_API_BASE}/workspaces/${workspaceId}/clients`,
+    {
+      headers: {
+        Authorization: getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Toggl API error: ${response.status} - ${error}`);
+  }
+
+  const clients: TogglClient[] = await response.json();
+
+  // Filter out archived clients
+  return clients.filter((c) => !c.archived);
 }
 
 /**
