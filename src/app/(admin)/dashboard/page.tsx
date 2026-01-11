@@ -1,4 +1,4 @@
-import { CreateTimesheetForm } from './components';
+import { CreateTimesheetForm, HoursThisMonthCard, EarningsThisMonthCard } from './components';
 import { TrendingUp, Clock, Receipt, Users } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -16,13 +16,8 @@ export default function DashboardPage() {
 
       {/* Quick Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={Clock}
-          label="Hours This Month"
-          value="164.5"
-          trend="+12%"
-          trendUp
-        />
+        <HoursThisMonthCard />
+        <EarningsThisMonthCard />
         <StatCard
           icon={Receipt}
           label="Pending Invoices"
@@ -34,13 +29,6 @@ export default function DashboardPage() {
           label="Active Clients"
           value="8"
           trend="+2"
-          trendUp
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="Revenue MTD"
-          value="$18,240"
-          trend="+23%"
           trendUp
         />
       </div>

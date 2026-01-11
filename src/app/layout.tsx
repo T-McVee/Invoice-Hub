@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Invoice Hub',
+  title: 'InVoice Hub',
   description: 'Automate timesheet and invoice generation from Toggl Track',
 };
 
@@ -43,9 +43,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}
-      >
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

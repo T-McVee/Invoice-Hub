@@ -162,6 +162,59 @@ export async function fetchTimesheetPdf(
   return { pdfBuffer, filename };
 }
 
+export interface MonthToDateHours {
+  totalHours: number;
+  month: string; // YYYY-MM format
+  entryCount: number;
+}
+
+/**
+ * Fetch total hours month-to-date across all projects
+ * Used for dashboard metrics
+ */
+export async function fetchMonthToDateHours(): Promise<MonthToDateHours> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthNum = now.getMonth(); // 0-indexed
+
+  // Start of current month
+  const startDate = new Date(Date.UTC(year, monthNum, 1));
+  // Today (end of day to include today's entries)
+  const endDate = now;
+
+  const startStr = startDate.toISOString().split('T')[0];
+  const endStr = endDate.toISOString().split('T')[0];
+
+  const response = await fetch(
+    `${TOGGL_API_BASE}/me/time_entries?start_date=${startStr}&end_date=${endStr}`,
+    {
+      headers: {
+        Authorization: getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Toggl API error: ${response.status} - ${error}`);
+  }
+
+  const entries: TogglTimeEntry[] = await response.json();
+
+  // Filter out running entries (negative duration) and sum all durations
+  const completedEntries = entries.filter((e) => e.duration > 0);
+  const totalSeconds = completedEntries.reduce((sum, e) => sum + e.duration, 0);
+
+  const month = `${year}-${String(monthNum + 1).padStart(2, '0')}`;
+
+  return {
+    totalHours: Math.round((totalSeconds / 3600) * 100) / 100,
+    month,
+    entryCount: completedEntries.length,
+  };
+}
+
 /**
  * Fetch all clients from the Toggl workspace
  * Docs: https://engineering.toggl.com/docs/api/clients#get-list-clients

@@ -10,6 +10,7 @@ import {
   Receipt,
   Users,
   BarChart3,
+  Settings,
   Sparkles,
 } from 'lucide-react';
 
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/invoices', label: 'Invoices', icon: Receipt },
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
