@@ -39,7 +39,7 @@ Add to `package.json`:
 }
 ```
 
-Create `vitest.config.ts`:
+Create `vitest.config.mts` (uses `.mts` extension for ESM compatibility):
 ```typescript
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
@@ -47,10 +47,14 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
+    environment: 'node',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
+    // Use jsdom for component tests (.tsx files)
+    environmentMatchGlobs: [
+      ['src/**/*.test.tsx', 'jsdom'],
+    ],
   },
   resolve: {
     alias: {
@@ -62,7 +66,8 @@ export default defineConfig({
 
 Create `src/test/setup.ts`:
 ```typescript
-import '@testing-library/jest-dom/vitest'
+// Test setup file
+// jest-dom matchers are loaded via environmentMatchGlobs for .tsx tests
 ```
 
 ## Priority Test Areas
@@ -206,21 +211,21 @@ beforeEach(() => {
 
 ## Implementation Roadmap
 
-### Stage 1: Foundation
-- [ ] Install Vitest and configure
-- [ ] Create test setup file
-- [ ] Add `test` and `test:run` scripts
-- [ ] Write first test (cache utility)
+### Stage 1: Foundation ✅
+- [x] Install Vitest and configure
+- [x] Create test setup file
+- [x] Add `test` and `test:run` scripts
+- [x] Write first test (cache utility)
 
-### Stage 2: Core Logic
-- [ ] Add tests for `src/lib/toggl/client.ts` utilities
-- [ ] Add tests for `src/lib/settings/index.ts` validation
-- [ ] Add tests for `src/lib/cache/index.ts`
+### Stage 2: Core Logic ✅
+- [x] Add tests for `src/lib/toggl/client.ts` utilities (13 tests)
+- [x] Add tests for `src/lib/settings/index.ts` validation (25 tests)
+- [x] Add tests for `src/lib/cache/index.ts` (11 tests)
 
-### Stage 3: API Routes
-- [ ] Add tests for client CRUD routes
-- [ ] Add tests for timesheet creation route
-- [ ] Add tests for settings routes
+### Stage 3: API Routes ✅
+- [x] Add tests for client CRUD routes (20 tests)
+- [x] Add tests for timesheet creation route (11 tests)
+- [x] Add tests for settings routes (19 tests)
 
 ### Stage 4: E2E (Future)
 When the application stabilizes:

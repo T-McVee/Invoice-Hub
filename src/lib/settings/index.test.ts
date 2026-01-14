@@ -1,0 +1,190 @@
+import { describe, it, expect } from 'vitest'
+import {
+  hourlyRateSchema,
+  emailSchema,
+  taxRateSchema,
+  nextInvoiceNumberSchema,
+  businessProfileSchema,
+  setHourlyRate,
+  getHourlyRate,
+  setBusinessProfile,
+  getBusinessProfile,
+  getAndIncrementNextInvoiceNumber,
+} from './index'
+
+describe('settings', () => {
+  describe('hourlyRateSchema', () => {
+    it('accepts valid positive numbers', () => {
+      expect(() => hourlyRateSchema.parse(100)).not.toThrow()
+      expect(() => hourlyRateSchema.parse(0)).not.toThrow()
+      expect(() => hourlyRateSchema.parse(150.50)).not.toThrow()
+    })
+
+    it('rejects negative numbers', () => {
+      expect(() => hourlyRateSchema.parse(-1)).toThrow()
+      expect(() => hourlyRateSchema.parse(-100)).toThrow()
+    })
+
+    it('rejects non-numbers', () => {
+      expect(() => hourlyRateSchema.parse('100')).toThrow()
+      expect(() => hourlyRateSchema.parse(null)).toThrow()
+    })
+  })
+
+  describe('emailSchema', () => {
+    it('accepts valid email addresses', () => {
+      expect(() => emailSchema.parse('test@example.com')).not.toThrow()
+      expect(() => emailSchema.parse('user.name@domain.co.uk')).not.toThrow()
+    })
+
+    it('accepts empty string (optional field)', () => {
+      expect(() => emailSchema.parse('')).not.toThrow()
+    })
+
+    it('accepts undefined (optional field)', () => {
+      expect(() => emailSchema.parse(undefined)).not.toThrow()
+    })
+
+    it('rejects invalid email formats', () => {
+      expect(() => emailSchema.parse('not-an-email')).toThrow()
+      expect(() => emailSchema.parse('missing@')).toThrow()
+      expect(() => emailSchema.parse('@nodomain.com')).toThrow()
+    })
+  })
+
+  describe('taxRateSchema', () => {
+    it('accepts valid tax rates (0-100)', () => {
+      expect(() => taxRateSchema.parse(0)).not.toThrow()
+      expect(() => taxRateSchema.parse(15)).not.toThrow()
+      expect(() => taxRateSchema.parse(100)).not.toThrow()
+      expect(() => taxRateSchema.parse(10.5)).not.toThrow()
+    })
+
+    it('rejects negative tax rates', () => {
+      expect(() => taxRateSchema.parse(-1)).toThrow()
+    })
+
+    it('rejects tax rates over 100%', () => {
+      expect(() => taxRateSchema.parse(101)).toThrow()
+      expect(() => taxRateSchema.parse(200)).toThrow()
+    })
+  })
+
+  describe('nextInvoiceNumberSchema', () => {
+    it('accepts positive integers', () => {
+      expect(() => nextInvoiceNumberSchema.parse(1)).not.toThrow()
+      expect(() => nextInvoiceNumberSchema.parse(100)).not.toThrow()
+      expect(() => nextInvoiceNumberSchema.parse(9999)).not.toThrow()
+    })
+
+    it('rejects zero', () => {
+      expect(() => nextInvoiceNumberSchema.parse(0)).toThrow()
+    })
+
+    it('rejects negative numbers', () => {
+      expect(() => nextInvoiceNumberSchema.parse(-1)).toThrow()
+    })
+
+    it('rejects non-integers', () => {
+      expect(() => nextInvoiceNumberSchema.parse(1.5)).toThrow()
+      expect(() => nextInvoiceNumberSchema.parse(10.1)).toThrow()
+    })
+  })
+
+  describe('businessProfileSchema', () => {
+    it('accepts valid complete profile', () => {
+      const profile = {
+        name: 'Test Business',
+        businessNumber: '123456',
+        gstNumber: 'GST123',
+        phone: '555-1234',
+        email: 'test@example.com',
+        address: '123 Main St',
+        paymentDetails: 'Bank: 12-3456-7890',
+        taxRate: 15,
+        paymentTerms: 'Due in 14 days',
+        nextInvoiceNumber: 100,
+      }
+      expect(() => businessProfileSchema.parse(profile)).not.toThrow()
+    })
+
+    it('accepts partial profile (all fields optional)', () => {
+      expect(() => businessProfileSchema.parse({})).not.toThrow()
+      expect(() => businessProfileSchema.parse({ name: 'Just Name' })).not.toThrow()
+    })
+
+    it('validates nested email field', () => {
+      expect(() => businessProfileSchema.parse({ email: 'invalid' })).toThrow()
+    })
+
+    it('validates nested taxRate field', () => {
+      expect(() => businessProfileSchema.parse({ taxRate: 150 })).toThrow()
+    })
+
+    it('validates nested nextInvoiceNumber field', () => {
+      expect(() => businessProfileSchema.parse({ nextInvoiceNumber: 0 })).toThrow()
+    })
+  })
+
+  describe('setHourlyRate / getHourlyRate', () => {
+    it('stores and retrieves hourly rate', () => {
+      const result = setHourlyRate(125)
+
+      expect(result.rate).toBe(125)
+      expect(result.updatedAt).toBeInstanceOf(Date)
+
+      const retrieved = getHourlyRate()
+      expect(retrieved.rate).toBe(125)
+    })
+
+    it('throws on invalid rate', () => {
+      expect(() => setHourlyRate(-50)).toThrow()
+    })
+  })
+
+  describe('setBusinessProfile / getBusinessProfile', () => {
+    it('stores and retrieves business profile', () => {
+      const updates = {
+        name: 'Test Corp',
+        taxRate: 10,
+      }
+
+      const result = setBusinessProfile(updates)
+
+      expect(result.name).toBe('Test Corp')
+      expect(result.taxRate).toBe(10)
+      expect(result.updatedAt).toBeInstanceOf(Date)
+
+      const retrieved = getBusinessProfile()
+      expect(retrieved.name).toBe('Test Corp')
+    })
+
+    it('merges partial updates', () => {
+      setBusinessProfile({ name: 'First Name' })
+      setBusinessProfile({ phone: '555-1234' })
+
+      const result = getBusinessProfile()
+      expect(result.name).toBe('First Name')
+      expect(result.phone).toBe('555-1234')
+    })
+
+    it('throws on invalid email in profile', () => {
+      expect(() => setBusinessProfile({ email: 'not-valid' })).toThrow()
+    })
+  })
+
+  describe('getAndIncrementNextInvoiceNumber', () => {
+    it('returns current number and increments', () => {
+      // Set a known starting point
+      setBusinessProfile({ nextInvoiceNumber: 50 })
+
+      const first = getAndIncrementNextInvoiceNumber()
+      const second = getAndIncrementNextInvoiceNumber()
+      const third = getAndIncrementNextInvoiceNumber()
+
+      expect(first).toBe(50)
+      expect(second).toBe(51)
+      expect(third).toBe(52)
+    })
+  })
+})

@@ -139,3 +139,23 @@ export function updateTimesheet(
   timesheets.set(id, updated);
   return updated;
 }
+
+// Test utilities
+
+/**
+ * Clear all data from the mock database
+ * Used for testing to reset state between tests
+ */
+export function clearAll(): void {
+  clients.clear();
+  timesheets.clear();
+}
+
+/**
+ * Reset database to initial state with default client
+ * Used for testing to restore predictable starting state
+ */
+export function resetToDefault(): void {
+  clearAll();
+  clients.set(defaultClient.id, { ...defaultClient });
+}
