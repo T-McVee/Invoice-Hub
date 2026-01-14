@@ -26,7 +26,9 @@ export function HoursThisMonthCard() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['metrics', 'hours-mtd'],
     queryFn: fetchHoursMtd,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes in background
   });
 
   // Loading state
@@ -95,11 +97,7 @@ export function HoursThisMonthCard() {
       <div className="mt-4">
         <p className="text-2xl font-bold text-foreground">{formattedHours}</p>
         <p className="text-sm text-muted-foreground mt-1">Hours This Month</p>
-        {timeAgo && (
-          <p className="text-xs text-muted-foreground/70 mt-0.5">
-            Updated {timeAgo}
-          </p>
-        )}
+        {timeAgo && <p className="text-xs text-muted-foreground/70 mt-0.5">Updated {timeAgo}</p>}
       </div>
     </div>
   );

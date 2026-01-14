@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { X, Loader2, Save, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,25 @@ interface ClientEditDialogProps {
   onClose: () => void;
 }
 
-async function updateClient(
-  id: string,
-  data: Partial<Client>
-): Promise<{ client: Client }> {
+interface FormState {
+  name: string;
+  togglProjectId: string;
+  timesheetRecipients: string[];
+  invoiceRecipients: string[];
+  notes: string;
+}
+
+function getInitialFormState(client: Client | null): FormState {
+  return {
+    name: client?.name ?? '',
+    togglProjectId: client?.togglProjectId ?? '',
+    timesheetRecipients: client?.timesheetRecipients ? [...client.timesheetRecipients] : [],
+    invoiceRecipients: client?.invoiceRecipients ? [...client.invoiceRecipients] : [],
+    notes: client?.notes ?? '',
+  };
+}
+
+async function updateClient(id: string, data: Partial<Client>): Promise<{ client: Client }> {
   const response = await fetch(`/api/clients/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -25,35 +40,30 @@ async function updateClient(
 
   if (!response.ok) {
     const result = await response.json();
+    // Include invalid emails in error message if present
+    if (result.invalidEmails?.length > 0) {
+      throw new Error(`${result.error}: ${result.invalidEmails.join(', ')}`);
+    }
     throw new Error(result.error || 'Failed to update client');
   }
 
   return response.json();
 }
 
-export function ClientEditDialog({
-  client,
-  open,
-  onClose,
-}: ClientEditDialogProps) {
-  const [name, setName] = useState('');
-  const [togglProjectId, setTogglProjectId] = useState('');
-  const [timesheetRecipients, setTimesheetRecipients] = useState<string[]>([]);
-  const [invoiceRecipients, setInvoiceRecipients] = useState<string[]>([]);
-  const [notes, setNotes] = useState('');
+export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProps) {
+  const [formState, setFormState] = useState<FormState>(() => getInitialFormState(client));
+
+  // Track which client the form was last initialized for
+  const clientId = client?.id ?? null;
+  const lastClientIdRef = useRef<string | null>(clientId);
+
+  // Reset form when a different client is selected
+  if (clientId !== lastClientIdRef.current) {
+    lastClientIdRef.current = clientId;
+    setFormState(getInitialFormState(client));
+  }
 
   const invalidateClients = useInvalidateClients();
-
-  // Reset form when client changes
-  useEffect(() => {
-    if (client) {
-      setName(client.name);
-      setTogglProjectId(client.togglProjectId || '');
-      setTimesheetRecipients([...client.timesheetRecipients]);
-      setInvoiceRecipients([...client.invoiceRecipients]);
-      setNotes(client.notes || '');
-    }
-  }, [client]);
 
   const mutation = useMutation({
     mutationFn: (data: Partial<Client>) => updateClient(client!.id, data),
@@ -68,43 +78,49 @@ export function ClientEditDialog({
     if (!client) return;
 
     mutation.mutate({
-      name,
-      togglProjectId: togglProjectId || null,
-      timesheetRecipients: timesheetRecipients.filter((e) => e.trim()),
-      invoiceRecipients: invoiceRecipients.filter((e) => e.trim()),
-      notes: notes || null,
+      name: formState.name,
+      togglProjectId: formState.togglProjectId || null,
+      timesheetRecipients: formState.timesheetRecipients.filter((e) => e.trim()),
+      invoiceRecipients: formState.invoiceRecipients.filter((e) => e.trim()),
+      notes: formState.notes || null,
     });
+  };
+
+  const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
   const addRecipient = (type: 'timesheet' | 'invoice') => {
     if (type === 'timesheet') {
-      setTimesheetRecipients([...timesheetRecipients, '']);
+      updateField('timesheetRecipients', [...formState.timesheetRecipients, '']);
     } else {
-      setInvoiceRecipients([...invoiceRecipients, '']);
+      updateField('invoiceRecipients', [...formState.invoiceRecipients, '']);
     }
   };
 
   const removeRecipient = (type: 'timesheet' | 'invoice', index: number) => {
     if (type === 'timesheet') {
-      setTimesheetRecipients(timesheetRecipients.filter((_, i) => i !== index));
+      updateField(
+        'timesheetRecipients',
+        formState.timesheetRecipients.filter((_, i) => i !== index)
+      );
     } else {
-      setInvoiceRecipients(invoiceRecipients.filter((_, i) => i !== index));
+      updateField(
+        'invoiceRecipients',
+        formState.invoiceRecipients.filter((_, i) => i !== index)
+      );
     }
   };
 
-  const updateRecipient = (
-    type: 'timesheet' | 'invoice',
-    index: number,
-    value: string
-  ) => {
+  const updateRecipient = (type: 'timesheet' | 'invoice', index: number, value: string) => {
     if (type === 'timesheet') {
-      const updated = [...timesheetRecipients];
+      const updated = [...formState.timesheetRecipients];
       updated[index] = value;
-      setTimesheetRecipients(updated);
+      updateField('timesheetRecipients', updated);
     } else {
-      const updated = [...invoiceRecipients];
+      const updated = [...formState.invoiceRecipients];
       updated[index] = value;
-      setInvoiceRecipients(updated);
+      updateField('invoiceRecipients', updated);
     }
   };
 
@@ -113,19 +129,14 @@ export function ClientEditDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Dialog */}
       <div className="relative glass rounded-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">
-              Edit Client
-            </h2>
+            <h2 className="text-lg font-semibold text-foreground">Edit Client</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Update client details and recipients
             </p>
@@ -145,13 +156,11 @@ export function ClientEditDialog({
           <div className="space-y-5">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Client Name
-              </label>
+              <label className="block text-sm font-medium text-foreground mb-2">Client Name</label>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={formState.name}
+                onChange={(e) => updateField('name', e.target.value)}
                 placeholder="Enter client name"
                 className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
                            text-foreground placeholder:text-muted-foreground
@@ -164,14 +173,12 @@ export function ClientEditDialog({
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Toggl Project ID
-                <span className="text-muted-foreground font-normal ml-1">
-                  (for timesheets)
-                </span>
+                <span className="text-muted-foreground font-normal ml-1">(for timesheets)</span>
               </label>
               <input
                 type="text"
-                value={togglProjectId}
-                onChange={(e) => setTogglProjectId(e.target.value)}
+                value={formState.togglProjectId}
+                onChange={(e) => updateField('togglProjectId', e.target.value)}
                 placeholder="e.g., 123456789"
                 className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
                            text-foreground placeholder:text-muted-foreground
@@ -182,9 +189,7 @@ export function ClientEditDialog({
             {/* Timesheet Recipients */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-foreground">
-                  Timesheet Recipients
-                </label>
+                <label className="text-sm font-medium text-foreground">Timesheet Recipients</label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -197,19 +202,17 @@ export function ClientEditDialog({
                 </Button>
               </div>
               <div className="space-y-2">
-                {timesheetRecipients.length === 0 ? (
+                {formState.timesheetRecipients.length === 0 ? (
                   <p className="text-sm text-muted-foreground/60 italic py-2">
                     No recipients added
                   </p>
                 ) : (
-                  timesheetRecipients.map((email, index) => (
+                  formState.timesheetRecipients.map((email, index) => (
                     <div key={index} className="flex gap-2">
                       <input
                         type="email"
                         value={email}
-                        onChange={(e) =>
-                          updateRecipient('timesheet', index, e.target.value)
-                        }
+                        onChange={(e) => updateRecipient('timesheet', index, e.target.value)}
                         placeholder="email@example.com"
                         className="flex-1 px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
                                    text-foreground placeholder:text-muted-foreground
@@ -233,9 +236,7 @@ export function ClientEditDialog({
             {/* Invoice Recipients */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-foreground">
-                  Invoice Recipients
-                </label>
+                <label className="text-sm font-medium text-foreground">Invoice Recipients</label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -248,19 +249,17 @@ export function ClientEditDialog({
                 </Button>
               </div>
               <div className="space-y-2">
-                {invoiceRecipients.length === 0 ? (
+                {formState.invoiceRecipients.length === 0 ? (
                   <p className="text-sm text-muted-foreground/60 italic py-2">
                     No recipients added
                   </p>
                 ) : (
-                  invoiceRecipients.map((email, index) => (
+                  formState.invoiceRecipients.map((email, index) => (
                     <div key={index} className="flex gap-2">
                       <input
                         type="email"
                         value={email}
-                        onChange={(e) =>
-                          updateRecipient('invoice', index, e.target.value)
-                        }
+                        onChange={(e) => updateRecipient('invoice', index, e.target.value)}
                         placeholder="email@example.com"
                         className="flex-1 px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
                                    text-foreground placeholder:text-muted-foreground
@@ -283,12 +282,10 @@ export function ClientEditDialog({
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Notes
-              </label>
+              <label className="block text-sm font-medium text-foreground mb-2">Notes</label>
               <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                value={formState.notes}
+                onChange={(e) => updateField('notes', e.target.value)}
                 placeholder="Optional notes about this client..."
                 rows={3}
                 className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
@@ -317,7 +314,7 @@ export function ClientEditDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={mutation.isPending || !name.trim()}
+            disabled={mutation.isPending || !formState.name.trim()}
             className="flex-1 gap-2"
           >
             {mutation.isPending ? (

@@ -74,7 +74,8 @@ export async function fetchTimeEntries(
   // Calculate start and end dates for the month
   const [year, monthNum] = month.split('-').map(Number);
   const startDate = new Date(Date.UTC(year, monthNum - 1, 1));
-  const endDate = new Date(Date.UTC(year, monthNum, 0)); // Last day of month
+  // First day of next month (Toggl API end_date is exclusive)
+  const endDate = new Date(Date.UTC(year, monthNum, 1));
 
   const startStr = startDate.toISOString().split('T')[0];
   const endStr = endDate.toISOString().split('T')[0];
@@ -179,8 +180,9 @@ export async function fetchMonthToDateHours(): Promise<MonthToDateHours> {
 
   // Start of current month
   const startDate = new Date(Date.UTC(year, monthNum, 1));
-  // Today (end of day to include today's entries)
-  const endDate = now;
+  // Tomorrow (Toggl API end_date is exclusive, so we need tomorrow to include today's entries)
+  const endDate = new Date(now);
+  endDate.setDate(endDate.getDate() + 1);
 
   const startStr = startDate.toISOString().split('T')[0];
   const endStr = endDate.toISOString().split('T')[0];
@@ -222,15 +224,12 @@ export async function fetchMonthToDateHours(): Promise<MonthToDateHours> {
 export async function fetchClients(): Promise<TogglClient[]> {
   const workspaceId = getWorkspaceId();
 
-  const response = await fetch(
-    `${TOGGL_API_BASE}/workspaces/${workspaceId}/clients`,
-    {
-      headers: {
-        Authorization: getAuthHeader(),
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetch(`${TOGGL_API_BASE}/workspaces/${workspaceId}/clients`, {
+    headers: {
+      Authorization: getAuthHeader(),
+      'Content-Type': 'application/json',
+    },
+  });
 
   if (!response.ok) {
     const error = await response.text();
@@ -271,4 +270,3 @@ export async function verifyConnection(): Promise<{
     };
   }
 }
-

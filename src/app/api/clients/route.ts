@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getClients, createClient, getClientByTogglClientId } from '@/lib/db/mock-data';
+
+// Email validation schema using Zod for robust validation
+const emailSchema = z.string().email();
 
 // GET /api/clients - List all clients
 export async function GET() {
@@ -30,19 +34,51 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validate email arrays
-    const validateEmails = (emails: unknown): string[] => {
-      if (!emails) return [];
-      if (!Array.isArray(emails)) return [];
-      return emails.filter((e) => typeof e === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+    // Validate email arrays using Zod for robust validation
+    // Returns { valid: string[], invalid: string[] }
+    const validateEmails = (emails: unknown): { valid: string[]; invalid: string[] } => {
+      if (!emails) return { valid: [], invalid: [] };
+      if (!Array.isArray(emails)) return { valid: [], invalid: [] };
+
+      const valid: string[] = [];
+      const invalid: string[] = [];
+
+      for (const e of emails) {
+        if (typeof e !== 'string') continue;
+        const trimmed = e.trim();
+        if (!trimmed) continue;
+        if (emailSchema.safeParse(trimmed).success) {
+          valid.push(trimmed);
+        } else {
+          invalid.push(trimmed);
+        }
+      }
+
+      return { valid, invalid };
     };
+
+    // Check for invalid emails and reject if any found
+    const timesheetEmailResult = validateEmails(timesheetRecipients);
+    const invoiceEmailResult = validateEmails(invoiceRecipients);
+
+    const allInvalidEmails = [...timesheetEmailResult.invalid, ...invoiceEmailResult.invalid];
+
+    if (allInvalidEmails.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Invalid email address(es) provided',
+          invalidEmails: allInvalidEmails,
+        },
+        { status: 400 }
+      );
+    }
 
     const client = createClient({
       name: name.trim(),
       togglClientId: togglClientId || null,
       togglProjectId: togglProjectId || null,
-      timesheetRecipients: validateEmails(timesheetRecipients),
-      invoiceRecipients: validateEmails(invoiceRecipients),
+      timesheetRecipients: timesheetEmailResult.valid,
+      invoiceRecipients: invoiceEmailResult.valid,
       notes: notes || null,
       contacts: [],
     });

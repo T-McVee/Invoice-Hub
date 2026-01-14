@@ -28,7 +28,9 @@ export function EarningsThisMonthCard() {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['metrics', 'earnings-mtd'],
     queryFn: fetchEarningsMtd,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes in background
   });
 
   // Loading state
