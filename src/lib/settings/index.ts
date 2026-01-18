@@ -1,85 +1,31 @@
 /**
- * Simple in-memory settings store
- * Designed for server-side use in Azure App Service (persistent Node.js process)
+ * Settings store - database-backed settings
+ * Persists settings to Azure SQL Database via Prisma
  */
 
-import { z } from 'zod';
+import { prisma } from '@/lib/db/prisma';
+import {
+  hourlyRateSchema,
+  businessProfileSchema,
+} from './schemas';
+
+// Re-export schemas from the separate schemas file (client-safe)
+export {
+  hourlyRateSchema,
+  emailSchema,
+  taxRateSchema,
+  nextInvoiceNumberSchema,
+  businessProfileSchema,
+} from './schemas';
 
 // =============================================================================
-// Hourly Rate Settings
+// Types
 // =============================================================================
-
-// Zod schema for hourly rate validation
-export const hourlyRateSchema = z.number().min(0, 'Hourly rate must be 0 or greater');
 
 export type HourlyRateSetting = {
   rate: number | null;
   updatedAt: Date | null;
 };
-
-// In-memory store for hourly rate
-let hourlyRateSetting: HourlyRateSetting = {
-  rate: null,
-  updatedAt: null,
-};
-
-/**
- * Get the current hourly rate setting
- */
-export function getHourlyRate(): HourlyRateSetting {
-  return { ...hourlyRateSetting };
-}
-
-/**
- * Set the hourly rate
- * @param rate - The hourly rate (must be >= 0)
- * @returns The updated setting
- */
-export function setHourlyRate(rate: number): HourlyRateSetting {
-  // Validate with Zod
-  hourlyRateSchema.parse(rate);
-
-  hourlyRateSetting = {
-    rate,
-    updatedAt: new Date(),
-  };
-
-  return { ...hourlyRateSetting };
-}
-
-// =============================================================================
-// Business Profile Settings
-// =============================================================================
-
-// Zod schemas for business profile validation
-export const emailSchema = z
-  .string()
-  .email('Please enter a valid email address')
-  .optional()
-  .or(z.literal(''));
-
-export const taxRateSchema = z
-  .number()
-  .min(0, 'Tax rate must be 0 or greater')
-  .max(100, 'Tax rate cannot exceed 100%');
-
-export const nextInvoiceNumberSchema = z
-  .number()
-  .int('Invoice number must be a whole number')
-  .min(1, 'Invoice number must be at least 1');
-
-export const businessProfileSchema = z.object({
-  name: z.string().optional(),
-  businessNumber: z.string().optional(),
-  gstNumber: z.string().optional(),
-  phone: z.string().optional(),
-  email: emailSchema,
-  address: z.string().optional(),
-  paymentDetails: z.string().optional(),
-  taxRate: taxRateSchema.optional().nullable(),
-  paymentTerms: z.string().optional(),
-  nextInvoiceNumber: nextInvoiceNumberSchema.optional(),
-});
 
 export type BusinessProfile = {
   name: string | null;
@@ -95,8 +41,23 @@ export type BusinessProfile = {
   updatedAt: Date | null;
 };
 
-// In-memory store for business profile
-let businessProfile: BusinessProfile = {
+// =============================================================================
+// Settings Keys
+// =============================================================================
+
+const HOURLY_RATE_KEY = 'hourlyRate';
+const BUSINESS_PROFILE_KEY = 'businessProfile';
+
+// =============================================================================
+// Default Values
+// =============================================================================
+
+const DEFAULT_HOURLY_RATE: HourlyRateSetting = {
+  rate: null,
+  updatedAt: null,
+};
+
+const DEFAULT_BUSINESS_PROFILE: BusinessProfile = {
   name: null,
   businessNumber: null,
   gstNumber: null,
@@ -110,11 +71,80 @@ let businessProfile: BusinessProfile = {
   updatedAt: null,
 };
 
+// =============================================================================
+// Hourly Rate Settings
+// =============================================================================
+
+/**
+ * Get the current hourly rate setting
+ */
+export async function getHourlyRate(): Promise<HourlyRateSetting> {
+  const setting = await prisma.settings.findUnique({
+    where: { key: HOURLY_RATE_KEY },
+  });
+
+  if (!setting) {
+    return { ...DEFAULT_HOURLY_RATE };
+  }
+
+  const value = JSON.parse(setting.value);
+  return {
+    rate: value.rate,
+    updatedAt: setting.updatedAt,
+  };
+}
+
+/**
+ * Set the hourly rate
+ * @param rate - The hourly rate (must be >= 0)
+ * @returns The updated setting
+ */
+export async function setHourlyRate(rate: number): Promise<HourlyRateSetting> {
+  // Validate with Zod
+  hourlyRateSchema.parse(rate);
+
+  const setting = await prisma.settings.upsert({
+    where: { key: HOURLY_RATE_KEY },
+    update: { value: JSON.stringify({ rate }) },
+    create: { key: HOURLY_RATE_KEY, value: JSON.stringify({ rate }) },
+  });
+
+  return {
+    rate,
+    updatedAt: setting.updatedAt,
+  };
+}
+
+// =============================================================================
+// Business Profile Settings
+// =============================================================================
+
 /**
  * Get the current business profile
  */
-export function getBusinessProfile(): BusinessProfile {
-  return { ...businessProfile };
+export async function getBusinessProfile(): Promise<BusinessProfile> {
+  const setting = await prisma.settings.findUnique({
+    where: { key: BUSINESS_PROFILE_KEY },
+  });
+
+  if (!setting) {
+    return { ...DEFAULT_BUSINESS_PROFILE };
+  }
+
+  const value = JSON.parse(setting.value);
+  return {
+    name: value.name ?? null,
+    businessNumber: value.businessNumber ?? null,
+    gstNumber: value.gstNumber ?? null,
+    phone: value.phone ?? null,
+    email: value.email ?? null,
+    address: value.address ?? null,
+    paymentDetails: value.paymentDetails ?? null,
+    taxRate: value.taxRate ?? null,
+    paymentTerms: value.paymentTerms ?? null,
+    nextInvoiceNumber: value.nextInvoiceNumber ?? 1,
+    updatedAt: setting.updatedAt,
+  };
 }
 
 /**
@@ -122,31 +152,107 @@ export function getBusinessProfile(): BusinessProfile {
  * @param updates - Partial business profile updates
  * @returns The updated business profile
  */
-export function setBusinessProfile(
+export async function setBusinessProfile(
   updates: Partial<Omit<BusinessProfile, 'updatedAt'>>
-): BusinessProfile {
+): Promise<BusinessProfile> {
   // Validate updates
   businessProfileSchema.parse(updates);
 
-  businessProfile = {
-    ...businessProfile,
-    ...updates,
-    updatedAt: new Date(),
+  // Get current profile to merge with updates
+  const current = await getBusinessProfile();
+
+  const newProfile = {
+    name: updates.name !== undefined ? updates.name : current.name,
+    businessNumber:
+      updates.businessNumber !== undefined
+        ? updates.businessNumber
+        : current.businessNumber,
+    gstNumber:
+      updates.gstNumber !== undefined ? updates.gstNumber : current.gstNumber,
+    phone: updates.phone !== undefined ? updates.phone : current.phone,
+    email: updates.email !== undefined ? updates.email : current.email,
+    address: updates.address !== undefined ? updates.address : current.address,
+    paymentDetails:
+      updates.paymentDetails !== undefined
+        ? updates.paymentDetails
+        : current.paymentDetails,
+    taxRate: updates.taxRate !== undefined ? updates.taxRate : current.taxRate,
+    paymentTerms:
+      updates.paymentTerms !== undefined
+        ? updates.paymentTerms
+        : current.paymentTerms,
+    nextInvoiceNumber:
+      updates.nextInvoiceNumber !== undefined
+        ? updates.nextInvoiceNumber
+        : current.nextInvoiceNumber,
   };
 
-  return { ...businessProfile };
+  const setting = await prisma.settings.upsert({
+    where: { key: BUSINESS_PROFILE_KEY },
+    update: { value: JSON.stringify(newProfile) },
+    create: { key: BUSINESS_PROFILE_KEY, value: JSON.stringify(newProfile) },
+  });
+
+  return {
+    ...newProfile,
+    updatedAt: setting.updatedAt,
+  };
 }
 
 /**
  * Get the current invoice number and increment for next use
  * @returns The current invoice number (before increment)
  */
-export function getAndIncrementNextInvoiceNumber(): number {
-  const current = businessProfile.nextInvoiceNumber;
-  businessProfile = {
-    ...businessProfile,
-    nextInvoiceNumber: current + 1,
-    updatedAt: new Date(),
-  };
-  return current;
+export async function getAndIncrementNextInvoiceNumber(): Promise<number> {
+  // Use a transaction to ensure atomicity
+  return await prisma.$transaction(async (tx) => {
+    const setting = await tx.settings.findUnique({
+      where: { key: BUSINESS_PROFILE_KEY },
+    });
+
+    let profile: Omit<BusinessProfile, 'updatedAt'>;
+
+    if (!setting) {
+      profile = { ...DEFAULT_BUSINESS_PROFILE };
+    } else {
+      const value = JSON.parse(setting.value);
+      profile = {
+        name: value.name ?? null,
+        businessNumber: value.businessNumber ?? null,
+        gstNumber: value.gstNumber ?? null,
+        phone: value.phone ?? null,
+        email: value.email ?? null,
+        address: value.address ?? null,
+        paymentDetails: value.paymentDetails ?? null,
+        taxRate: value.taxRate ?? null,
+        paymentTerms: value.paymentTerms ?? null,
+        nextInvoiceNumber: value.nextInvoiceNumber ?? 1,
+      };
+    }
+
+    const currentNumber = profile.nextInvoiceNumber;
+
+    // Increment and save
+    profile.nextInvoiceNumber = currentNumber + 1;
+
+    await tx.settings.upsert({
+      where: { key: BUSINESS_PROFILE_KEY },
+      update: { value: JSON.stringify(profile) },
+      create: { key: BUSINESS_PROFILE_KEY, value: JSON.stringify(profile) },
+    });
+
+    return currentNumber;
+  });
+}
+
+// =============================================================================
+// Test Utilities
+// =============================================================================
+
+/**
+ * Reset settings to default values
+ * Used for testing to restore predictable starting state
+ */
+export async function resetSettings(): Promise<void> {
+  await prisma.settings.deleteMany();
 }

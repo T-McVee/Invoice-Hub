@@ -9,7 +9,7 @@ import {
   emailSchema,
   taxRateSchema,
   nextInvoiceNumberSchema,
-} from '@/lib/settings';
+} from '@/lib/settings/schemas';
 
 // =============================================================================
 // Types

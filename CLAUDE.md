@@ -19,6 +19,12 @@ npm run format:check     # Check formatting
 npm test                 # Vitest watch mode
 npm run test:run         # Single test run (CI)
 npx vitest src/lib/cache/index.test.ts  # Run single test file
+
+# Database (Prisma)
+npx prisma generate      # Generate Prisma client
+npx prisma migrate dev   # Create new migration
+npx prisma migrate deploy # Apply pending migrations
+npx prisma studio        # Database browser GUI
 ```
 
 ## Workflow Requirements
@@ -40,7 +46,7 @@ Personal tool to automate timesheet and invoice generation from Toggl Track. Two
 - **Client portal** (`portal/[token]/`): Token-based access for timesheet approval
 
 ### Tech Stack
-Next.js 16 (App Router), TypeScript (strict), TanStack Query, shadcn/ui, Tailwind CSS, Zod validation
+Next.js 16 (App Router), TypeScript (strict), TanStack Query, shadcn/ui, Tailwind CSS, Zod validation, Prisma ORM, Azure SQL Database
 
 ### Folder Structure
 ```
@@ -52,9 +58,9 @@ src/
 ├── lib/                   # Shared utilities and services
 │   ├── toggl/            # Toggl API client
 │   ├── cache/            # TTL cache with stale data fallback
-│   ├── settings/         # Business profile & hourly rate (in-memory)
+│   ├── settings/         # Business profile & hourly rate (database-backed)
 │   ├── hooks/            # React Query hooks
-│   └── db/               # Mock database (in-memory)
+│   └── db/               # Prisma repositories (Azure SQL)
 ├── components/ui/        # shadcn/ui components
 └── types/                # Shared TypeScript types
 ```

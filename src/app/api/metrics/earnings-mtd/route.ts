@@ -23,7 +23,7 @@ export async function GET() {
     );
 
     // Get hourly rate setting
-    const rateSetting = getHourlyRate();
+    const rateSetting = await getHourlyRate();
 
     // Calculate earnings (null if rate not configured)
     const earnings =

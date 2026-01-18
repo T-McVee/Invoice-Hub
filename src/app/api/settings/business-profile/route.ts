@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getBusinessProfile, setBusinessProfile, businessProfileSchema } from '@/lib/settings';
 
 export async function GET() {
-  const profile = getBusinessProfile();
+  const profile = await getBusinessProfile();
 
   return NextResponse.json({
     name: profile.name,
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const profile = setBusinessProfile(updates);
+    const profile = await setBusinessProfile(updates);
 
     return NextResponse.json({
       name: profile.name,

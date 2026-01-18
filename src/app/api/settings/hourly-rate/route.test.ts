@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { GET, PUT } from './route'
 import { setHourlyRate } from '@/lib/settings'
 
 describe('GET /api/settings/hourly-rate', () => {
   it('returns current hourly rate', async () => {
     // Set a known rate first
-    setHourlyRate(125)
+    await setHourlyRate(125)
 
     const response = await GET()
     const data = await response.json()

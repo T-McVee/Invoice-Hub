@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { GET, POST } from './route'
-import { clearAll, createClient, getClients } from '@/lib/db/mock-data'
+import { createClient } from '@/lib/db'
 
 describe('GET /api/clients', () => {
-  beforeEach(() => {
-    clearAll()
-  })
 
   it('returns empty array when no clients exist', async () => {
     const response = await GET()
@@ -16,7 +13,7 @@ describe('GET /api/clients', () => {
   })
 
   it('returns all clients', async () => {
-    createClient({
+    await createClient({
       name: 'Client A',
       togglClientId: null,
       togglProjectId: null,
@@ -25,7 +22,7 @@ describe('GET /api/clients', () => {
       notes: null,
       contacts: [],
     })
-    createClient({
+    await createClient({
       name: 'Client B',
       togglClientId: null,
       togglProjectId: null,
@@ -44,10 +41,6 @@ describe('GET /api/clients', () => {
 })
 
 describe('POST /api/clients', () => {
-  beforeEach(() => {
-    clearAll()
-  })
-
   it('creates a client with valid data', async () => {
     const request = new Request('http://localhost/api/clients', {
       method: 'POST',
@@ -130,7 +123,7 @@ describe('POST /api/clients', () => {
   })
 
   it('rejects duplicate Toggl client ID', async () => {
-    createClient({
+    await createClient({
       name: 'Existing Client',
       togglClientId: 'toggl-123',
       togglProjectId: null,

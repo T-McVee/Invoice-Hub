@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { GET, PATCH, DELETE } from './route'
-import { clearAll, createClient, createTimesheet } from '@/lib/db/mock-data'
+import { createClient, createTimesheet } from '@/lib/db'
 
 // Helper to create route params
 function createParams(id: string) {
@@ -8,12 +8,8 @@ function createParams(id: string) {
 }
 
 describe('GET /api/clients/[id]', () => {
-  beforeEach(() => {
-    clearAll()
-  })
-
   it('returns client when found', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: null,
@@ -43,12 +39,8 @@ describe('GET /api/clients/[id]', () => {
 })
 
 describe('PATCH /api/clients/[id]', () => {
-  beforeEach(() => {
-    clearAll()
-  })
-
   it('updates client name', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Original Name',
       togglClientId: null,
       togglProjectId: null,
@@ -71,7 +63,7 @@ describe('PATCH /api/clients/[id]', () => {
   })
 
   it('updates multiple fields', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Original',
       togglClientId: null,
       togglProjectId: null,
@@ -113,7 +105,7 @@ describe('PATCH /api/clients/[id]', () => {
   })
 
   it('rejects empty name', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Original',
       togglClientId: null,
       togglProjectId: null,
@@ -136,7 +128,7 @@ describe('PATCH /api/clients/[id]', () => {
   })
 
   it('rejects invalid email addresses', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test',
       togglClientId: null,
       togglProjectId: null,
@@ -162,7 +154,7 @@ describe('PATCH /api/clients/[id]', () => {
   })
 
   it('clears togglProjectId when set to empty string', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -186,12 +178,8 @@ describe('PATCH /api/clients/[id]', () => {
 })
 
 describe('DELETE /api/clients/[id]', () => {
-  beforeEach(() => {
-    clearAll()
-  })
-
   it('deletes client successfully', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'To Delete',
       togglClientId: null,
       togglProjectId: null,
@@ -225,7 +213,7 @@ describe('DELETE /api/clients/[id]', () => {
   })
 
   it('prevents deletion of client with timesheets', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Has Timesheets',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -236,7 +224,7 @@ describe('DELETE /api/clients/[id]', () => {
     })
 
     // Create a timesheet for this client
-    createTimesheet({
+    await createTimesheet({
       clientId: client.id,
       month: '2024-01',
       status: 'pending',

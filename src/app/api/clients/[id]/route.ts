@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getClientById, updateClient, deleteClient } from '@/lib/db/mock-data';
+import { getClientById, updateClient, deleteClient } from '@/lib/db';
 
 // Email validation schema using Zod for robust validation
 const emailSchema = z.string().email();
@@ -12,7 +12,7 @@ interface RouteParams {
 // GET /api/clients/[id] - Get a single client
 export async function GET(_request: Request, { params }: RouteParams) {
   const { id } = await params;
-  const client = getClientById(id);
+  const client = await getClientById(id);
 
   if (!client) {
     return NextResponse.json({ error: 'Client not found' }, { status: 404 });
@@ -27,7 +27,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const { id } = await params;
     const body = await request.json();
 
-    const existing = getClientById(id);
+    const existing = await getClientById(id);
     if (!existing) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
@@ -103,7 +103,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       updates.notes = notes || null;
     }
 
-    const client = updateClient(id, updates);
+    const client = await updateClient(id, updates);
 
     return NextResponse.json({ client });
   } catch (error) {
@@ -116,12 +116,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 export async function DELETE(_request: Request, { params }: RouteParams) {
   const { id } = await params;
 
-  const existing = getClientById(id);
+  const existing = await getClientById(id);
   if (!existing) {
     return NextResponse.json({ error: 'Client not found' }, { status: 404 });
   }
 
-  const deleted = deleteClient(id);
+  const deleted = await deleteClient(id);
 
   if (!deleted) {
     return NextResponse.json(

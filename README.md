@@ -19,6 +19,31 @@ Automate timesheet and invoice generation from Toggl Track time entries.
 
 ## Getting Started
 
+### Prerequisites
+
+1. **Azure CLI**: Install from [docs.microsoft.com/cli/azure/install-azure-cli](https://docs.microsoft.com/cli/azure/install-azure-cli)
+2. **Database access**: Your Azure account must have a database user in the Azure SQL instance
+
+### Database Setup (Local Development)
+
+```bash
+# 1. Login to Azure (for database authentication)
+az login
+
+# 2. Copy environment variables
+cp .env.example .env.local
+
+# 3. Update DATABASE_URL in .env.local with your server name
+
+# 4. Generate Prisma client
+npx prisma generate
+
+# 5. Run migrations (if needed)
+npx prisma migrate deploy
+```
+
+### Running the App
+
 ```bash
 # Install dependencies
 npm install
