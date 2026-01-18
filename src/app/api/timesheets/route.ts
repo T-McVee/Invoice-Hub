@@ -6,12 +6,12 @@ import {
   getClientById,
   getTimesheetByClientAndMonth,
   getTimesheets,
-} from '@/lib/db/mock-data';
+} from '@/lib/db';
 import { fetchTimeEntries, fetchTimesheetPdf } from '@/lib/toggl/client';
 
 // GET /api/timesheets - List all timesheets
 export async function GET() {
-  const timesheets = getTimesheets();
+  const timesheets = await getTimesheets();
   return NextResponse.json({ timesheets });
 }
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check client exists
-    const client = getClientById(clientId);
+    const client = await getClientById(clientId);
     if (!client) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate timesheet
-    const existing = getTimesheetByClientAndMonth(clientId, month);
+    const existing = await getTimesheetByClientAndMonth(clientId, month);
     if (existing) {
       return NextResponse.json(
         {
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create timesheet record
-    const timesheet = createTimesheet({
+    const timesheet = await createTimesheet({
       clientId,
       month,
       status: 'pending',

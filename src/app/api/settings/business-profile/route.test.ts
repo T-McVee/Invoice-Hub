@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { GET, PUT } from './route'
 import { setBusinessProfile } from '@/lib/settings'
 
 describe('GET /api/settings/business-profile', () => {
   it('returns current business profile', async () => {
     // Set a known profile first
-    setBusinessProfile({
+    await setBusinessProfile({
       name: 'Test Business',
       taxRate: 15,
     })

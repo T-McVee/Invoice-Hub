@@ -8,10 +8,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    // Use jsdom for component tests (.tsx files)
-    environmentMatchGlobs: [
-      ['src/**/*.test.tsx', 'jsdom'],
-    ],
   },
   resolve: {
     alias: {

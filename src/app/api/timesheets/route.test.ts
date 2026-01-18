@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { clearAll, createClient, createTimesheet } from '@/lib/db/mock-data'
+import { createClient, createTimesheet } from '@/lib/db'
 
 // Create hoisted mock functions so they're available when vi.mock runs
 const { mockFetchTimeEntries, mockFetchTimesheetPdf } = vi.hoisted(() => ({
@@ -17,10 +17,6 @@ vi.mock('../../../lib/toggl/client', () => ({
 import { GET, POST } from './route'
 
 describe('GET /api/timesheets', () => {
-  beforeEach(() => {
-    clearAll()
-  })
-
   it('returns empty array when no timesheets exist', async () => {
     const response = await GET()
     const data = await response.json()
@@ -30,7 +26,7 @@ describe('GET /api/timesheets', () => {
   })
 
   it('returns all timesheets', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -40,7 +36,7 @@ describe('GET /api/timesheets', () => {
       contacts: [],
     })
 
-    createTimesheet({
+    await createTimesheet({
       clientId: client.id,
       month: '2024-01',
       status: 'pending',
@@ -50,7 +46,7 @@ describe('GET /api/timesheets', () => {
       approvedAt: null,
     })
 
-    createTimesheet({
+    await createTimesheet({
       clientId: client.id,
       month: '2024-02',
       status: 'approved',
@@ -70,12 +66,11 @@ describe('GET /api/timesheets', () => {
 
 describe('POST /api/timesheets', () => {
   beforeEach(() => {
-    clearAll()
     vi.clearAllMocks()
   })
 
   it('creates timesheet with valid data', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -177,7 +172,7 @@ describe('POST /api/timesheets', () => {
   })
 
   it('rejects client without Toggl project ID', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'No Toggl',
       togglClientId: null,
       togglProjectId: null, // No project ID
@@ -203,7 +198,7 @@ describe('POST /api/timesheets', () => {
   })
 
   it('prevents duplicate timesheet for same client and month', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -214,7 +209,7 @@ describe('POST /api/timesheets', () => {
     })
 
     // Create existing timesheet
-    createTimesheet({
+    await createTimesheet({
       clientId: client.id,
       month: '2024-01',
       status: 'pending',
@@ -241,7 +236,7 @@ describe('POST /api/timesheets', () => {
   })
 
   it('continues without PDF if PDF fetch fails', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: 'proj-123',
@@ -276,7 +271,7 @@ describe('POST /api/timesheets', () => {
   })
 
   it('handles Toggl API errors gracefully', async () => {
-    const client = createClient({
+    const client = await createClient({
       name: 'Test Client',
       togglClientId: null,
       togglProjectId: 'proj-123',

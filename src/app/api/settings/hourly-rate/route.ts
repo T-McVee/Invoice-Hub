@@ -8,7 +8,7 @@ const updateHourlyRateSchema = z.object({
 });
 
 export async function GET() {
-  const setting = getHourlyRate();
+  const setting = await getHourlyRate();
 
   return NextResponse.json({
     rate: setting.rate,
@@ -33,7 +33,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const setting = setHourlyRate(parsed.data.rate);
+    const setting = await setHourlyRate(parsed.data.rate);
 
     return NextResponse.json({
       rate: setting.rate,

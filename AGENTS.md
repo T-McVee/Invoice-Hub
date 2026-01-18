@@ -16,3 +16,11 @@ Use `@/openspec/AGENTS.md` to learn:
 Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
+
+## Project Workflow
+
+**Before any implementation**, read `CLAUDE.md` for:
+- Required workflow (run tests before/after work)
+- Available commands (dev, build, lint, test, Prisma/database)
+- Architecture overview and folder structure
+- Naming conventions and coding patterns

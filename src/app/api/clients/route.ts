@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getClients, createClient, getClientByTogglClientId } from '@/lib/db/mock-data';
+import { getClients, createClient, getClientByTogglClientId } from '@/lib/db';
 
 // Email validation schema using Zod for robust validation
 const emailSchema = z.string().email();
 
 // GET /api/clients - List all clients
 export async function GET() {
-  const clients = getClients();
+  const clients = await getClients();
   return NextResponse.json({ clients });
 }
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     // Check if client with same Toggl client ID already exists
     if (togglClientId) {
-      const existing = getClientByTogglClientId(togglClientId);
+      const existing = await getClientByTogglClientId(togglClientId);
       if (existing) {
         return NextResponse.json(
           { error: 'A client with this Toggl client ID already exists' },
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const client = createClient({
+    const client = await createClient({
       name: name.trim(),
       togglClientId: togglClientId || null,
       togglProjectId: togglProjectId || null,

@@ -127,60 +127,60 @@ describe('settings', () => {
   })
 
   describe('setHourlyRate / getHourlyRate', () => {
-    it('stores and retrieves hourly rate', () => {
-      const result = setHourlyRate(125)
+    it('stores and retrieves hourly rate', async () => {
+      const result = await setHourlyRate(125)
 
       expect(result.rate).toBe(125)
       expect(result.updatedAt).toBeInstanceOf(Date)
 
-      const retrieved = getHourlyRate()
+      const retrieved = await getHourlyRate()
       expect(retrieved.rate).toBe(125)
     })
 
-    it('throws on invalid rate', () => {
-      expect(() => setHourlyRate(-50)).toThrow()
+    it('throws on invalid rate', async () => {
+      await expect(setHourlyRate(-50)).rejects.toThrow()
     })
   })
 
   describe('setBusinessProfile / getBusinessProfile', () => {
-    it('stores and retrieves business profile', () => {
+    it('stores and retrieves business profile', async () => {
       const updates = {
         name: 'Test Corp',
         taxRate: 10,
       }
 
-      const result = setBusinessProfile(updates)
+      const result = await setBusinessProfile(updates)
 
       expect(result.name).toBe('Test Corp')
       expect(result.taxRate).toBe(10)
       expect(result.updatedAt).toBeInstanceOf(Date)
 
-      const retrieved = getBusinessProfile()
+      const retrieved = await getBusinessProfile()
       expect(retrieved.name).toBe('Test Corp')
     })
 
-    it('merges partial updates', () => {
-      setBusinessProfile({ name: 'First Name' })
-      setBusinessProfile({ phone: '555-1234' })
+    it('merges partial updates', async () => {
+      await setBusinessProfile({ name: 'First Name' })
+      await setBusinessProfile({ phone: '555-1234' })
 
-      const result = getBusinessProfile()
+      const result = await getBusinessProfile()
       expect(result.name).toBe('First Name')
       expect(result.phone).toBe('555-1234')
     })
 
-    it('throws on invalid email in profile', () => {
-      expect(() => setBusinessProfile({ email: 'not-valid' })).toThrow()
+    it('throws on invalid email in profile', async () => {
+      await expect(setBusinessProfile({ email: 'not-valid' })).rejects.toThrow()
     })
   })
 
   describe('getAndIncrementNextInvoiceNumber', () => {
-    it('returns current number and increments', () => {
+    it('returns current number and increments', async () => {
       // Set a known starting point
-      setBusinessProfile({ nextInvoiceNumber: 50 })
+      await setBusinessProfile({ nextInvoiceNumber: 50 })
 
-      const first = getAndIncrementNextInvoiceNumber()
-      const second = getAndIncrementNextInvoiceNumber()
-      const third = getAndIncrementNextInvoiceNumber()
+      const first = await getAndIncrementNextInvoiceNumber()
+      const second = await getAndIncrementNextInvoiceNumber()
+      const third = await getAndIncrementNextInvoiceNumber()
 
       expect(first).toBe(50)
       expect(second).toBe(51)

@@ -1,0 +1,96 @@
+// Prisma schema for Invoice Hub
+// Azure SQL Database with Entra ID authentication
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+// Client entity - businesses/individuals who receive invoices
+model Client {
+  id                  String   @id @default(uuid())
+  name                String
+  togglClientId       String?  @unique
+  togglProjectId      String?
+  timesheetRecipients String   @default("[]") // JSON array of email addresses
+  invoiceRecipients   String   @default("[]") // JSON array of email addresses
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  contacts   Contact[]
+  timesheets Timesheet[]
+  invoices   Invoice[]
+
+  @@map("clients")
+}
+
+// Contact entity - people at a client who receive emails
+model Contact {
+  id       String @id @default(uuid())
+  clientId String
+  name     String
+  email    String
+  role     String // 'approver' | 'billing' | 'both'
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
+}
+
+// Timesheet entity - monthly summary of time entries
+model Timesheet {
+  id         String    @id @default(uuid())
+  clientId   String
+  month      String // YYYY-MM format
+  status     String    @default("pending") // 'pending' | 'sent' | 'approved' | 'rejected'
+  pdfUrl     String?
+  totalHours Float
+  sentAt     DateTime?
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoices Invoice[]
+
+  // Unique constraint: one timesheet per client per month
+  @@unique([clientId, month])
+  @@map("timesheets")
+}
+
+// Invoice entity - generated document based on approved timesheet
+model Invoice {
+  id            String    @id @default(uuid())
+  clientId      String
+  timesheetId   String
+  invoiceNumber String    @unique
+  amount        Float
+  status        String    @default("draft") // 'draft' | 'sent' | 'paid'
+  pdfUrl        String?
+  sentAt        DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  // Relations - use NoAction to avoid cyclic cascade issues with SQL Server
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  timesheet Timesheet @relation(fields: [timesheetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("invoices")
+}
+
+// Settings entity - key-value store for application settings
+model Settings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String // JSON value
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
