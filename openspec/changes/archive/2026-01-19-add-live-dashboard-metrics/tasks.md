@@ -28,6 +28,6 @@
 
 ## 5. Validation
 
-- [ ] 5.1 Test with valid Toggl credentials - verify hours match Toggl UI
-- [ ] 5.2 Test cache behavior - verify no API call within TTL window
-- [ ] 5.3 Test error handling - disconnect network, verify stale fallback
+- [x] 5.1 Test with valid Toggl credentials - verify hours match Toggl UI
+- [x] 5.2 Test cache behavior - verify no API call within TTL window
+- [x] 5.3 Test error handling - disconnect network, verify stale fallback
