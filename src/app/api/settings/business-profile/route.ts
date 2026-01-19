@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getBusinessProfile, setBusinessProfile, businessProfileSchema } from '@/lib/settings';
 
@@ -20,7 +20,7 @@ export async function GET() {
   });
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: Request) {
   try {
     const body = await request.json();
 

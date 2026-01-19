@@ -9,7 +9,8 @@
       "Bash(openspec validate:*)",
       "Bash(npx prisma:*)",
       "Bash(npm run build:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
