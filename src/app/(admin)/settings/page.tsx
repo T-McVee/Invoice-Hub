@@ -9,6 +9,7 @@ import {
   emailSchema,
   taxRateSchema,
   nextInvoiceNumberSchema,
+  businessProfileSchema,
 } from '@/lib/settings/schemas';
 
 // =============================================================================
@@ -446,25 +447,68 @@ function BusinessProfileCard() {
   };
 
   const handleSave = () => {
-    // Validate all fields
     const newErrors: Partial<Record<keyof BusinessProfileFormState, string>> = {};
-    let hasErrors = false;
 
-    (Object.keys(formState) as Array<keyof BusinessProfileFormState>).forEach((field) => {
-      const error = validateField(field, formState[field]);
-      if (error) {
-        newErrors[field] = error;
-        hasErrors = true;
+    // Pre-validate number conversions (Zod expects numbers, form has strings)
+    let taxRateValue: number | undefined = undefined;
+    if (formState.taxRate && formState.taxRate.trim() !== '') {
+      taxRateValue = parseFloat(formState.taxRate);
+      if (isNaN(taxRateValue)) {
+        newErrors.taxRate = 'Please enter a valid number';
       }
-    });
+    }
 
-    setErrors(newErrors);
+    let nextInvoiceNumberValue: number | undefined = undefined;
+    if (formState.nextInvoiceNumber && formState.nextInvoiceNumber.trim() !== '') {
+      const parsed = parseInt(formState.nextInvoiceNumber, 10);
+      if (isNaN(parsed) || parsed.toString() !== formState.nextInvoiceNumber.trim()) {
+        newErrors.nextInvoiceNumber = 'Please enter a whole number';
+      } else {
+        nextInvoiceNumberValue = parsed;
+      }
+    } else {
+      newErrors.nextInvoiceNumber = 'Invoice number is required';
+    }
 
-    if (hasErrors) {
+    // If number conversions failed, show errors and stop
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    // Prepare data for API
+    // Build data object for Zod validation
+    const dataToValidate = {
+      name: formState.name || undefined,
+      businessNumber: formState.businessNumber || undefined,
+      gstNumber: formState.gstNumber || undefined,
+      phone: formState.phone || undefined,
+      email: formState.email, // emailSchema handles empty string
+      address: formState.address || undefined,
+      paymentDetails: formState.paymentDetails || undefined,
+      taxRate: taxRateValue,
+      paymentTerms: formState.paymentTerms || undefined,
+      nextInvoiceNumber: nextInvoiceNumberValue,
+    };
+
+    // Validate with Zod schema
+    const result = businessProfileSchema.safeParse(dataToValidate);
+
+    if (!result.success) {
+      // Map Zod errors to form field errors
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof BusinessProfileFormState;
+        if (field && !newErrors[field]) {
+          newErrors[field] = issue.message;
+        }
+      });
+      setErrors(newErrors);
+      return;
+    }
+
+    // Validation passed - clear errors and submit
+    setErrors({});
+
+    // Prepare data for API (convert empty strings to null)
     const updateData: Partial<BusinessProfileResponse> = {
       name: formState.name || null,
       businessNumber: formState.businessNumber || null,
@@ -473,9 +517,9 @@ function BusinessProfileCard() {
       email: formState.email || null,
       address: formState.address || null,
       paymentDetails: formState.paymentDetails || null,
-      taxRate: formState.taxRate ? parseFloat(formState.taxRate) : null,
+      taxRate: taxRateValue ?? null,
       paymentTerms: formState.paymentTerms || null,
-      nextInvoiceNumber: parseInt(formState.nextInvoiceNumber, 10),
+      nextInvoiceNumber: nextInvoiceNumberValue!,
     };
 
     mutation.mutate(updateData);

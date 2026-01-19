@@ -26,14 +26,14 @@ export const nextInvoiceNumberSchema = z
   .min(1, 'Invoice number must be at least 1');
 
 export const businessProfileSchema = z.object({
-  name: z.string().optional(),
-  businessNumber: z.string().optional(),
-  gstNumber: z.string().optional(),
-  phone: z.string().optional(),
-  email: emailSchema,
-  address: z.string().optional(),
-  paymentDetails: z.string().optional(),
-  taxRate: taxRateSchema.optional().nullable(),
-  paymentTerms: z.string().optional(),
+  name: z.string().nullable().optional(),
+  businessNumber: z.string().nullable().optional(),
+  gstNumber: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  email: emailSchema.nullable(),
+  address: z.string().nullable().optional(),
+  paymentDetails: z.string().nullable().optional(),
+  taxRate: taxRateSchema.nullable().optional(),
+  paymentTerms: z.string().nullable().optional(),
   nextInvoiceNumber: nextInvoiceNumberSchema.optional(),
 });

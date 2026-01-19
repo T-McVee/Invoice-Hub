@@ -124,6 +124,58 @@ describe('settings', () => {
     it('validates nested nextInvoiceNumber field', () => {
       expect(() => businessProfileSchema.parse({ nextInvoiceNumber: 0 })).toThrow()
     })
+
+    // Tests for null value handling (form sends null for empty fields)
+    it('accepts null for optional string fields', () => {
+      const profile = {
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        paymentTerms: null,
+      }
+      expect(() => businessProfileSchema.parse(profile)).not.toThrow()
+    })
+
+    it('accepts null for taxRate', () => {
+      expect(() => businessProfileSchema.parse({ taxRate: null })).not.toThrow()
+    })
+
+    it('accepts data in the exact format the form sends to the API', () => {
+      // This mirrors the updateData object in handleSave
+      const formData = {
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        taxRate: 10, // User entered a tax rate
+        paymentTerms: null,
+        nextInvoiceNumber: 1,
+      }
+      expect(() => businessProfileSchema.parse(formData)).not.toThrow()
+    })
+
+    it('accepts mixed null and values (typical form submission)', () => {
+      const formData = {
+        name: 'My Business',
+        businessNumber: null,
+        gstNumber: null,
+        phone: '555-1234',
+        email: 'test@example.com',
+        address: null,
+        paymentDetails: null,
+        taxRate: 15,
+        paymentTerms: 'Net 30',
+        nextInvoiceNumber: 42,
+      }
+      expect(() => businessProfileSchema.parse(formData)).not.toThrow()
+    })
   })
 
   describe('setHourlyRate / getHourlyRate', () => {
@@ -170,6 +222,46 @@ describe('settings', () => {
 
     it('throws on invalid email in profile', async () => {
       await expect(setBusinessProfile({ email: 'not-valid' })).rejects.toThrow()
+    })
+
+    it('accepts null values for optional fields', async () => {
+      const updates = {
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        taxRate: null,
+        paymentTerms: null,
+      }
+
+      const result = await setBusinessProfile(updates)
+
+      expect(result.name).toBeNull()
+      expect(result.taxRate).toBeNull()
+    })
+
+    it('accepts form submission payload with tax rate change', async () => {
+      // This mimics exactly what the form sends when user changes tax rate
+      const updates = {
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        taxRate: 10,
+        paymentTerms: null,
+        nextInvoiceNumber: 1,
+      }
+
+      const result = await setBusinessProfile(updates)
+
+      expect(result.taxRate).toBe(10)
+      expect(result.nextInvoiceNumber).toBe(1)
     })
   })
 

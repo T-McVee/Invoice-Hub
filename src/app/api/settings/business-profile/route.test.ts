@@ -84,10 +84,6 @@ describe('PUT /api/settings/business-profile', () => {
   })
 
   it('handles empty string fields by clearing them', async () => {
-    // Note: The route converts empty strings to null, but the schema
-    // doesn't accept null for optional string fields. This test documents
-    // current behavior which returns 400 for empty strings.
-    // TODO: Fix route to handle empty strings properly
     const request = new Request('http://localhost/api/settings/business-profile', {
       method: 'PUT',
       body: JSON.stringify({ phone: '' }),
@@ -95,8 +91,9 @@ describe('PUT /api/settings/business-profile', () => {
 
     const response = await PUT(request)
 
-    // Current behavior: returns 400 because null conversion fails validation
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(200)
+    const data = await response.json()
+    expect(data.phone).toBeNull()
   })
 
   it('rejects invalid email', async () => {
@@ -176,5 +173,88 @@ describe('PUT /api/settings/business-profile', () => {
 
     expect(response.status).toBe(200)
     expect(data.nextInvoiceNumber).toBe(100)
+  })
+
+  // Tests that simulate exact form submission payloads
+  it('accepts full form submission with all null optional fields', async () => {
+    // This is exactly what the form sends when user only fills required fields
+    const request = new Request('http://localhost/api/settings/business-profile', {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        taxRate: null,
+        paymentTerms: null,
+        nextInvoiceNumber: 1,
+      }),
+    })
+
+    const response = await PUT(request)
+
+    expect(response.status).toBe(200)
+  })
+
+  it('accepts form submission with tax rate change (typical user scenario)', async () => {
+    // User changes tax rate from empty to 10, all other fields remain empty
+    const request = new Request('http://localhost/api/settings/business-profile', {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: null,
+        businessNumber: null,
+        gstNumber: null,
+        phone: null,
+        email: null,
+        address: null,
+        paymentDetails: null,
+        taxRate: 10,
+        paymentTerms: null,
+        nextInvoiceNumber: 1,
+      }),
+    })
+
+    const response = await PUT(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.taxRate).toBe(10)
+  })
+
+  it('accepts form submission with mixed values (some filled, some null)', async () => {
+    const request = new Request('http://localhost/api/settings/business-profile', {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: 'My Business',
+        businessNumber: null,
+        gstNumber: null,
+        phone: '555-1234',
+        email: 'test@example.com',
+        address: null,
+        paymentDetails: null,
+        taxRate: 15,
+        paymentTerms: 'Net 30',
+        nextInvoiceNumber: 42,
+      }),
+    })
+
+    const response = await PUT(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.name).toBe('My Business')
+    expect(data.phone).toBe('555-1234')
+    expect(data.email).toBe('test@example.com')
+    expect(data.taxRate).toBe(15)
+    expect(data.paymentTerms).toBe('Net 30')
+    expect(data.nextInvoiceNumber).toBe(42)
+    // Null fields should remain null
+    expect(data.businessNumber).toBeNull()
+    expect(data.gstNumber).toBeNull()
+    expect(data.address).toBeNull()
+    expect(data.paymentDetails).toBeNull()
   })
 })
