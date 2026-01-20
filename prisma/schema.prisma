@@ -19,6 +19,7 @@ model Client {
   timesheetRecipients String   @default("[]") // JSON array of email addresses
   invoiceRecipients   String   @default("[]") // JSON array of email addresses
   notes               String?
+  portalToken         String?  // JWT token for client portal access (~45 day expiry)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
