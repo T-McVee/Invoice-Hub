@@ -10,7 +10,8 @@
       "Bash(npx prisma:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(bd list:*)"
     ]
   }
 }
