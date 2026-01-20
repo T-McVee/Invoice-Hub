@@ -10,7 +10,10 @@
       "Bash(npx prisma:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx openspec:*)",
+      "Bash(for f in /Users/tim/Documents/Codeing/Projects/invoice-hub/openspec/changes/add-timesheet-persistence/specs/*/spec.md)",
+      "Bash(done)"
     ]
   }
 }
