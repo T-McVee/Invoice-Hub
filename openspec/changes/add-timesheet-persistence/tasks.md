@@ -39,10 +39,10 @@
 - [ ] 5.8 Write tests for portal API routes (valid token, expired token, invalid token)
 
 ## 6. Admin Client Portal Link Management
-- [ ] 6.1 Add portal link display to client detail view (or clients list)
-- [ ] 6.2 Add "Copy Portal Link" button
-- [ ] 6.3 Add "Regenerate Portal Link" button with confirmation
-- [ ] 6.4 Create `POST /api/clients/[id]/regenerate-token` endpoint
+- [x] 6.1 Add portal link display to client detail view (or clients list)
+- [x] 6.2 Add "Copy Portal Link" button
+- [x] 6.3 Add "Regenerate Portal Link" button with confirmation
+- [x] 6.4 Create `POST /api/clients/[id]/regenerate-token` endpoint
 
 ## 7. Validation & Cleanup
 - [ ] 7.1 Run full test suite, fix any failures

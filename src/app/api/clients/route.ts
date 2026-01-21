@@ -80,6 +80,7 @@ export async function POST(request: Request) {
       timesheetRecipients: timesheetEmailResult.valid,
       invoiceRecipients: invoiceEmailResult.valid,
       notes: notes || null,
+      portalToken: null,
       contacts: [],
     });
 

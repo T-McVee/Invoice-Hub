@@ -75,3 +75,44 @@ export function useInvalidateClients() {
   const queryClient = useQueryClient();
   return () => queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY });
 }
+
+interface RegenerateTokenResponse {
+  token: string;
+  expiresAt: string | null;
+}
+
+async function regenerateClientToken(
+  clientId: string
+): Promise<RegenerateTokenResponse> {
+  const response = await fetch(`/api/clients/${clientId}/regenerate-token`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let message = 'Failed to regenerate token';
+    try {
+      const data = JSON.parse(text);
+      message = data.error || message;
+    } catch {
+      // Response wasn't JSON
+    }
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+/**
+ * Hook for regenerating a client's portal token
+ */
+export function useRegenerateToken() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: regenerateClientToken,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY });
+    },
+  });
+}

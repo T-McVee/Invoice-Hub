@@ -20,6 +20,7 @@ function toClient(
     timesheetRecipients: JSON.parse(prismaClient.timesheetRecipients),
     invoiceRecipients: JSON.parse(prismaClient.invoiceRecipients),
     notes: prismaClient.notes,
+    portalToken: prismaClient.portalToken,
     contacts: (prismaClient.contacts ?? []).map((c) => ({
       id: c.id,
       clientId: c.clientId,
@@ -166,4 +167,23 @@ export async function deleteClient(id: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * Update a client's portal token
+ */
+export async function updateClientPortalToken(
+  id: string,
+  portalToken: string
+): Promise<Client | undefined> {
+  const existing = await prisma.client.findUnique({ where: { id } });
+  if (!existing) return undefined;
+
+  const client = await prisma.client.update({
+    where: { id },
+    data: { portalToken },
+    include: { contacts: true },
+  });
+
+  return toClient(client);
 }

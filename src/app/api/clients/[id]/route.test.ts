@@ -16,6 +16,7 @@ describe('GET /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -47,6 +48,7 @@ describe('PATCH /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -70,6 +72,7 @@ describe('PATCH /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -112,6 +115,7 @@ describe('PATCH /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -135,6 +139,7 @@ describe('PATCH /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -161,6 +166,7 @@ describe('PATCH /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -186,6 +192,7 @@ describe('DELETE /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -220,6 +227,7 @@ describe('DELETE /api/clients/[id]', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 

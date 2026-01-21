@@ -12,6 +12,7 @@ export {
   getClientByTogglClientId,
   createClient,
   updateClient,
+  updateClientPortalToken,
   deleteClient,
 } from './repositories/client';
 

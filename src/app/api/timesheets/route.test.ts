@@ -33,6 +33,7 @@ describe('GET /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -77,6 +78,7 @@ describe('POST /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -179,6 +181,7 @@ describe('POST /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -205,6 +208,7 @@ describe('POST /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -243,6 +247,7 @@ describe('POST /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -278,6 +283,7 @@ describe('POST /api/timesheets', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
