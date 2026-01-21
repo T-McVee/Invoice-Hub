@@ -1,15 +1,15 @@
 ## 1. Azure Blob Storage Integration
-- [ ] 1.1 Add `@azure/storage-blob` dependency
-- [ ] 1.2 Create `src/lib/blob/client.ts` with upload/download/delete functions
-- [ ] 1.3 Add blob storage environment variables (`AZURE_STORAGE_ACCOUNT`, `AZURE_STORAGE_CONTAINER`)
-- [ ] 1.4 Write tests for blob client (mock Azure SDK)
+- [x] 1.1 Add `@azure/storage-blob` dependency
+- [x] 1.2 Create `src/lib/blob/client.ts` with upload/download/delete functions
+- [x] 1.3 Add blob storage environment variables (`AZURE_STORAGE_CONNECTION_STRING`, `AZURE_STORAGE_CONTAINER`)
+- [x] 1.4 Write tests for blob client (mock Azure SDK)
 
 ## 2. Database Schema & JWT Setup
-- [ ] 2.1 Add `portalToken` field to Client model (String, optional - stores JWT)
-- [ ] 2.2 Add `JWT_SECRET` environment variable for signing
-- [ ] 2.3 Create `src/lib/auth/jwt.ts` with sign/verify/decode functions
-- [ ] 2.4 Create migration
-- [ ] 2.5 Write tests for JWT utilities
+- [x] 2.1 Add `portalToken` field to Client model (String, optional - stores JWT)
+- [x] 2.2 Add `JWT_SECRET` environment variable for signing
+- [x] 2.3 Create `src/lib/auth/jwt.ts` with sign/verify/decode functions
+- [x] 2.4 Create migration
+- [x] 2.5 Write tests for JWT utilities
 
 ## 3. Timesheet Creation Updates
 - [ ] 3.1 Update `POST /api/timesheets` to upload PDF to blob storage
