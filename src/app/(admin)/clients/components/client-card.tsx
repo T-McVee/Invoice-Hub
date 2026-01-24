@@ -193,8 +193,8 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
         </div>
         {portalUrl ? (
           <div className="flex items-center gap-2">
-            <div className="flex-1 px-3 py-2 rounded-lg bg-muted/50 border border-border/50 text-sm text-muted-foreground truncate font-mono">
-              {portalUrl}
+            <div className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-muted/50 border border-border/50 text-sm text-muted-foreground truncate font-mono">
+              /portal/{client.portalToken?.slice(0, 20)}...
             </div>
             <Button
               variant="ghost"

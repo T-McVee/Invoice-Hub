@@ -1,11 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Shield } from 'lucide-react';
+import { CopyToken } from './copy-token';
 
 interface PortalPageProps {
   params: Promise<{ token: string }>;
@@ -32,9 +27,7 @@ export default async function PortalPage({ params }: PortalPageProps) {
             <h1 className="text-4xl font-bold tracking-tight mb-3">
               Client <span className="text-primary">Portal</span>
             </h1>
-            <p className="text-muted-foreground">
-              Access your timesheets and invoices securely
-            </p>
+            <p className="text-muted-foreground">Access your timesheets and invoices securely</p>
           </div>
 
           {/* Main Card */}
@@ -49,15 +42,8 @@ export default async function PortalPage({ params }: PortalPageProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">Access Token:</span>
-                </p>
-                <code className="mt-2 block rounded-lg bg-background px-3 py-2 text-sm font-mono border border-border/50 text-primary">
-                  {token}
-                </code>
-              </div>
-              
+              <CopyToken token={token} />
+
               <p className="text-sm text-muted-foreground text-center pt-4">
                 Your documents will appear here once they&apos;re ready.
               </p>
