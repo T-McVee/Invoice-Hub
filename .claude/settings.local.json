@@ -14,7 +14,15 @@
       "Bash(npx openspec:*)",
       "Bash(for f in /Users/tim/Documents/Codeing/Projects/invoice-hub/openspec/changes/add-timesheet-persistence/specs/*/spec.md)",
       "Bash(done)",
-      "Bash(bd list:*)"
+      "Bash(bd list:*)",
+      "Bash(bd create:*)",
+      "Bash(bd dep add:*)",
+      "Bash(bd ready:*)",
+      "Bash(bd show:*)",
+      "Bash(bd update:*)",
+      "Bash(bd close:*)",
+      "Bash(bd sync:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }

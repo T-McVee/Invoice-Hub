@@ -13,18 +13,24 @@ export function CopyToken({ token }: CopyTokenProps) {
 
   const handleCopy = async () => {
     const fullUrl = `${window.location.origin}/portal/${token}`;
+    let success = false;
+
     try {
       await navigator.clipboard.writeText(fullUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      success = true;
     } catch {
-      // Fallback
+      // Fallback for older browsers
       const textarea = document.createElement('textarea');
       textarea.value = fullUrl;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
       document.body.appendChild(textarea);
       textarea.select();
-      document.execCommand('copy');
+      success = document.execCommand('copy');
       document.body.removeChild(textarea);
+    }
+
+    if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
