@@ -61,6 +61,19 @@ export async function getTimesheetByClientAndMonth(
 }
 
 /**
+ * Get all timesheets for a specific client
+ */
+export async function getTimesheetsByClientId(
+  clientId: string
+): Promise<Timesheet[]> {
+  const timesheets = await prisma.timesheet.findMany({
+    where: { clientId },
+    orderBy: { createdAt: 'desc' },
+  });
+  return timesheets.map(toTimesheet);
+}
+
+/**
  * Create a new timesheet
  */
 export async function createTimesheet(

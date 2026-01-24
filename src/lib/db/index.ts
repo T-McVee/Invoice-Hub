@@ -21,6 +21,7 @@ export {
   getTimesheets,
   getTimesheetById,
   getTimesheetByClientAndMonth,
+  getTimesheetsByClientId,
   createTimesheet,
   updateTimesheet,
   deleteTimesheet,

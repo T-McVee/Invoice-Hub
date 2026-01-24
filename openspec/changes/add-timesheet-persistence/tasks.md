@@ -21,22 +21,22 @@
 - [x] 3.7 Update existing tests, add tests for new behavior
 
 ## 4. Admin Timesheets Page
-- [ ] 4.1 Create `src/app/(admin)/timesheets/page.tsx` with timesheet list
-- [ ] 4.2 Add columns: Client, Month, Status, Total Hours, Created, Actions
-- [ ] 4.3 Add status badge component (pending/sent/approved/rejected)
-- [ ] 4.4 Add "View PDF" action (opens blob URL)
-- [ ] 4.5 Add navigation link to sidebar
-- [ ] 4.6 Create `timesheets.queries.ts` for React Query hooks
+- [x] 4.1 Create `src/app/(admin)/timesheets/page.tsx` with timesheet list
+- [x] 4.2 Add columns: Client, Month, Status, Total Hours, Created, Actions
+- [x] 4.3 Add status badge component (pending/sent/approved/rejected)
+- [x] 4.4 Add "View PDF" action (opens blob URL)
+- [x] 4.5 Add navigation link to sidebar
+- [x] 4.6 Create `timesheets.queries.ts` for React Query hooks
 
 ## 5. Client Portal Implementation
-- [ ] 5.1 Create `GET /api/portal/[token]` with JWT validation, return client data and timesheets
-- [ ] 5.2 Create `POST /api/portal/[token]/timesheets/[id]/approve` endpoint
-- [ ] 5.3 Update `src/app/portal/[token]/page.tsx` with timesheet list UI
-- [ ] 5.4 Add approval button for pending timesheets
-- [ ] 5.5 Show approved timesheets in "History" section
-- [ ] 5.6 Add PDF download links
-- [ ] 5.7 Create expired token page with "contact admin" message
-- [ ] 5.8 Write tests for portal API routes (valid token, expired token, invalid token)
+- [x] 5.1 Create `GET /api/portal/[token]` with JWT validation, return client data and timesheets
+- [x] 5.2 Create `POST /api/portal/[token]/timesheets/[id]/approve` endpoint
+- [x] 5.3 Update `src/app/portal/[token]/page.tsx` with timesheet list UI
+- [x] 5.4 Add approval button for pending timesheets
+- [x] 5.5 Show approved timesheets in "History" section
+- [x] 5.6 Add PDF download links
+- [x] 5.7 Create expired token page with "contact admin" message
+- [x] 5.8 Write tests for portal API routes (valid token, expired token, invalid token)
 
 ## 6. Admin Client Portal Link Management
 - [x] 6.1 Add portal link display to client detail view (or clients list)
@@ -45,6 +45,6 @@
 - [x] 6.4 Create `POST /api/clients/[id]/regenerate-token` endpoint
 
 ## 7. Validation & Cleanup
-- [ ] 7.1 Run full test suite, fix any failures
+- [x] 7.1 Run full test suite, fix any failures
 - [ ] 7.2 Manual end-to-end test of full workflow
 - [ ] 7.3 Update CLAUDE.md if new environment variables added
