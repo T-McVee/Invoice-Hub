@@ -160,7 +160,7 @@ export default function TimesheetsPage() {
                           className="gap-1.5"
                         >
                           <a
-                            href={timesheet.pdfUrl}
+                            href={`/api/timesheets/${timesheet.id}/pdf`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >

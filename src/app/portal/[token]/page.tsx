@@ -76,7 +76,7 @@ function TimesheetCard({
         <div className="flex items-center gap-2 flex-shrink-0">
           {timesheet.pdfUrl && (
             <Button variant="outline" size="sm" asChild className="gap-1.5">
-              <a href={timesheet.pdfUrl} target="_blank" rel="noopener noreferrer">
+              <a href={`/api/timesheets/${timesheet.id}/pdf`} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
                 View PDF
               </a>
