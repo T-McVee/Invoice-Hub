@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import {
   createTimesheet,
+  deleteTimesheet,
   getClientById,
   getTimesheetByClientAndMonth,
   getTimesheets,
+  updateClientPortalToken,
 } from '@/lib/db';
 import { fetchTimeEntries, fetchTimesheetPdf } from '@/lib/toggl/client';
+import { uploadPdf, getTimesheetBlobPath, deletePdf } from '@/lib/blob/client';
+import { signPortalToken } from '@/lib/auth/jwt';
 
 // GET /api/timesheets - List all timesheets
 export async function GET() {
@@ -19,7 +21,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { clientId, month } = body;
+    const { clientId, month, force } = body;
 
     // Validate required fields
     if (!clientId || !month) {
@@ -48,35 +50,39 @@ export async function POST(request: NextRequest) {
     // Check for duplicate timesheet
     const existing = await getTimesheetByClientAndMonth(clientId, month);
     if (existing) {
-      return NextResponse.json(
-        {
-          error: `A timesheet already exists for ${client.name} in ${month}`,
-          existingTimesheetId: existing.id,
-        },
-        { status: 409 }
-      );
+      if (force) {
+        // Delete existing timesheet and its PDF from blob storage
+        if (existing.pdfUrl) {
+          const blobPath = getTimesheetBlobPath(clientId, month);
+          await deletePdf(blobPath);
+        }
+        await deleteTimesheet(existing.id);
+      } else {
+        return NextResponse.json(
+          {
+            error: `A timesheet already exists for ${client.name} in ${month}`,
+            existingTimesheetId: existing.id,
+          },
+          { status: 409 }
+        );
+      }
     }
 
     // Fetch time entries from Toggl
     const timeEntries = await fetchTimeEntries(client.togglProjectId, month);
 
-    // Fetch PDF from Toggl and save locally for testing
-    // In production, upload to Azure Blob Storage and store the URL
+    // Fetch PDF from Toggl and upload to Azure Blob Storage
     let pdfUrl: string | null = null;
     try {
-      const { pdfBuffer, filename } = await fetchTimesheetPdf(client.togglProjectId, month);
+      const { pdfBuffer } = await fetchTimesheetPdf(client.togglProjectId, month);
 
-      // Save PDF to tmp directory for testing/validation
-      const tmpDir = join(process.cwd(), 'tmp', 'timesheets');
-      await mkdir(tmpDir, { recursive: true });
-      const pdfPath = join(tmpDir, filename);
-      await writeFile(pdfPath, pdfBuffer);
-      console.log(`PDF saved to: ${pdfPath}`);
-
-      pdfUrl = `/tmp/timesheets/${filename}`;
+      // Upload to Azure Blob Storage
+      const blobPath = getTimesheetBlobPath(clientId, month);
+      const result = await uploadPdf(pdfBuffer, blobPath);
+      pdfUrl = result.url;
     } catch (pdfError) {
       // PDF generation is not critical - continue without it
-      console.warn('Failed to fetch PDF from Toggl:', pdfError);
+      console.warn('Failed to fetch/upload PDF:', pdfError);
     }
 
     // Create timesheet record
@@ -89,6 +95,10 @@ export async function POST(request: NextRequest) {
       sentAt: null,
       approvedAt: null,
     });
+
+    // Generate/refresh client's portal JWT token
+    const portalToken = signPortalToken(clientId);
+    await updateClientPortalToken(clientId, portalToken);
 
     return NextResponse.json(
       {

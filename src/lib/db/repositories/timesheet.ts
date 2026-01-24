@@ -108,3 +108,15 @@ export async function updateTimesheet(
 
   return toTimesheet(timesheet);
 }
+
+/**
+ * Delete a timesheet by ID
+ */
+export async function deleteTimesheet(id: string): Promise<boolean> {
+  try {
+    await prisma.timesheet.delete({ where: { id } });
+    return true;
+  } catch {
+    return false;
+  }
+}

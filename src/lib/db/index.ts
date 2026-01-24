@@ -23,6 +23,7 @@ export {
   getTimesheetByClientAndMonth,
   createTimesheet,
   updateTimesheet,
+  deleteTimesheet,
 } from './repositories/timesheet';
 
 // Invoice operations

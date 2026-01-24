@@ -8,10 +8,22 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
+  AlertTriangle,
 } from 'lucide-react';
 import { MonthPicker } from './month-picker';
 import { ClientSelector } from './client-selector';
 import { Timesheet } from '@/types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface CreateTimesheetResponse {
   timesheet: Timesheet;
@@ -21,9 +33,37 @@ interface CreateTimesheetResponse {
   };
 }
 
+interface ExistingTimesheetInfo {
+  id: string;
+  status: string;
+  totalHours: number;
+  createdAt: string;
+}
+
+interface CheckTimesheetResponse {
+  exists: boolean;
+  timesheet: ExistingTimesheetInfo | null;
+}
+
+async function checkExistingTimesheet(
+  clientId: string,
+  month: string
+): Promise<CheckTimesheetResponse> {
+  const response = await fetch(
+    `/api/timesheets/check?clientId=${clientId}&month=${month}`
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to check for existing timesheet');
+  }
+
+  return response.json();
+}
+
 async function createTimesheet(data: {
   clientId: string;
   month: string;
+  force?: boolean;
 }): Promise<CreateTimesheetResponse> {
   const response = await fetch('/api/timesheets', {
     method: 'POST',
@@ -54,6 +94,10 @@ export function CreateTimesheetForm() {
   const [lastCreated, setLastCreated] = useState<CreateTimesheetResponse | null>(
     null
   );
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [existingTimesheet, setExistingTimesheet] =
+    useState<ExistingTimesheetInfo | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -61,20 +105,52 @@ export function CreateTimesheetForm() {
     mutationFn: createTimesheet,
     onSuccess: (data) => {
       setLastCreated(data);
+      setShowConfirmDialog(false);
+      setExistingTimesheet(null);
       // Invalidate timesheets query to refresh any lists
       queryClient.invalidateQueries({ queryKey: ['timesheets'] });
+      // Invalidate clients query to refresh portal tokens
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientId || !month) return;
 
     setLastCreated(null);
-    mutation.mutate({ clientId, month });
+    mutation.reset();
+
+    // Check for existing timesheet first
+    setIsChecking(true);
+    try {
+      const checkResult = await checkExistingTimesheet(clientId, month);
+      if (checkResult.exists && checkResult.timesheet) {
+        // Show confirmation dialog
+        setExistingTimesheet(checkResult.timesheet);
+        setShowConfirmDialog(true);
+      } else {
+        // No existing timesheet, create directly
+        mutation.mutate({ clientId, month });
+      }
+    } catch {
+      // If check fails, try to create anyway (will fail with 409 if duplicate)
+      mutation.mutate({ clientId, month });
+    } finally {
+      setIsChecking(false);
+    }
   };
 
-  const isDisabled = mutation.isPending || !clientId;
+  const handleConfirmReplace = () => {
+    mutation.mutate({ clientId, month, force: true });
+  };
+
+  const handleCancelReplace = () => {
+    setShowConfirmDialog(false);
+    setExistingTimesheet(null);
+  };
+
+  const isDisabled = mutation.isPending || isChecking || !clientId;
 
   return (
     <div className="glass rounded-2xl overflow-hidden">
@@ -109,12 +185,17 @@ export function CreateTimesheetForm() {
           type="submit"
           disabled={isDisabled}
           className="group w-full py-3.5 px-4 rounded-xl bg-primary text-primary-foreground font-semibold
-                     hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring 
-                     focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 
+                     hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring
+                     focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50
                      disabled:cursor-not-allowed transition-all duration-300
                      flex items-center justify-center gap-2 hover-lift"
         >
-          {mutation.isPending ? (
+          {isChecking ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Checking...
+            </>
+          ) : mutation.isPending ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
               Creating Timesheet...
@@ -182,6 +263,53 @@ export function CreateTimesheetForm() {
           </div>
         </div>
       )}
+
+      {/* Confirmation dialog for replacing existing timesheet */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-amber-100 dark:bg-amber-900/30">
+              <AlertTriangle className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Timesheet Already Exists</AlertDialogTitle>
+            <AlertDialogDescription>
+              A timesheet already exists for this client and month.
+              {existingTimesheet && (
+                <span className="block mt-2 text-foreground">
+                  <strong>Status:</strong>{' '}
+                  <span className="capitalize">{existingTimesheet.status}</span>
+                  <br />
+                  <strong>Hours:</strong> {existingTimesheet.totalHours}h
+                  <br />
+                  <strong>Created:</strong>{' '}
+                  {new Date(existingTimesheet.createdAt).toLocaleDateString()}
+                </span>
+              )}
+              <span className="block mt-2">
+                Do you want to replace it with a new timesheet?
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelReplace}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmReplace}
+              variant="destructive"
+            >
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Replacing...
+                </>
+              ) : (
+                'Replace Timesheet'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -12,13 +12,13 @@
 - [x] 2.5 Write tests for JWT utilities
 
 ## 3. Timesheet Creation Updates
-- [ ] 3.1 Update `POST /api/timesheets` to upload PDF to blob storage
-- [ ] 3.2 Store blob URL in `pdfUrl` field instead of local path
-- [ ] 3.3 Generate/refresh client's portal JWT on successful timesheet creation
-- [ ] 3.4 Add duplicate check endpoint `GET /api/timesheets/check?clientId=X&month=Y`
-- [ ] 3.5 Add `force` parameter to `POST /api/timesheets` to replace existing
-- [ ] 3.6 Update `CreateTimesheetForm` to check for existing and show confirmation dialog
-- [ ] 3.7 Update existing tests, add tests for new behavior
+- [x] 3.1 Update `POST /api/timesheets` to upload PDF to blob storage
+- [x] 3.2 Store blob URL in `pdfUrl` field instead of local path
+- [x] 3.3 Generate/refresh client's portal JWT on successful timesheet creation
+- [x] 3.4 Add duplicate check endpoint `GET /api/timesheets/check?clientId=X&month=Y`
+- [x] 3.5 Add `force` parameter to `POST /api/timesheets` to replace existing
+- [x] 3.6 Update `CreateTimesheetForm` to check for existing and show confirmation dialog
+- [x] 3.7 Update existing tests, add tests for new behavior
 
 ## 4. Admin Timesheets Page
 - [ ] 4.1 Create `src/app/(admin)/timesheets/page.tsx` with timesheet list
