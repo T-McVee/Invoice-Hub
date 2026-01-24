@@ -50,12 +50,28 @@ The system SHALL create a timesheet record and fetch data from Toggl when the ad
 
 ### Requirement: Duplicate Timesheet Prevention
 
-The system SHALL prevent creating duplicate timesheets for the same month and client combination.
+The system SHALL warn the admin when a timesheet already exists for the same month and client, and allow replacement if confirmed.
 
-#### Scenario: Attempt to create duplicate timesheet
+#### Scenario: Detect existing timesheet before creation
 
-- **GIVEN** a timesheet already exists for a specific month and client
-- **WHEN** the admin attempts to create another timesheet for the same month and client
-- **THEN** the system displays an error indicating a timesheet already exists
-- **AND** no new timesheet record is created
+- **GIVEN** the admin has selected a month and client
+- **WHEN** a timesheet already exists for that combination
+- **THEN** the system displays a warning indicating a timesheet already exists
+- **AND** shows the existing timesheet's details (status, total hours, created date)
+- **AND** prompts the admin to confirm if they want to replace it
+
+#### Scenario: Confirm replacement of existing timesheet
+
+- **GIVEN** the admin is warned about an existing timesheet
+- **WHEN** the admin confirms they want to proceed
+- **THEN** the existing timesheet is deleted
+- **AND** a new timesheet is created with fresh data from Toggl
+- **AND** the admin sees a success message
+
+#### Scenario: Cancel replacement of existing timesheet
+
+- **GIVEN** the admin is warned about an existing timesheet
+- **WHEN** the admin cancels the operation
+- **THEN** no changes are made
+- **AND** the existing timesheet remains intact
 

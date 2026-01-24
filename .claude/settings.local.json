@@ -22,7 +22,13 @@
       "Bash(bd update:*)",
       "Bash(bd close:*)",
       "Bash(bd sync:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(bd blocked)",
+      "Bash(npx shadcn@latest add alert-dialog:*)",
+      "Bash(npx vitest:*)",
+      "Bash(git push:*)",
+      "Bash(bd stats:*)",
+      "Bash(openspec archive add-timesheet-persistence:*)"
     ]
   }
 }
