@@ -20,6 +20,7 @@ describe('GET /api/clients', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
     await createClient({
@@ -29,6 +30,7 @@ describe('GET /api/clients', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 
@@ -130,6 +132,7 @@ describe('POST /api/clients', () => {
       timesheetRecipients: [],
       invoiceRecipients: [],
       notes: null,
+      portalToken: null,
       contacts: [],
     })
 

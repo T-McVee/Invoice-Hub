@@ -61,6 +61,19 @@ export async function getTimesheetByClientAndMonth(
 }
 
 /**
+ * Get all timesheets for a specific client
+ */
+export async function getTimesheetsByClientId(
+  clientId: string
+): Promise<Timesheet[]> {
+  const timesheets = await prisma.timesheet.findMany({
+    where: { clientId },
+    orderBy: { createdAt: 'desc' },
+  });
+  return timesheets.map(toTimesheet);
+}
+
+/**
  * Create a new timesheet
  */
 export async function createTimesheet(
@@ -107,4 +120,16 @@ export async function updateTimesheet(
   });
 
   return toTimesheet(timesheet);
+}
+
+/**
+ * Delete a timesheet by ID
+ */
+export async function deleteTimesheet(id: string): Promise<boolean> {
+  try {
+    await prisma.timesheet.delete({ where: { id } });
+    return true;
+  } catch {
+    return false;
+  }
 }

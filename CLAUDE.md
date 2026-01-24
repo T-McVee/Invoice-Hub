@@ -57,12 +57,31 @@ src/
 │   └── api/               # API routes
 ├── lib/                   # Shared utilities and services
 │   ├── toggl/            # Toggl API client
+│   ├── blob/             # Azure Blob Storage client (PDF storage)
+│   ├── auth/             # JWT utilities for portal tokens
 │   ├── cache/            # TTL cache with stale data fallback
 │   ├── settings/         # Business profile & hourly rate (database-backed)
 │   ├── hooks/            # React Query hooks
 │   └── db/               # Prisma repositories (Azure SQL)
 ├── components/ui/        # shadcn/ui components
 └── types/                # Shared TypeScript types
+```
+
+### Environment Variables
+```bash
+# Database
+DATABASE_URL                      # Azure SQL connection string
+
+# Toggl API
+TOGGL_API_TOKEN                   # Toggl Track API token
+TOGGL_WORKSPACE_ID                # Toggl workspace ID
+
+# Azure Blob Storage (PDF persistence)
+AZURE_STORAGE_CONNECTION_STRING   # Azure Storage account connection string
+AZURE_STORAGE_CONTAINER           # Container name for PDF files
+
+# Authentication
+JWT_SECRET                        # Secret for signing portal JWT tokens
 ```
 
 ### Key Patterns

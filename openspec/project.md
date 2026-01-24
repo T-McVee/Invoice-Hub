@@ -82,27 +82,27 @@ Invoice Hub is a personal tool (with potential for productization) that automate
 ```
 src/
 ├── app/                    # Next.js app router
-│   ├── (admin)/           # Admin portal routes
-│   │   ├── dashboard/
-│   │   │   ├── page.tsx
-│   │   │   ├── dashboard.queries.ts
-│   │   │   └── components/
-│   │   ├── timesheets/
-│   │   ├── invoices/
-│   │   ├── clients/
-│   │   └── analytics/
-│   ├── portal/            # Client portal (token-authenticated)
-│   │   └── [token]/
-│   │       ├── page.tsx
-│   │       ├── approve/
-│   │       └── invoices/
+│   ├── (admin)/           # Admin portal routes (grouped layout)
+│   │   ├── dashboard/     # Dashboard with timesheet creation
+│   │   ├── timesheets/    # Timesheet list and management
+│   │   ├── invoices/      # Invoice management (future)
+│   │   ├── clients/       # Client management
+│   │   └── settings/      # Business profile, hourly rate
+│   ├── portal/[token]/    # Client portal (JWT-authenticated)
 │   └── api/               # API routes
+│       ├── clients/       # Client CRUD
+│       ├── timesheets/    # Timesheet CRUD + PDF proxy
+│       ├── portal/        # Portal data + approval endpoints
+│       └── settings/      # Business profile, hourly rate
 ├── lib/                   # Shared utilities and services
-│   ├── toggl/            # Toggl API integration
-│   ├── invoice-generator/ # Invoice Generator API integration
-│   └── email/            # Email service
-├── components/           # Shared UI components
-│   └── ui/              # Base components (buttons, inputs, etc.)
+│   ├── toggl/            # Toggl API client
+│   ├── blob/             # Azure Blob Storage client (PDF storage)
+│   ├── auth/             # JWT utilities for portal tokens
+│   ├── cache/            # TTL cache with stale data fallback
+│   ├── settings/         # Business profile & hourly rate service
+│   ├── hooks/            # React Query hooks
+│   └── db/               # Prisma repositories
+├── components/ui/        # shadcn/ui components
 └── types/               # Shared TypeScript types
 ```
 

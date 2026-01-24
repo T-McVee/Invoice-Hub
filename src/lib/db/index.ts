@@ -12,6 +12,7 @@ export {
   getClientByTogglClientId,
   createClient,
   updateClient,
+  updateClientPortalToken,
   deleteClient,
 } from './repositories/client';
 
@@ -20,8 +21,10 @@ export {
   getTimesheets,
   getTimesheetById,
   getTimesheetByClientAndMonth,
+  getTimesheetsByClientId,
   createTimesheet,
   updateTimesheet,
+  deleteTimesheet,
 } from './repositories/timesheet';
 
 // Invoice operations
