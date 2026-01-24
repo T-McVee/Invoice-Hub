@@ -16,7 +16,19 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRegenerateToken } from '@/lib/hooks';
-import { getTokenExpiry } from '@/lib/auth/jwt';
+
+// Client-side JWT expiry decoder (doesn't verify signature, just reads payload)
+function getTokenExpiryClient(token: string): Date | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    if (!payload.exp) return null;
+    return new Date(payload.exp * 1000);
+  } catch {
+    return null;
+  }
+}
 
 interface ClientCardProps {
   client: Client;
@@ -37,7 +49,7 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
     : null;
 
   const tokenExpiry = client.portalToken
-    ? getTokenExpiry(client.portalToken)
+    ? getTokenExpiryClient(client.portalToken)
     : null;
 
   const handleCopyLink = async () => {
