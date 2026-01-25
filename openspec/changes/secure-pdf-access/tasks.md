@@ -22,7 +22,7 @@
 
 ## 3. Validation
 
-- [ ] 3.1 Manual verification
+- [x] 3.1 Manual verification
   - Access PDF via client portal with valid token works
   - Attempting to access another client's PDF via portal fails with 403
   - Admin portal PDF access continues to work (legacy endpoint)
