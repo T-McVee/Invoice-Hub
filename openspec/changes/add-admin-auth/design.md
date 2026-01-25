@@ -36,15 +36,15 @@ This is a personal tool for a single admin user deployed to Azure App Service. R
 
 **Trade-off**: Locks us to Azure App Service. If we move hosts, we'd need to implement auth in code. Acceptable for a personal tool.
 
-### 2. Restrict Access to Specific User(s)
+### 2. Use Entra ID App Registration
 
-**Decision**: Configure "Require authentication" and limit to specific Microsoft account(s).
+**Decision**: Create an Entra ID app registration with user assignment required.
 
-**Options**:
-- Use personal Microsoft account (simplest for single user)
-- Create Entra ID app registration with user assignment (more formal)
-
-For MVP, personal Microsoft account is sufficient.
+**Why**:
+- Formal identity management through Azure portal
+- Easy to add/remove authorized users later
+- Clear audit trail of who has access
+- Standard approach if productized
 
 ### 3. Client Portal Remains Public
 

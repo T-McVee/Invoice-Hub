@@ -2,7 +2,7 @@
 
 ## 1. Azure Configuration
 
-- [ ] 1.1 Create Entra ID app registration for Invoice Hub (or decide to use personal Microsoft account)
+- [ ] 1.1 Create Entra ID app registration for Invoice Hub with user assignment required
 - [ ] 1.2 Enable App Service Authentication in Azure Portal
 - [ ] 1.3 Configure Microsoft as identity provider
 - [ ] 1.4 Set "Require authentication" for unauthenticated requests
