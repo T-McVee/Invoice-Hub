@@ -50,8 +50,9 @@ export async function GET() {
       );
     }
 
+    // Return user-friendly error message (detailed error already logged above)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch earnings' },
+      { error: 'Unable to load earnings. Please try again later.' },
       { status: 500 }
     );
   }

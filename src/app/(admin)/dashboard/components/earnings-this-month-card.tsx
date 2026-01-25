@@ -63,7 +63,7 @@ export function EarningsThisMonthCard() {
           </div>
           <button
             onClick={() => refetch()}
-            className="text-xs font-medium px-2 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            className="text-xs font-medium px-2 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
           >
             <RefreshCw className="h-3 w-3" />
           </button>
@@ -71,9 +71,7 @@ export function EarningsThisMonthCard() {
         <div className="mt-4">
           <p className="text-sm text-destructive font-medium">Unable to load</p>
           <p className="text-sm text-muted-foreground mt-1">Estimated Earnings</p>
-          <p className="text-xs text-muted-foreground/70 mt-0.5">
-            {error instanceof Error ? error.message : 'Unknown error'}
-          </p>
+          <p className="text-xs text-muted-foreground/70 mt-0.5">Click refresh to retry</p>
         </div>
       </div>
     );
@@ -130,8 +128,7 @@ export function EarningsThisMonthCard() {
         <p className="text-2xl font-bold text-foreground">{formattedEarnings}</p>
         <p className="text-sm text-muted-foreground mt-1">Estimated Earnings</p>
         <p className="text-xs text-muted-foreground/70 mt-0.5">
-          ${data?.hourlyRate}/hr × {data?.hours.toFixed(1)}h
-          {timeAgo && ` • ${timeAgo}`}
+          ${data?.hourlyRate}/hr × {data?.hours.toFixed(1)}h{timeAgo && ` • ${timeAgo}`}
         </p>
       </div>
     </div>
