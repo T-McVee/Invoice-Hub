@@ -138,8 +138,44 @@ describe('module', () => {
 
 Use `vi.stubEnv()` for environment variables, `vi.useFakeTimers()` for time-dependent tests.
 
+## Planning & Tracking
+
+This project uses **two complementary tools** for planning and work tracking:
+
+### OpenSpec (Planning)
+Use OpenSpec for **planning significant work** - features, breaking changes, architecture shifts.
+
+```bash
+openspec list                    # See active changes
+openspec validate <id> --strict  # Validate a change
+openspec archive <id> --yes      # Archive after completion
+```
+
+**What it creates**: `proposal.md`, `design.md`, `tasks.md`, and spec deltas under `openspec/changes/<change-id>/`
+
+### Beads (Work Tracking)
+Use Beads for **tracking individual tasks** across sessions. Create a bead for each OpenSpec task.
+
+```bash
+bd ready                         # Find available work
+bd create --title="..." --type=task --priority=2
+bd update <id> --status=in_progress
+bd close <id>
+bd sync                          # Push to remote
+```
+
+### Integrated Workflow
+
+1. **Plan with OpenSpec** - Create proposal with `tasks.md` listing implementation steps
+2. **Create beads** - One bead per task in `tasks.md` (use `bd create`)
+3. **Implement** - Work through beads, marking complete as you go
+4. **Sync OpenSpec** - Update task checkboxes in `tasks.md` as beads close
+5. **Archive** - Once all beads closed, run `openspec archive <id> --yes`
+
+See `AGENTS.md` for detailed session workflow and `openspec/AGENTS.md` for OpenSpec specifics.
+
 ## Reference
 
 - `openspec/project.md` - Authoritative project spec with domain context
-- `openspec/testing-strategy.md` - Testing approach and roadmap
-- `AGENTS.md` - OpenSpec instructions for proposals/big changes
+- `openspec/AGENTS.md` - OpenSpec instructions for proposals/big changes
+- `.beads/` - Issue tracking data (git-synced)

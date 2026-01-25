@@ -47,19 +47,27 @@ Skip proposal for:
 4. Run `openspec validate <id> --strict` and resolve any issues before sharing the proposal.
 
 ### Stage 2: Implementing Changes
+
+**Prerequisite**: Proposal must be reviewed and approved before starting implementation.
+
 Track these steps as TODOs and complete them one by one.
 1. **Run tests first** - Execute `npm run test:run` before starting; fix any failures before new work
 2. **Read proposal.md** - Understand what's being built
 3. **Read design.md** (if exists) - Review technical decisions
 4. **Read tasks.md** - Get implementation checklist
-5. **Implement tasks sequentially** - Complete in order
-6. **Run tests after** - Execute `npm run test:run` again; task is not complete until all tests pass
-7. **Confirm completion** - Ensure every item in `tasks.md` is finished before updating statuses
-8. **Update checklist** - After all work is done, set every task to `- [x]` so the list reflects reality
-9. **Approval gate** - Do not start implementation until the proposal is reviewed and approved
+5. **Create beads** - Create a bead for each task (`bd create --title="Task 1.1: ..." --type=task`)
+6. **Implement tasks sequentially** - Work through beads in order
+7. **Close beads** - Mark each bead complete as you finish (`bd close <id>`)
+8. **Run tests after** - Execute `npm run test:run` again; task is not complete until all tests pass
+9. **Sync tasks.md** - Update checkboxes to `- [x]` as beads close (keep OpenSpec in sync)
+
+**Beads Integration**: This project uses Beads to track individual tasks from `tasks.md`. Each task becomes a bead, allowing work to persist across sessions. When a bead closes, update the corresponding checkbox in `tasks.md`.
 
 ### Stage 3: Archiving Changes
-After deployment, create separate PR to:
+**Prerequisite**: All beads for this change must be closed. Run `bd list` to verify no open beads remain.
+
+After deployment:
+- Run `bd sync` to ensure all bead changes are committed
 - Move `changes/[name]/` → `changes/archive/YYYY-MM-DD-[name]/`
 - Update `specs/` if capabilities changed
 - Use `openspec archive <change-id> --skip-specs --yes` for tooling-only changes (always pass the change ID explicitly)

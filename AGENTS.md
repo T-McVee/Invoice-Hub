@@ -17,6 +17,68 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
 
+## OpenSpec + Beads Integration
+
+This project uses **OpenSpec for planning** and **Beads for work tracking**. They work together:
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| **OpenSpec** | Plan and document significant work | Features, breaking changes, architecture |
+| **Beads** | Track individual tasks across sessions | Each task from `tasks.md` becomes a bead |
+
+### Workflow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. PLAN (OpenSpec)                                         │
+│     Create proposal.md, tasks.md, spec deltas               │
+│     Run: openspec validate <id> --strict                    │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│  2. TRACK (Beads)                                           │
+│     Create bead for each task in tasks.md                   │
+│     Run: bd create --title="Task 1.1: ..." --type=task      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│  3. IMPLEMENT                                               │
+│     Work through beads one at a time                        │
+│     Run: bd update <id> --status=in_progress                │
+│     Run: bd close <id> (when done)                          │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│  4. SYNC                                                    │
+│     Update tasks.md checkboxes as beads close               │
+│     Keep OpenSpec tasks in sync with bead status            │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│  5. ARCHIVE (OpenSpec)                                      │
+│     Once ALL beads closed, archive the change               │
+│     Run: openspec archive <id> --yes                        │
+│     Update specs/ if capabilities changed                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Quick Reference
+
+```bash
+# OpenSpec commands
+openspec list                    # See active changes
+openspec show <id>               # View change details
+openspec validate <id> --strict  # Validate before implementation
+openspec archive <id> --yes      # Archive after all tasks complete
+
+# Beads commands
+bd ready                         # Find unblocked work
+bd create --title="..." --type=task --priority=2
+bd update <id> --status=in_progress
+bd close <id>
+bd sync                          # Push to remote
+```
+
 ## Project Workflow
 
 **Before any implementation**, read `CLAUDE.md` for:

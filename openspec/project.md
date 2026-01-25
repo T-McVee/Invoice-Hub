@@ -122,6 +122,13 @@ MVP phase: Manual testing, add automated tests as system stabilizes
 - **Commits**: Conventional commits (`feat:`, `fix:`, `chore:`, etc.)
 - **Merge**: Merge requests for code review
 
+### Planning & Tracking Tools
+
+- **OpenSpec**: Plan and document significant work (proposals, specs, tasks)
+- **Beads**: Track individual tasks across sessions (each OpenSpec task becomes a bead)
+
+Workflow: OpenSpec for planning → Beads for tracking → Archive when complete. See `AGENTS.md` for details.
+
 ## Domain Context
 
 ### Key Entities
