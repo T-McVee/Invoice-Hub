@@ -49,8 +49,19 @@ The client portal SHALL display all timesheets for the client, organized by stat
 #### Scenario: Download timesheet PDF
 
 - **GIVEN** a timesheet exists for the client
+- **AND** the client has a valid portal JWT token
 - **WHEN** the client clicks the PDF download link
-- **THEN** the timesheet PDF is downloaded or opened in a new tab
+- **THEN** the request includes the portal token for authentication
+- **AND** the system verifies the timesheet belongs to the authenticated client
+- **AND** the timesheet PDF is downloaded or opened in a new tab
+
+#### Scenario: Download PDF for unowned timesheet rejected
+
+- **GIVEN** a timesheet exists but belongs to a different client
+- **AND** the client has a valid portal JWT token
+- **WHEN** the client attempts to access the PDF
+- **THEN** a 403 Forbidden response is returned
+- **AND** no PDF content is exposed
 
 #### Scenario: No timesheets available
 
