@@ -6,20 +6,17 @@ The admin portal currently has no authentication. Anyone with the URL can access
 
 ## What Changes
 
-- Add password-based authentication for the admin portal
-- Protect all admin routes (`/dashboard`, `/timesheets`, `/clients`, `/settings`, etc.)
-- Protect all admin API endpoints (clients, timesheets, settings, metrics)
-- Add login page at `/login`
-- Add session management with secure HTTP-only cookies
-- Add logout functionality
+- Enable Azure App Service Authentication (Easy Auth) with Microsoft Entra ID
+- All admin routes and API endpoints protected at the infrastructure level
+- Only authorized Microsoft account(s) can access the admin portal
+- No application code changes required for auth - Azure handles it
 
 ## Impact
 
 - **Affected specs**: New `admin-auth` capability
-- **Affected code**:
-  - `src/app/(admin)/layout.tsx` - Add auth check wrapper
-  - `src/app/login/` - New login page
-  - `src/app/api/auth/` - New auth endpoints (login, logout, session)
-  - `src/lib/auth/` - New admin auth utilities
-  - All admin API routes - Add auth middleware
-- **Environment**: New `ADMIN_PASSWORD_HASH` environment variable
+- **Affected code**: None - Easy Auth is configured at the Azure platform level
+- **Azure configuration**:
+  - App Service Authentication enabled
+  - Microsoft Entra ID identity provider configured
+  - Authorized users/groups specified
+- **Environment**: No new environment variables needed

@@ -2,112 +2,74 @@
 
 ## Context
 
-This is a personal tool for a single admin user. The client portal already uses JWT tokens for per-client access. The admin portal needs a simple, secure authentication mechanism that doesn't require user management infrastructure.
+This is a personal tool for a single admin user deployed to Azure App Service. Rather than implementing custom authentication code, we use Azure App Service's built-in authentication feature (Easy Auth) which handles auth at the platform level before requests reach the application.
 
 **Constraints**:
-- Single admin user (no user registration or management needed)
-- MVP-first: simple password auth now, Azure Entra ID later if productized
-- Must work with Next.js App Router (server components, route handlers)
-- Secure session handling (HTTP-only cookies, no localStorage tokens)
+- Single admin user (personal Microsoft account or Entra ID)
+- Deployed to Azure App Service
+- MVP-first: use platform features over custom code
 
 ## Goals / Non-Goals
 
 **Goals**:
 - Protect all admin routes and API endpoints from unauthorized access
-- Simple password-based login with secure session
-- Easy to upgrade to SSO later
+- Zero auth code to maintain
+- Easy upgrade path if productized (just update Entra ID config)
 
 **Non-Goals**:
-- Multi-user support or user management
-- Password reset flow (admin can update env var)
-- Remember me / persistent sessions across browser restarts
-- Rate limiting (can add later if needed)
+- Custom login UI (Easy Auth provides Microsoft's standard login)
+- Fine-grained role-based access (single admin user)
+- Support for non-Azure hosting
 
 ## Decisions
 
-### 1. Session-Based Auth with HTTP-Only Cookies
+### 1. Use Azure Easy Auth with Microsoft Entra ID
 
-**Decision**: Use signed session tokens stored in HTTP-only, secure cookies.
-
-**Why**:
-- HTTP-only cookies prevent XSS token theft
-- Secure flag ensures HTTPS-only transmission
-- SameSite=Lax prevents CSRF for GET requests
-- Server-side session validation on each request
-
-**Alternatives considered**:
-- JWT in localStorage: Vulnerable to XSS, harder to invalidate
-- Next.js Auth.js: Overkill for single-user password auth
-
-### 2. Password Hashing with bcrypt
-
-**Decision**: Store bcrypt hash in `ADMIN_PASSWORD_HASH` env var.
+**Decision**: Enable App Service Authentication with Microsoft as the identity provider.
 
 **Why**:
-- bcrypt is industry standard for password hashing
-- Cost factor makes brute force impractical
-- No database table needed for single user
+- Zero application code changes
+- Auth happens at infrastructure level before requests reach the app
+- Microsoft handles token validation, session management, security updates
+- Already deploying to Azure App Service
+- Natural upgrade to multi-user Entra ID if productized
 
-**Setup**: Admin runs `npx bcrypt-cli hash "password"` to generate hash.
+**Trade-off**: Locks us to Azure App Service. If we move hosts, we'd need to implement auth in code. Acceptable for a personal tool.
 
-### 3. Session Token Structure
+### 2. Restrict Access to Specific User(s)
 
-**Decision**: Sign a simple session payload with `jose` (already used for JWTs).
+**Decision**: Configure "Require authentication" and limit to specific Microsoft account(s).
 
-```typescript
-interface AdminSession {
-  type: 'admin'
-  iat: number
-  exp: number
-}
-```
+**Options**:
+- Use personal Microsoft account (simplest for single user)
+- Create Entra ID app registration with user assignment (more formal)
 
-**Why**:
-- Reuses existing JWT infrastructure
-- Stateless verification (no session store needed)
-- 24-hour expiry balances security and convenience
+For MVP, personal Microsoft account is sufficient.
 
-### 4. Middleware vs Per-Route Checks
+### 3. Client Portal Remains Public
 
-**Decision**: Use Next.js middleware for route protection + utility for API routes.
+**Decision**: Easy Auth protects the entire app, but `/api/portal/*` routes use their own JWT-based client token auth which continues to work.
 
-**Why**:
-- Middleware handles UI routes efficiently (redirects before rendering)
-- API routes use shared `requireAdminAuth()` utility for consistency
-- Clear separation of concerns
+**How it works**: Easy Auth can be configured to allow unauthenticated requests to specific paths, or the client portal can be hosted separately. For simplicity, we configure Easy Auth to require auth but the portal's token-based access is handled at the app level.
 
-**File structure**:
-```
-src/
-├── middleware.ts              # Protects /dashboard, /timesheets, etc.
-├── lib/auth/
-│   ├── jwt.ts                 # Existing portal token utils
-│   ├── admin.ts               # NEW: Admin auth utilities
-│   └── admin.test.ts          # NEW: Tests
-├── app/
-│   ├── login/page.tsx         # NEW: Login form
-│   └── api/auth/
-│       ├── login/route.ts     # NEW: POST login
-│       ├── logout/route.ts    # NEW: POST logout
-│       └── session/route.ts   # NEW: GET session status
-```
+**Note**: Need to verify Easy Auth behavior with the existing portal token flow. May need to exclude `/portal/*` and `/api/portal/*` paths from Easy Auth.
 
 ## Risks / Trade-offs
 
 | Risk | Mitigation |
 |------|------------|
-| Password in env var visible to deployment system | Use secrets manager in production (Azure Key Vault) |
-| No password reset | Document password update procedure (regenerate hash, update env) |
-| Session hijacking if cookie stolen | Short expiry (24h), secure cookie flags, HTTPS only |
+| Vendor lock-in to Azure | Acceptable for personal tool; can add code-based auth if migrating |
+| Easy Auth may interfere with client portal | Configure path exclusions for `/portal/*` and `/api/portal/*` |
+| No custom login UI | Microsoft's login UI is professional and familiar |
 
 ## Migration Plan
 
-1. Implement auth without breaking existing routes (gated behind feature flag if needed)
-2. Add login page and auth endpoints
-3. Enable middleware protection
-4. Update API routes to require auth
-5. No rollback needed (removing protection is trivial)
+1. Create Entra ID app registration (or use personal account)
+2. Enable App Service Authentication in Azure Portal
+3. Configure Microsoft identity provider
+4. Test admin access and client portal access
+5. No code deployment needed
 
 ## Open Questions
 
-None - design is straightforward for MVP scope.
+- Confirm path exclusion configuration for client portal routes

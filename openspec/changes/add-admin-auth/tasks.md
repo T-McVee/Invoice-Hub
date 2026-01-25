@@ -1,38 +1,20 @@
 # Tasks: Add Admin Authentication
 
-## 1. Core Auth Infrastructure
+## 1. Azure Configuration
 
-- [ ] 1.1 Create `src/lib/auth/admin.ts` with password verification and session token utilities
-- [ ] 1.2 Add tests for admin auth utilities
-- [ ] 1.3 Add `ADMIN_PASSWORD_HASH` to `.env.example` with setup instructions
+- [ ] 1.1 Create Entra ID app registration for Invoice Hub (or decide to use personal Microsoft account)
+- [ ] 1.2 Enable App Service Authentication in Azure Portal
+- [ ] 1.3 Configure Microsoft as identity provider
+- [ ] 1.4 Set "Require authentication" for unauthenticated requests
+- [ ] 1.5 Configure path exclusions for client portal (`/portal/*`, `/api/portal/*`)
 
-## 2. Auth API Endpoints
+## 2. Testing
 
-- [ ] 2.1 Create `POST /api/auth/login` - Verify password, set session cookie
-- [ ] 2.2 Create `POST /api/auth/logout` - Clear session cookie
-- [ ] 2.3 Create `GET /api/auth/session` - Check current session status
+- [ ] 2.1 Verify admin routes require Microsoft login
+- [ ] 2.2 Verify admin API endpoints return 401 without auth
+- [ ] 2.3 Verify client portal still works with token-based access
+- [ ] 2.4 Test logout flow
 
-## 3. Login UI
+## 3. Documentation
 
-- [ ] 3.1 Create login page at `src/app/login/page.tsx` with password form
-- [ ] 3.2 Add redirect to dashboard on successful login
-- [ ] 3.3 Show error message for invalid credentials
-
-## 4. Route Protection
-
-- [ ] 4.1 Create `src/middleware.ts` to protect admin routes
-- [ ] 4.2 Redirect unauthenticated users to `/login`
-- [ ] 4.3 Redirect authenticated users from `/login` to `/dashboard`
-
-## 5. API Protection
-
-- [ ] 5.1 Create `requireAdminAuth()` utility for API routes
-- [ ] 5.2 Add auth check to client API routes (`/api/clients/*`)
-- [ ] 5.3 Add auth check to timesheet API routes (`/api/timesheets/*`)
-- [ ] 5.4 Add auth check to settings API routes (`/api/settings/*`)
-- [ ] 5.5 Add auth check to metrics API routes (`/api/metrics/*`)
-- [ ] 5.6 Add auth check to Toggl API routes (`/api/toggl/*`)
-
-## 6. Admin UI Updates
-
-- [ ] 6.1 Add logout button to admin layout navigation
+- [ ] 3.1 Document Easy Auth configuration in README or project docs
