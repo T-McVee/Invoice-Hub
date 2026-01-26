@@ -22,6 +22,5 @@ The application needs to be deployed to a production environment. Azure App Serv
   - `next.config.ts` - Add standalone output mode
   - `.github/workflows/` - New CI/CD workflow
 - **Azure resources**:
-  - App Service Plan (Linux, Node.js)
-  - App Service Web App
+  - App Service Web App (using existing shared App Service Plan)
 - **Environment**: Production env vars configured in Azure

@@ -7,9 +7,8 @@
 
 ## 2. Azure Resources
 
-- [ ] 2.1 Create App Service Plan (Linux, Basic B1)
-- [ ] 2.2 Create App Service Web App (Node.js 20)
-- [ ] 2.3 Configure environment variables in Application Settings
+- [ ] 2.1 Create App Service Web App (Node.js 20) using existing App Service Plan
+- [ ] 2.2 Configure environment variables in Application Settings
 
 ## 3. CI/CD Pipeline
 

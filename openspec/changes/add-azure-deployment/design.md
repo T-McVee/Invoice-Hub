@@ -48,14 +48,14 @@ Invoice Hub is a Next.js application that needs to be deployed to Azure App Serv
 - Azure DevOps Pipelines: More setup, separate service
 - Manual deployment: Not sustainable for ongoing development
 
-### 3. Linux App Service Plan
+### 3. Use Existing App Service Plan
 
-**Decision**: Use Linux-based App Service Plan with Node.js 20.
+**Decision**: Use existing Linux B1 App Service Plan (shared with other apps).
 
 **Why**:
-- Better Node.js performance than Windows
-- Lower cost at same tier
-- Standard for modern Node.js apps
+- Already provisioned and paid for
+- No additional cost for the plan itself
+- Cross-resource-group reference is supported
 
 ### 4. Environment Variables via Azure Portal
 
@@ -92,7 +92,7 @@ Invoice Hub is a Next.js application that needs to be deployed to Azure App Serv
 |------|------------|
 | Cold start latency | Basic tier has always-on; can upgrade if needed |
 | Build time in CI | Cache node_modules and .next/cache |
-| Cost | Start with Basic B1 (~$13/month), scale as needed |
+| Shared plan resource contention | Monitor; scale plan or separate if needed |
 
 ## Migration Plan
 
@@ -105,4 +105,4 @@ Invoice Hub is a Next.js application that needs to be deployed to Azure App Serv
 
 ## Open Questions
 
-- Confirm Azure subscription and resource group to use
+None - using existing App Service Plan in separate resource group.
