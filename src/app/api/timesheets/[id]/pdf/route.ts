@@ -28,7 +28,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
     const pdfBuffer = await downloadPdf(blobPath);
 
     // Return PDF with appropriate headers
-    return new NextResponse(pdfBuffer, {
+    // Convert Buffer to Uint8Array for NextResponse compatibility
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

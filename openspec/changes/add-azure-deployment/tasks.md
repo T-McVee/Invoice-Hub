@@ -2,18 +2,18 @@
 
 ## 1. Next.js Configuration
 
-- [ ] 1.1 Add `output: 'standalone'` to next.config.ts
-- [ ] 1.2 Test local build with standalone output
+- [x] 1.1 Add `output: 'standalone'` to next.config.ts
+- [x] 1.2 Test local build with standalone output
 
 ## 2. Azure Resources
 
-- [ ] 2.1 Create App Service Web App (Node.js 20) using existing App Service Plan
-- [ ] 2.2 Configure environment variables in Application Settings
+- [x] 2.1 Create App Service Web App (Node.js 22) using existing App Service Plan
+- [x] 2.2 Configure environment variables in Application Settings
 
 ## 3. CI/CD Pipeline
 
-- [ ] 3.1 Create GitHub Actions workflow for Azure deployment
-- [ ] 3.2 Configure Azure publish profile as GitHub secret
+- [x] 3.1 Create GitHub Actions workflow for Azure deployment
+- [x] 3.2 Configure Azure publish profile as GitHub secret
 - [ ] 3.3 Test deployment by pushing to main
 
 ## 4. Verification
