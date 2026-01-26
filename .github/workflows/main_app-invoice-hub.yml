@@ -44,26 +44,18 @@ jobs:
           AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=dummy"
           AZURE_STORAGE_CONTAINER: "dummy"
 
-      - name: Copy static files to standalone
+      - name: Prepare standalone package
         run: |
           cp -r .next/static .next/standalone/.next/static
           cp -r public .next/standalone/public
-
-      - name: Debug - List standalone contents
-        run: |
-          echo "=== Standalone root ==="
-          ls -la .next/standalone/
-          echo "=== Standalone .next directory ==="
-          ls -la .next/standalone/.next/
-          echo "=== Check BUILD_ID ==="
-          cat .next/standalone/.next/BUILD_ID
+          cd .next/standalone
+          zip -r ../../deploy.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .next/standalone
-          include-hidden-files: true
+          path: deploy.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -84,5 +76,5 @@ jobs:
         with:
           app-name: 'app-invoice-hub'
           slot-name: 'Production'
-          package: .
+          package: deploy.zip
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C044435917A447BC93228F86119ED6B9 }}
