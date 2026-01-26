@@ -35,6 +35,14 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Dummy values for build - actual values configured in Azure App Service
+          DATABASE_URL: "sqlserver://localhost:1433;database=dummy;encrypt=true"
+          TOGGL_API_TOKEN: "dummy"
+          TOGGL_WORKSPACE_ID: "0"
+          JWT_SECRET: "dummy-secret-for-build"
+          AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=dummy"
+          AZURE_STORAGE_CONTAINER: "dummy"
 
       - name: Copy static files to standalone
         run: |
