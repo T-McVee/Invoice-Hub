@@ -14,11 +14,10 @@
 
 - [x] 3.1 Create GitHub Actions workflow for Azure deployment
 - [x] 3.2 Configure Azure publish profile as GitHub secret
-- [ ] 3.3 Test deployment by pushing to main
+- [x] 3.3 Test deployment by pushing to main
 
 ## 4. Verification
 
-- [ ] 4.1 Verify app loads in browser
-- [ ] 4.2 Verify API routes work
-- [ ] 4.3 Verify database connectivity
-- [ ] 4.4 Verify blob storage connectivity
+- [x] 4.1 Verify app loads in browser
+- [x] 4.2 Verify API routes and database connectivity
+- [x] 4.3 Verify auth (admin requires Microsoft login, portal uses JWT)
