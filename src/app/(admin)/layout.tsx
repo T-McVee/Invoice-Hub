@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
 
 const navItems = [
@@ -94,6 +95,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 );
               })}
             </div>
+
+            {/* Logout Button */}
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
+            >
+              <a href="/.auth/logout" className="flex items-center gap-2">
+                <LogOut className="h-4 w-4" />
+                <span className="font-medium">Logout</span>
+              </a>
+            </Button>
           </div>
         </div>
       </nav>
