@@ -28,7 +28,10 @@
       "Bash(npx vitest:*)",
       "Bash(git push:*)",
       "Bash(bd stats:*)",
-      "Bash(openspec archive add-timesheet-persistence:*)"
+      "Bash(openspec archive add-timesheet-persistence:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(openspec archive add-azure-deployment:*)"
     ]
   }
 }
