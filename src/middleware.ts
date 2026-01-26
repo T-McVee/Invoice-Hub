@@ -32,7 +32,6 @@ export function middleware(request: NextRequest) {
 
   // Admin routes - require Easy Auth
   const isAdminRoute =
-    pathname === '/' ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/clients') ||
     pathname.startsWith('/timesheets') ||
