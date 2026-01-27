@@ -146,6 +146,29 @@ Workflow: OpenSpec for planning → Beads for tracking → Archive when complete
 - Invoices are immutable once generated
 - Client portal access is token-based (no client account creation required)
 
+### Authentication
+
+**Admin Portal** uses Azure App Service Authentication (Easy Auth) with Microsoft Entra ID:
+- Auth handled at platform level before requests reach the application
+- No auth code to maintain - configured entirely in Azure Portal
+- Middleware (`src/middleware.ts`) redirects unauthenticated requests to `/.auth/login/aad`
+- Logout via `/.auth/logout` (button in admin header)
+- Local development: Easy Auth only works on Azure, so admin routes are unprotected locally
+
+**Client Portal** uses JWT-based token authentication:
+- Each client gets a unique portal URL with embedded token
+- Tokens signed with `JWT_SECRET` environment variable
+- Auth handled in route handlers (`src/lib/auth/jwt.ts`)
+
+**Path Routing** (in middleware):
+| Path | Auth |
+|------|------|
+| `/portal/*`, `/api/portal/*` | Allow through (JWT auth in handlers) |
+| `/.auth/*` | Allow through (Easy Auth endpoints) |
+| Admin routes | Require `x-ms-client-principal` header (set by Easy Auth) |
+
+See `openspec/specs/admin-auth/spec.md` for detailed requirements.
+
 ### Toggl Track Concepts
 
 - **Workspace**: Container for projects and time entries
@@ -207,4 +230,4 @@ None currently - all major decisions resolved!
 - [x] **Development Philosophy**: MVP-first, speed over robustness
 - [x] **Email Provider**: Resend
 - [x] **Framework**: Next.js (App Router)
-- [x] **Admin Auth**: Simple password-based (upgrade to Azure Entra ID if productized)
+- [x] **Admin Auth**: Azure Easy Auth with Microsoft Entra ID (see Authentication section)

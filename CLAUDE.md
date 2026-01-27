@@ -99,23 +99,11 @@ JWT_SECRET                        # Secret for signing portal JWT tokens
 
 ### Authentication
 
-**Admin Portal**: Uses Azure App Service Authentication (Easy Auth) with Microsoft Entra ID.
-- Auth handled at platform level before requests reach the application
-- No auth code to maintain - configured entirely in Azure Portal
-- Middleware (`src/middleware.ts`) redirects unauthenticated requests to `/.auth/login/aad`
-- Logout via `/.auth/logout` (button in admin header)
+- **Admin Portal**: Azure Easy Auth with Microsoft Entra ID (platform-level, no app code)
+- **Client Portal**: JWT-based token authentication (`src/lib/auth/jwt.ts`)
+- **Local Development**: Easy Auth only works on Azure; admin routes unprotected locally
 
-**Client Portal**: Uses JWT-based token authentication.
-- Each client gets a unique portal URL with embedded token
-- Tokens signed with `JWT_SECRET` environment variable
-- Auth handled in route handlers (`src/lib/auth/jwt.ts`)
-
-**Path Routing** (in middleware):
-- `/portal/*`, `/api/portal/*` - Allow through (JWT auth in handlers)
-- `/.auth/*` - Allow through (Easy Auth endpoints)
-- Admin routes - Require `x-ms-client-principal` header (set by Easy Auth)
-
-**Local Development**: Easy Auth only works when deployed to Azure. Locally, admin routes are unprotected.
+See `openspec/project.md` for details and `openspec/specs/admin-auth/spec.md` for requirements.
 
 ## Conventions
 

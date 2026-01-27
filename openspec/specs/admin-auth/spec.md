@@ -1,7 +1,7 @@
 # admin-auth Specification
 
 ## Purpose
-TBD - created by archiving change add-admin-auth. Update Purpose after archive.
+Protect the admin portal using Azure App Service Authentication (Easy Auth) with Microsoft Entra ID, while preserving token-based access for the client portal.
 ## Requirements
 ### Requirement: Azure Easy Auth Protection
 
