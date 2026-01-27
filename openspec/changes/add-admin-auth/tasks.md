@@ -17,4 +17,4 @@
 
 ## 3. Documentation
 
-- [ ] 3.1 Document Easy Auth configuration in README or project docs
+- [x] 3.1 Document Easy Auth configuration in README or project docs
