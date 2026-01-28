@@ -29,6 +29,7 @@ export interface Timesheet {
   status: 'pending' | 'sent' | 'approved' | 'rejected';
   pdfUrl: string | null;
   totalHours: number;
+  invoiceNumber: number | null; // Sequential ID assigned on creation, becomes invoice number
   sentAt: Date | null;
   approvedAt: Date | null;
   createdAt: Date;

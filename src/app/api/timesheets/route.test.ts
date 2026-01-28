@@ -82,6 +82,7 @@ describe('GET /api/timesheets', () => {
       status: 'pending',
       pdfUrl: null,
       totalHours: 40,
+      invoiceNumber: null,
       sentAt: null,
       approvedAt: null,
     })
@@ -92,6 +93,7 @@ describe('GET /api/timesheets', () => {
       status: 'approved',
       pdfUrl: '/path/to/pdf',
       totalHours: 35,
+      invoiceNumber: null,
       sentAt: new Date(),
       approvedAt: new Date(),
     })
@@ -270,6 +272,7 @@ describe('POST /api/timesheets', () => {
       status: 'pending',
       pdfUrl: null,
       totalHours: 40,
+      invoiceNumber: null,
       sentAt: null,
       approvedAt: null,
     })
@@ -466,6 +469,7 @@ describe('POST /api/timesheets', () => {
       status: 'pending',
       pdfUrl: 'https://storage.blob.core.windows.net/old.pdf',
       totalHours: 40,
+      invoiceNumber: 1001,
       sentAt: null,
       approvedAt: null,
     })
@@ -518,6 +522,7 @@ describe('POST /api/timesheets', () => {
       status: 'pending',
       pdfUrl: null,
       totalHours: 40,
+      invoiceNumber: null,
       sentAt: null,
       approvedAt: null,
     })

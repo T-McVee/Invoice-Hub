@@ -238,6 +238,7 @@ describe('DELETE /api/clients/[id]', () => {
       status: 'pending',
       pdfUrl: null,
       totalHours: 10,
+      invoiceNumber: null,
       sentAt: null,
       approvedAt: null,
     })

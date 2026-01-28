@@ -10,6 +10,7 @@ import {
 import { fetchTimeEntries, fetchTimesheetPdf } from '@/lib/toggl/client';
 import { uploadPdf, getTimesheetBlobPath, deletePdf } from '@/lib/blob/client';
 import { signPortalToken } from '@/lib/auth/jwt';
+import { getAndIncrementNextInvoiceNumber } from '@/lib/settings';
 
 // GET /api/timesheets - List all timesheets
 export async function GET() {
@@ -49,8 +50,11 @@ export async function POST(request: NextRequest) {
 
     // Check for duplicate timesheet
     const existing = await getTimesheetByClientAndMonth(clientId, month);
+    let existingInvoiceNumber: number | null = null;
     if (existing) {
       if (force) {
+        // Capture existing invoice number to reuse
+        existingInvoiceNumber = existing.invoiceNumber;
         // Delete existing timesheet and its PDF from blob storage
         if (existing.pdfUrl) {
           const blobPath = getTimesheetBlobPath(clientId, month);
@@ -67,6 +71,9 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+
+    // Get invoice number: reuse existing on force recreate, otherwise get new number
+    const invoiceNumber = existingInvoiceNumber ?? (await getAndIncrementNextInvoiceNumber());
 
     // Fetch time entries from Toggl
     const timeEntries = await fetchTimeEntries(client.togglProjectId, month);
@@ -92,6 +99,7 @@ export async function POST(request: NextRequest) {
       status: 'pending',
       pdfUrl,
       totalHours: timeEntries.totalHours,
+      invoiceNumber,
       sentAt: null,
       approvedAt: null,
     });

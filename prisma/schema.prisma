@@ -47,15 +47,16 @@ model Contact {
 
 // Timesheet entity - monthly summary of time entries
 model Timesheet {
-  id         String    @id @default(uuid())
-  clientId   String
-  month      String // YYYY-MM format
-  status     String    @default("pending") // 'pending' | 'sent' | 'approved' | 'rejected'
-  pdfUrl     String?
-  totalHours Float
-  sentAt     DateTime?
-  approvedAt DateTime?
-  createdAt  DateTime  @default(now())
+  id            String    @id @default(uuid())
+  clientId      String
+  month         String // YYYY-MM format
+  status        String    @default("pending") // 'pending' | 'sent' | 'approved' | 'rejected'
+  pdfUrl        String?
+  totalHours    Float
+  invoiceNumber Int? // Sequential ID assigned on creation, becomes invoice number
+  sentAt        DateTime?
+  approvedAt    DateTime?
+  createdAt     DateTime  @default(now())
 
   // Relations
   client   Client    @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction)

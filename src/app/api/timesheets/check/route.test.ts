@@ -50,6 +50,7 @@ describe('GET /api/timesheets/check', () => {
       status: 'pending',
       pdfUrl: null,
       totalHours: 40,
+      invoiceNumber: null,
       sentAt: null,
       approvedAt: null,
     })
