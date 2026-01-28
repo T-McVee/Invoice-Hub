@@ -106,6 +106,9 @@ export default function TimesheetsPage() {
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                    Invoice #
+                  </th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
                     Client
                   </th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
@@ -131,6 +134,11 @@ export default function TimesheetsPage() {
                     key={timesheet.id}
                     className="border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors"
                   >
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-sm text-muted-foreground">
+                        {timesheet.invoiceNumber ?? '-'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4">
                       <span className="font-medium text-foreground">
                         {clientNames.get(timesheet.clientId) || 'Unknown Client'}

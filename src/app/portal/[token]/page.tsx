@@ -59,7 +59,14 @@ function TimesheetCard({
     <div className="glass rounded-xl p-4 border border-border/50">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1 min-w-0">
-          <h4 className="font-medium text-foreground">{formatMonth(timesheet.month)}</h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-medium text-foreground">{formatMonth(timesheet.month)}</h4>
+            {timesheet.invoiceNumber && (
+              <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                #{timesheet.invoiceNumber}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" />

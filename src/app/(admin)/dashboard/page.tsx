@@ -1,5 +1,10 @@
-import { CreateTimesheetForm, HoursThisMonthCard, EarningsThisMonthCard } from './components';
-import { TrendingUp, Clock, Receipt, Users } from 'lucide-react';
+import {
+  CreateTimesheetForm,
+  HoursThisMonthCard,
+  EarningsThisMonthCard,
+  RecentActivityCard,
+} from './components';
+import { Receipt, Users } from 'lucide-react';
 
 export default function DashboardPage() {
   return (
@@ -36,46 +41,7 @@ export default function DashboardPage() {
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         <CreateTimesheetForm />
-
-        {/* Recent Activity Card */}
-        <div className="glass rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
-            <h2 className="text-lg font-semibold text-foreground">
-              Recent Activity
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your latest timesheets and invoices
-            </p>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <ActivityItem
-                type="timesheet"
-                title="November 2025 Timesheet"
-                client="Acme Corp"
-                time="2 hours ago"
-              />
-              <ActivityItem
-                type="invoice"
-                title="Invoice #INV-2025-042"
-                client="TechStart Inc"
-                time="Yesterday"
-              />
-              <ActivityItem
-                type="timesheet"
-                title="October 2025 Timesheet"
-                client="Acme Corp"
-                time="3 days ago"
-              />
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-border/50">
-              <p className="text-sm text-muted-foreground text-center">
-                View all activity in the Analytics section
-              </p>
-            </div>
-          </div>
-        </div>
+        <RecentActivityCard />
       </div>
     </div>
   );
@@ -125,35 +91,3 @@ function StatCard({
   );
 }
 
-function ActivityItem({
-  type,
-  title,
-  client,
-  time,
-}: {
-  type: 'timesheet' | 'invoice';
-  title: string;
-  client: string;
-  time: string;
-}) {
-  return (
-    <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors group">
-      <div
-        className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-          type === 'timesheet' ? 'bg-primary/10' : 'bg-chart-2/10'
-        }`}
-      >
-        {type === 'timesheet' ? (
-          <Clock className="h-5 w-5 text-primary" />
-        ) : (
-          <Receipt className="h-5 w-5 text-chart-2" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-foreground truncate">{title}</p>
-        <p className="text-sm text-muted-foreground">{client}</p>
-      </div>
-      <p className="text-xs text-muted-foreground whitespace-nowrap">{time}</p>
-    </div>
-  );
-}

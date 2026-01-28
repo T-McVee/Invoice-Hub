@@ -15,6 +15,7 @@ const {
   mockGetTimesheetBlobPath,
   mockSignPortalToken,
   mockUpdateClientPortalToken,
+  mockGetAndIncrementNextInvoiceNumber,
 } = vi.hoisted(() => ({
   mockFetchTimeEntries: vi.fn(),
   mockFetchTimesheetPdf: vi.fn(),
@@ -23,6 +24,7 @@ const {
   mockGetTimesheetBlobPath: vi.fn(),
   mockSignPortalToken: vi.fn(),
   mockUpdateClientPortalToken: vi.fn(),
+  mockGetAndIncrementNextInvoiceNumber: vi.fn(),
 }))
 
 // Mock the Toggl client module (use relative path for proper resolution)
@@ -41,6 +43,11 @@ vi.mock('../../../lib/blob/client', () => ({
 // Mock the JWT module
 vi.mock('../../../lib/auth/jwt', () => ({
   signPortalToken: mockSignPortalToken,
+}))
+
+// Mock the settings module for invoice number generation
+vi.mock('../../../lib/settings', () => ({
+  getAndIncrementNextInvoiceNumber: mockGetAndIncrementNextInvoiceNumber,
 }))
 
 // Mock updateClientPortalToken from db
@@ -121,6 +128,7 @@ describe('POST /api/timesheets', () => {
     mockDeletePdf.mockResolvedValue(true)
     mockSignPortalToken.mockReturnValue('mock-jwt-token')
     mockUpdateClientPortalToken.mockResolvedValue(undefined)
+    mockGetAndIncrementNextInvoiceNumber.mockResolvedValue(1001)
   })
 
   it('creates timesheet with valid data', async () => {
@@ -541,5 +549,155 @@ describe('POST /api/timesheets', () => {
 
     expect(response.status).toBe(409)
     expect(data.error).toContain('A timesheet already exists')
+  })
+
+  it('assigns invoice number on new timesheet creation', async () => {
+    const client = await createClient({
+      name: 'Test Client',
+      togglClientId: null,
+      togglProjectId: 'proj-123',
+      timesheetRecipients: [],
+      invoiceRecipients: [],
+      notes: null,
+      portalToken: null,
+      contacts: [],
+    })
+
+    mockGetAndIncrementNextInvoiceNumber.mockResolvedValue(2001)
+
+    mockFetchTimeEntries.mockResolvedValue({
+      totalSeconds: 144000,
+      totalHours: 40,
+      entries: [],
+    })
+
+    mockFetchTimesheetPdf.mockResolvedValue({
+      pdfBuffer: Buffer.from('fake pdf'),
+      filename: 'timesheet-2024-03.pdf',
+    })
+
+    const request = new Request('http://localhost/api/timesheets', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId: client.id,
+        month: '2024-03',
+      }),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(201)
+    expect(data.timesheet.invoiceNumber).toBe(2001)
+    expect(mockGetAndIncrementNextInvoiceNumber).toHaveBeenCalledTimes(1)
+  })
+
+  it('preserves invoice number when force recreating timesheet', async () => {
+    const client = await createClient({
+      name: 'Test Client',
+      togglClientId: null,
+      togglProjectId: 'proj-123',
+      timesheetRecipients: [],
+      invoiceRecipients: [],
+      notes: null,
+      portalToken: null,
+      contacts: [],
+    })
+
+    // Create existing timesheet with invoice number
+    await createTimesheet({
+      clientId: client.id,
+      month: '2024-04',
+      status: 'pending',
+      pdfUrl: 'https://storage.blob.core.windows.net/old.pdf',
+      totalHours: 40,
+      invoiceNumber: 1001,
+      sentAt: null,
+      approvedAt: null,
+    })
+
+    mockFetchTimeEntries.mockResolvedValue({
+      totalSeconds: 72000,
+      totalHours: 20,
+      entries: [],
+    })
+
+    mockFetchTimesheetPdf.mockResolvedValue({
+      pdfBuffer: Buffer.from('new pdf'),
+      filename: 'timesheet-2024-04.pdf',
+    })
+
+    const request = new Request('http://localhost/api/timesheets', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId: client.id,
+        month: '2024-04',
+        force: true,
+      }),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(201)
+    // Should preserve the original invoice number
+    expect(data.timesheet.invoiceNumber).toBe(1001)
+    // Should NOT call getAndIncrementNextInvoiceNumber when preserving
+    expect(mockGetAndIncrementNextInvoiceNumber).not.toHaveBeenCalled()
+  })
+
+  it('gets new invoice number when force recreating timesheet without existing number', async () => {
+    const client = await createClient({
+      name: 'Test Client',
+      togglClientId: null,
+      togglProjectId: 'proj-123',
+      timesheetRecipients: [],
+      invoiceRecipients: [],
+      notes: null,
+      portalToken: null,
+      contacts: [],
+    })
+
+    // Create existing timesheet WITHOUT invoice number (legacy data)
+    await createTimesheet({
+      clientId: client.id,
+      month: '2024-05',
+      status: 'pending',
+      pdfUrl: 'https://storage.blob.core.windows.net/old.pdf',
+      totalHours: 40,
+      invoiceNumber: null,
+      sentAt: null,
+      approvedAt: null,
+    })
+
+    mockGetAndIncrementNextInvoiceNumber.mockResolvedValue(3001)
+
+    mockFetchTimeEntries.mockResolvedValue({
+      totalSeconds: 72000,
+      totalHours: 20,
+      entries: [],
+    })
+
+    mockFetchTimesheetPdf.mockResolvedValue({
+      pdfBuffer: Buffer.from('new pdf'),
+      filename: 'timesheet-2024-05.pdf',
+    })
+
+    const request = new Request('http://localhost/api/timesheets', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId: client.id,
+        month: '2024-05',
+        force: true,
+      }),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(201)
+    // Should get a new invoice number since existing had null
+    expect(data.timesheet.invoiceNumber).toBe(3001)
+    expect(mockGetAndIncrementNextInvoiceNumber).toHaveBeenCalledTimes(1)
   })
 })

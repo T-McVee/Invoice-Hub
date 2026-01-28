@@ -36,6 +36,7 @@ type DbTimesheet = {
   status: string;
   pdfUrl: string | null;
   totalHours: number;
+  invoiceNumber: number | null;
   sentAt: Date | null;
   approvedAt: Date | null;
   createdAt: Date;
@@ -185,10 +186,12 @@ export const mockPrisma = {
     }),
   },
   timesheet: {
-    findMany: vi.fn(async () => {
-      return Array.from(timesheets.values()).sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-      );
+    findMany: vi.fn(async (args?: { where?: { clientId: string }; orderBy?: unknown }) => {
+      let result = Array.from(timesheets.values());
+      if (args?.where?.clientId) {
+        result = result.filter((t) => t.clientId === args.where!.clientId);
+      }
+      return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }),
     findUnique: vi.fn(
       async (args: { where: { id?: string; clientId_month?: { clientId: string; month: string } } }) => {
@@ -216,6 +219,7 @@ export const mockPrisma = {
         status: (args.data.status as string) || 'pending',
         pdfUrl: (args.data.pdfUrl as string) || null,
         totalHours: args.data.totalHours as number,
+        invoiceNumber: (args.data.invoiceNumber as number) ?? null,
         sentAt: (args.data.sentAt as Date) || null,
         approvedAt: (args.data.approvedAt as Date) || null,
         createdAt: new Date(),
@@ -237,6 +241,12 @@ export const mockPrisma = {
         ).length;
       }
       return timesheets.size;
+    }),
+    delete: vi.fn(async (args: { where: { id: string } }) => {
+      const timesheet = timesheets.get(args.where.id);
+      if (!timesheet) throw new Error('Record not found');
+      timesheets.delete(args.where.id);
+      return timesheet;
     }),
     deleteMany: vi.fn(async () => {
       const count = timesheets.size;
