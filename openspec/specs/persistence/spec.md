@@ -107,23 +107,27 @@ The system SHALL provide database-backed CRUD operations for Client entities.
 
 ### Requirement: Timesheet Repository
 
-The system SHALL provide database-backed CRUD operations for Timesheet entities.
+The system SHALL provide database-backed CRUD operations for Timesheet entities, including invoice number assignment.
 
-#### Scenario: Create timesheet
+#### Scenario: Create timesheet with invoice number
 
-- **WHEN** a new timesheet is created with valid data
-- **THEN** the timesheet is persisted to the database with a foreign key to the client
+- **WHEN** a new timesheet is created
+- **THEN** the timesheet is persisted with a unique `invoiceNumber`
+- **AND** the `invoiceNumber` is obtained by calling `getAndIncrementNextInvoiceNumber()` from settings
+- **AND** the settings `nextInvoiceNumber` is atomically incremented
 
-#### Scenario: Query timesheet by client and month
+#### Scenario: Force recreate timesheet preserves invoice number
 
-- **GIVEN** timesheets exist in the database
-- **WHEN** a timesheet is queried by clientId and month
-- **THEN** the matching timesheet is returned (or null if not found)
+- **GIVEN** a timesheet exists for a client and month with `invoiceNumber` N
+- **WHEN** a new timesheet is created with `force=true` for the same client and month
+- **THEN** the existing timesheet is deleted
+- **AND** the new timesheet is created with the same `invoiceNumber` N
+- **AND** the settings `nextInvoiceNumber` is NOT incremented
 
-#### Scenario: Update timesheet status
+#### Scenario: Query timesheet includes invoice number
 
-- **WHEN** a timesheet status is updated (e.g., pending → approved)
-- **THEN** the status change is persisted to the database
+- **WHEN** timesheets are queried (by ID, by client, or listing all)
+- **THEN** the `invoiceNumber` field is included in the response
 
 ### Requirement: Invoice Repository
 

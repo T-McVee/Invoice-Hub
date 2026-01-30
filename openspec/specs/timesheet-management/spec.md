@@ -7,17 +7,12 @@ TBD - created by archiving change add-timesheet-persistence. Update Purpose afte
 
 The admin portal SHALL provide a dedicated page for viewing and managing all timesheets.
 
-#### Scenario: Navigate to timesheets page
-
-- **WHEN** the admin clicks "Timesheets" in the navigation menu
-- **THEN** the timesheets page is displayed
-- **AND** the URL is `/timesheets`
-
 #### Scenario: View timesheet list
 
 - **WHEN** the admin views the timesheets page
 - **THEN** a table displays all timesheets sorted by creation date (newest first)
 - **AND** each row shows:
+  - Invoice number (e.g., "42") or "—" if not assigned (legacy records)
   - Client name
   - Month (formatted as "January 2026")
   - Status (with badge styling)
@@ -25,27 +20,6 @@ The admin portal SHALL provide a dedicated page for viewing and managing all tim
   - Created date
   - Approved date (if approved)
   - Invoice status (if invoice exists: draft/sent/paid, or "—" if none)
-
-#### Scenario: View timesheet status
-
-- **WHEN** the admin views a timesheet in the list
-- **THEN** the status is displayed as a badge with appropriate styling:
-  - "pending" - neutral/gray
-  - "sent" - blue
-  - "approved" - green
-  - "rejected" - red
-
-#### Scenario: View timesheet PDF
-
-- **GIVEN** a timesheet has a PDF stored
-- **WHEN** the admin clicks the "View PDF" action
-- **THEN** the PDF opens in a new browser tab
-
-#### Scenario: Empty state
-
-- **WHEN** no timesheets exist
-- **THEN** a helpful message is displayed indicating no timesheets have been created
-- **AND** a prompt or link to create one from the dashboard is shown
 
 ### Requirement: Timesheet Details
 
@@ -56,6 +30,7 @@ The system SHALL allow viewing detailed information about a specific timesheet.
 - **GIVEN** a timesheet exists
 - **WHEN** the admin clicks on a timesheet row or detail action
 - **THEN** detailed information is displayed including:
+  - Invoice number (or "Not assigned" for legacy records)
   - Client name
   - Month (formatted as "January 2026")
   - Status with timestamp (e.g., "Approved on Jan 15, 2026")
