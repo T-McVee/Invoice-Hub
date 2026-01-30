@@ -6,7 +6,11 @@ import type { NextRequest } from 'next/server';
  *
  * - Admin routes require Microsoft Easy Auth (checked via x-ms-client-principal header)
  * - Portal routes are unauthenticated at platform level (JWT validation in route handlers)
+ * - In development mode, auth is bypassed to allow local testing
  */
+
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -39,6 +43,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/api/');
 
   if (isAdminRoute) {
+    // Skip auth in development mode - Easy Auth only works on Azure
+    if (isDevelopment) {
+      return NextResponse.next();
+    }
+
     // Check for Easy Auth header (set by Azure when user is authenticated)
     const principal = request.headers.get('x-ms-client-principal');
 
