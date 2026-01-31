@@ -2,8 +2,8 @@
 
 ## 0. Schema Updates
 
-- [ ] 0.1 Add `month` field to Invoice model in Prisma schema
-- [ ] 0.2 Migrate `paymentTerms` from string to `paymentTermsDays` number in business profile
+- [x] 0.1 Add `month` field to Invoice model in Prisma schema
+- [x] 0.2 Migrate `paymentTerms` from string to `paymentTermsDays` number in business profile
   - Update `src/lib/settings/schemas.ts`
   - Update `src/lib/settings/index.ts` (type + implementation)
   - Update `src/lib/settings/index.test.ts`
@@ -14,14 +14,14 @@
 
 ## 1. Invoice Generator Module
 
-- [ ] 1.1 Create `src/lib/invoice-generator/client.ts` - API client for invoice-generator.com
-- [ ] 1.2 Create `src/lib/invoice-generator/index.ts` - Service module with helper functions
-- [ ] 1.3 Write tests for invoice generator module
+- [x] 1.1 Create `src/lib/invoice-generator/client.ts` - API client for invoice-generator.com
+- [x] 1.2 Create `src/lib/invoice-generator/index.ts` - Service module with helper functions
+- [x] 1.3 Write tests for invoice generator module
 
 ## 2. Blob Storage
 
-- [ ] 2.1 Add `getInvoiceBlobPath()` helper to `src/lib/blob/client.ts`
-- [ ] 2.2 Write test for `getInvoiceBlobPath()`
+- [x] 2.1 Add `getInvoiceBlobPath()` helper to `src/lib/blob/client.ts`
+- [x] 2.2 Write test for `getInvoiceBlobPath()`
 
 ## 3. Approval Route Integration
 

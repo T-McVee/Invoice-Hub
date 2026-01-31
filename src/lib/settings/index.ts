@@ -15,6 +15,7 @@ export {
   emailSchema,
   taxRateSchema,
   nextInvoiceNumberSchema,
+  paymentTermsDaysSchema,
   businessProfileSchema,
 } from './schemas';
 
@@ -36,7 +37,7 @@ export type BusinessProfile = {
   address: string | null;
   paymentDetails: string | null;
   taxRate: number | null;
-  paymentTerms: string | null;
+  paymentTermsDays: number | null;
   nextInvoiceNumber: number;
   updatedAt: Date | null;
 };
@@ -66,7 +67,7 @@ const DEFAULT_BUSINESS_PROFILE: BusinessProfile = {
   address: null,
   paymentDetails: null,
   taxRate: null,
-  paymentTerms: null,
+  paymentTermsDays: null,
   nextInvoiceNumber: 1,
   updatedAt: null,
 };
@@ -141,7 +142,7 @@ export async function getBusinessProfile(): Promise<BusinessProfile> {
     address: value.address ?? null,
     paymentDetails: value.paymentDetails ?? null,
     taxRate: value.taxRate ?? null,
-    paymentTerms: value.paymentTerms ?? null,
+    paymentTermsDays: value.paymentTermsDays ?? null,
     nextInvoiceNumber: value.nextInvoiceNumber ?? 1,
     updatedAt: setting.updatedAt,
   };
@@ -177,10 +178,10 @@ export async function setBusinessProfile(
         ? updates.paymentDetails
         : current.paymentDetails,
     taxRate: updates.taxRate !== undefined ? updates.taxRate : current.taxRate,
-    paymentTerms:
-      updates.paymentTerms !== undefined
-        ? updates.paymentTerms
-        : current.paymentTerms,
+    paymentTermsDays:
+      updates.paymentTermsDays !== undefined
+        ? updates.paymentTermsDays
+        : current.paymentTermsDays,
     nextInvoiceNumber:
       updates.nextInvoiceNumber !== undefined
         ? updates.nextInvoiceNumber
@@ -225,7 +226,7 @@ export async function getAndIncrementNextInvoiceNumber(): Promise<number> {
         address: value.address ?? null,
         paymentDetails: value.paymentDetails ?? null,
         taxRate: value.taxRate ?? null,
-        paymentTerms: value.paymentTerms ?? null,
+        paymentTermsDays: value.paymentTermsDays ?? null,
         nextInvoiceNumber: value.nextInvoiceNumber ?? 1,
       };
     }

@@ -73,6 +73,7 @@ model Invoice {
   clientId      String
   timesheetId   String
   invoiceNumber String    @unique
+  month         String // YYYY-MM format (denormalized from Timesheet for querying)
   amount        Float
   status        String    @default("draft") // 'draft' | 'sent' | 'paid'
   pdfUrl        String?

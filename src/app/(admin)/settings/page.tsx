@@ -9,6 +9,7 @@ import {
   emailSchema,
   taxRateSchema,
   nextInvoiceNumberSchema,
+  paymentTermsDaysSchema,
   businessProfileSchema,
 } from '@/lib/settings/schemas';
 
@@ -30,7 +31,7 @@ interface BusinessProfileResponse {
   address: string | null;
   paymentDetails: string | null;
   taxRate: number | null;
-  paymentTerms: string | null;
+  paymentTermsDays: number | null;
   nextInvoiceNumber: number;
   updatedAt: string | null;
 }
@@ -335,7 +336,7 @@ interface BusinessProfileFormState {
   address: string;
   paymentDetails: string;
   taxRate: string;
-  paymentTerms: string;
+  paymentTermsDays: string;
   nextInvoiceNumber: string;
 }
 
@@ -348,7 +349,7 @@ const initialFormState: BusinessProfileFormState = {
   address: '',
   paymentDetails: '',
   taxRate: '',
-  paymentTerms: '',
+  paymentTermsDays: '',
   nextInvoiceNumber: '1',
 };
 
@@ -385,7 +386,7 @@ function BusinessProfileCard() {
         address: data.address ?? '',
         paymentDetails: data.paymentDetails ?? '',
         taxRate: data.taxRate !== null ? data.taxRate.toString() : '',
-        paymentTerms: data.paymentTerms ?? '',
+        paymentTermsDays: data.paymentTermsDays !== null ? data.paymentTermsDays.toString() : '',
         nextInvoiceNumber: data.nextInvoiceNumber.toString(),
       });
     }
@@ -430,6 +431,19 @@ function BusinessProfileCard() {
         }
         return null;
 
+      case 'paymentTermsDays':
+        if (value && value.trim() !== '') {
+          const numValue = parseInt(value, 10);
+          if (isNaN(numValue) || numValue.toString() !== value.trim()) {
+            return 'Please enter a whole number';
+          }
+          const result = paymentTermsDaysSchema.safeParse(numValue);
+          if (!result.success) {
+            return result.error.issues[0]?.message ?? 'Invalid payment terms';
+          }
+        }
+        return null;
+
       default:
         return null;
     }
@@ -470,6 +484,16 @@ function BusinessProfileCard() {
       newErrors.nextInvoiceNumber = 'Invoice number is required';
     }
 
+    let paymentTermsDaysValue: number | undefined = undefined;
+    if (formState.paymentTermsDays && formState.paymentTermsDays.trim() !== '') {
+      const parsed = parseInt(formState.paymentTermsDays, 10);
+      if (isNaN(parsed) || parsed.toString() !== formState.paymentTermsDays.trim()) {
+        newErrors.paymentTermsDays = 'Please enter a whole number';
+      } else {
+        paymentTermsDaysValue = parsed;
+      }
+    }
+
     // If number conversions failed, show errors and stop
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -486,7 +510,7 @@ function BusinessProfileCard() {
       address: formState.address || undefined,
       paymentDetails: formState.paymentDetails || undefined,
       taxRate: taxRateValue,
-      paymentTerms: formState.paymentTerms || undefined,
+      paymentTermsDays: paymentTermsDaysValue,
       nextInvoiceNumber: nextInvoiceNumberValue,
     };
 
@@ -518,7 +542,7 @@ function BusinessProfileCard() {
       address: formState.address || null,
       paymentDetails: formState.paymentDetails || null,
       taxRate: taxRateValue ?? null,
-      paymentTerms: formState.paymentTerms || null,
+      paymentTermsDays: paymentTermsDaysValue ?? null,
       nextInvoiceNumber: nextInvoiceNumberValue!,
     };
 
@@ -537,7 +561,7 @@ function BusinessProfileCard() {
       formState.address !== (data.address ?? '') ||
       formState.paymentDetails !== (data.paymentDetails ?? '') ||
       formState.taxRate !== (data.taxRate !== null ? data.taxRate.toString() : '') ||
-      formState.paymentTerms !== (data.paymentTerms ?? '') ||
+      formState.paymentTermsDays !== (data.paymentTermsDays !== null ? data.paymentTermsDays.toString() : '') ||
       formState.nextInvoiceNumber !== data.nextInvoiceNumber.toString()
     : false;
 
@@ -644,11 +668,14 @@ function BusinessProfileCard() {
                 suffix="%"
               />
               <FormField
-                id="paymentTerms"
+                id="paymentTermsDays"
                 label="Payment Terms"
-                value={formState.paymentTerms}
-                onChange={(v) => handleChange('paymentTerms', v)}
-                placeholder="Net 30, Due on receipt, etc."
+                value={formState.paymentTermsDays}
+                onChange={(v) => handleChange('paymentTermsDays', v)}
+                error={errors.paymentTermsDays}
+                type="number"
+                placeholder="30"
+                suffix="days"
               />
             </div>
 

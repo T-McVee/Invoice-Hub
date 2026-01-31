@@ -31,7 +31,7 @@ describe('GET /api/settings/business-profile', () => {
     expect(data).toHaveProperty('address')
     expect(data).toHaveProperty('paymentDetails')
     expect(data).toHaveProperty('taxRate')
-    expect(data).toHaveProperty('paymentTerms')
+    expect(data).toHaveProperty('paymentTermsDays')
     expect(data).toHaveProperty('nextInvoiceNumber')
     expect(data).toHaveProperty('updatedAt')
   })
@@ -189,7 +189,7 @@ describe('PUT /api/settings/business-profile', () => {
         address: null,
         paymentDetails: null,
         taxRate: null,
-        paymentTerms: null,
+        paymentTermsDays: null,
         nextInvoiceNumber: 1,
       }),
     })
@@ -212,7 +212,7 @@ describe('PUT /api/settings/business-profile', () => {
         address: null,
         paymentDetails: null,
         taxRate: 10,
-        paymentTerms: null,
+        paymentTermsDays: null,
         nextInvoiceNumber: 1,
       }),
     })
@@ -236,7 +236,7 @@ describe('PUT /api/settings/business-profile', () => {
         address: null,
         paymentDetails: null,
         taxRate: 15,
-        paymentTerms: 'Net 30',
+        paymentTermsDays: 30,
         nextInvoiceNumber: 42,
       }),
     })
@@ -249,12 +249,38 @@ describe('PUT /api/settings/business-profile', () => {
     expect(data.phone).toBe('555-1234')
     expect(data.email).toBe('test@example.com')
     expect(data.taxRate).toBe(15)
-    expect(data.paymentTerms).toBe('Net 30')
+    expect(data.paymentTermsDays).toBe(30)
     expect(data.nextInvoiceNumber).toBe(42)
     // Null fields should remain null
     expect(data.businessNumber).toBeNull()
     expect(data.gstNumber).toBeNull()
     expect(data.address).toBeNull()
     expect(data.paymentDetails).toBeNull()
+  })
+
+  it('rejects invalid paymentTermsDays', async () => {
+    const request = new Request('http://localhost/api/settings/business-profile', {
+      method: 'PUT',
+      body: JSON.stringify({ paymentTermsDays: 0 }),
+    })
+
+    const response = await PUT(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Invalid business profile data')
+  })
+
+  it('accepts valid paymentTermsDays', async () => {
+    const request = new Request('http://localhost/api/settings/business-profile', {
+      method: 'PUT',
+      body: JSON.stringify({ paymentTermsDays: 30 }),
+    })
+
+    const response = await PUT(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.paymentTermsDays).toBe(30)
   })
 })

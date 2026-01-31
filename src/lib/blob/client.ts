@@ -110,3 +110,13 @@ export async function blobExists(blobPath: string): Promise<boolean> {
 export function getTimesheetBlobPath(clientId: string, month: string): string {
   return `timesheets/${clientId}/${month}.pdf`
 }
+
+/**
+ * Generate the blob path for an invoice PDF
+ * @param clientId - The client's UUID
+ * @param invoiceNumber - The invoice number (matches timesheet ID)
+ * @returns The blob path (e.g., "invoices/abc-123/1234.pdf")
+ */
+export function getInvoiceBlobPath(clientId: string, invoiceNumber: string): string {
+  return `invoices/${clientId}/${invoiceNumber}.pdf`
+}

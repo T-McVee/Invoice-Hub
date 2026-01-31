@@ -25,6 +25,12 @@ export const nextInvoiceNumberSchema = z
   .int('Invoice number must be a whole number')
   .min(1, 'Invoice number must be at least 1');
 
+export const paymentTermsDaysSchema = z
+  .number()
+  .int('Payment terms must be a whole number')
+  .min(1, 'Payment terms must be at least 1 day')
+  .max(365, 'Payment terms cannot exceed 365 days');
+
 export const businessProfileSchema = z.object({
   name: z.string().nullable().optional(),
   businessNumber: z.string().nullable().optional(),
@@ -34,6 +40,6 @@ export const businessProfileSchema = z.object({
   address: z.string().nullable().optional(),
   paymentDetails: z.string().nullable().optional(),
   taxRate: taxRateSchema.nullable().optional(),
-  paymentTerms: z.string().nullable().optional(),
+  paymentTermsDays: paymentTermsDaysSchema.nullable().optional(),
   nextInvoiceNumber: nextInvoiceNumberSchema.optional(),
 });

@@ -14,7 +14,7 @@ export async function GET() {
     address: profile.address,
     paymentDetails: profile.paymentDetails,
     taxRate: profile.taxRate,
-    paymentTerms: profile.paymentTerms,
+    paymentTermsDays: profile.paymentTermsDays,
     nextInvoiceNumber: profile.nextInvoiceNumber,
     updatedAt: profile.updatedAt?.toISOString() ?? null,
   });
@@ -61,7 +61,7 @@ export async function PUT(request: Request) {
       address: profile.address,
       paymentDetails: profile.paymentDetails,
       taxRate: profile.taxRate,
-      paymentTerms: profile.paymentTerms,
+      paymentTermsDays: profile.paymentTermsDays,
       nextInvoiceNumber: profile.nextInvoiceNumber,
       updatedAt: profile.updatedAt?.toISOString() ?? null,
     });

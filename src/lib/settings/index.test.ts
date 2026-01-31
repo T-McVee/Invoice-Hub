@@ -4,6 +4,7 @@ import {
   emailSchema,
   taxRateSchema,
   nextInvoiceNumberSchema,
+  paymentTermsDaysSchema,
   businessProfileSchema,
   setHourlyRate,
   getHourlyRate,
@@ -91,6 +92,31 @@ describe('settings', () => {
     })
   })
 
+  describe('paymentTermsDaysSchema', () => {
+    it('accepts valid payment terms (1-365)', () => {
+      expect(() => paymentTermsDaysSchema.parse(1)).not.toThrow()
+      expect(() => paymentTermsDaysSchema.parse(15)).not.toThrow()
+      expect(() => paymentTermsDaysSchema.parse(30)).not.toThrow()
+      expect(() => paymentTermsDaysSchema.parse(365)).not.toThrow()
+    })
+
+    it('rejects zero', () => {
+      expect(() => paymentTermsDaysSchema.parse(0)).toThrow()
+    })
+
+    it('rejects negative numbers', () => {
+      expect(() => paymentTermsDaysSchema.parse(-1)).toThrow()
+    })
+
+    it('rejects values over 365', () => {
+      expect(() => paymentTermsDaysSchema.parse(366)).toThrow()
+    })
+
+    it('rejects non-integers', () => {
+      expect(() => paymentTermsDaysSchema.parse(15.5)).toThrow()
+    })
+  })
+
   describe('businessProfileSchema', () => {
     it('accepts valid complete profile', () => {
       const profile = {
@@ -102,7 +128,7 @@ describe('settings', () => {
         address: '123 Main St',
         paymentDetails: 'Bank: 12-3456-7890',
         taxRate: 15,
-        paymentTerms: 'Due in 14 days',
+        paymentTermsDays: 14,
         nextInvoiceNumber: 100,
       }
       expect(() => businessProfileSchema.parse(profile)).not.toThrow()
@@ -125,6 +151,11 @@ describe('settings', () => {
       expect(() => businessProfileSchema.parse({ nextInvoiceNumber: 0 })).toThrow()
     })
 
+    it('validates nested paymentTermsDays field', () => {
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: 0 })).toThrow()
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: 400 })).toThrow()
+    })
+
     // Tests for null value handling (form sends null for empty fields)
     it('accepts null for optional string fields', () => {
       const profile = {
@@ -135,13 +166,17 @@ describe('settings', () => {
         email: null,
         address: null,
         paymentDetails: null,
-        paymentTerms: null,
+        paymentTermsDays: null,
       }
       expect(() => businessProfileSchema.parse(profile)).not.toThrow()
     })
 
     it('accepts null for taxRate', () => {
       expect(() => businessProfileSchema.parse({ taxRate: null })).not.toThrow()
+    })
+
+    it('accepts null for paymentTermsDays', () => {
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: null })).not.toThrow()
     })
 
     it('accepts data in the exact format the form sends to the API', () => {
@@ -155,7 +190,7 @@ describe('settings', () => {
         address: null,
         paymentDetails: null,
         taxRate: 10, // User entered a tax rate
-        paymentTerms: null,
+        paymentTermsDays: null,
         nextInvoiceNumber: 1,
       }
       expect(() => businessProfileSchema.parse(formData)).not.toThrow()
@@ -171,7 +206,7 @@ describe('settings', () => {
         address: null,
         paymentDetails: null,
         taxRate: 15,
-        paymentTerms: 'Net 30',
+        paymentTermsDays: 30,
         nextInvoiceNumber: 42,
       }
       expect(() => businessProfileSchema.parse(formData)).not.toThrow()
@@ -234,7 +269,7 @@ describe('settings', () => {
         address: null,
         paymentDetails: null,
         taxRate: null,
-        paymentTerms: null,
+        paymentTermsDays: null,
       }
 
       const result = await setBusinessProfile(updates)
@@ -254,7 +289,7 @@ describe('settings', () => {
         address: null,
         paymentDetails: null,
         taxRate: 10,
-        paymentTerms: null,
+        paymentTermsDays: null,
         nextInvoiceNumber: 1,
       }
 

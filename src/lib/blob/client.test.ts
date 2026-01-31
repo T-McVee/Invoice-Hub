@@ -42,7 +42,14 @@ vi.stubEnv(
 vi.stubEnv('AZURE_STORAGE_CONTAINER', 'test-container')
 
 // Import after mocks are set
-import { uploadPdf, downloadPdf, deletePdf, blobExists, getTimesheetBlobPath } from './client'
+import {
+  uploadPdf,
+  downloadPdf,
+  deletePdf,
+  blobExists,
+  getTimesheetBlobPath,
+  getInvoiceBlobPath,
+} from './client'
 
 describe('blob/client', () => {
   beforeEach(() => {
@@ -142,6 +149,14 @@ describe('blob/client', () => {
       const result = getTimesheetBlobPath('client-123', '2024-01')
 
       expect(result).toBe('timesheets/client-123/2024-01.pdf')
+    })
+  })
+
+  describe('getInvoiceBlobPath', () => {
+    it('generates correct blob path', () => {
+      const result = getInvoiceBlobPath('client-123', '1234')
+
+      expect(result).toBe('invoices/client-123/1234.pdf')
     })
   })
 })
