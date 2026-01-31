@@ -6,9 +6,11 @@ import {
   getTimesheetByClientAndMonth,
   getTimesheets,
   updateClientPortalToken,
+  getInvoicesByTimesheetId,
+  deleteInvoice,
 } from '@/lib/db';
 import { fetchTimeEntries, fetchTimesheetPdf } from '@/lib/toggl/client';
-import { uploadPdf, getTimesheetBlobPath, deletePdf } from '@/lib/blob/client';
+import { uploadPdf, getTimesheetBlobPath, getInvoiceBlobPath, deletePdf } from '@/lib/blob/client';
 import { signPortalToken } from '@/lib/auth/jwt';
 import { getAndIncrementNextInvoiceNumber } from '@/lib/settings';
 
@@ -55,12 +57,32 @@ export async function POST(request: NextRequest) {
       if (force) {
         // Capture existing invoice number to reuse
         existingInvoiceNumber = existing.invoiceNumber;
-        // Delete existing timesheet and its PDF from blob storage
+
+        // Delete any associated invoices first (required due to foreign key constraint)
+        const existingInvoices = await getInvoicesByTimesheetId(existing.id);
+        for (const invoice of existingInvoices) {
+          // Delete invoice PDF from blob storage
+          if (invoice.pdfUrl) {
+            const invoiceBlobPath = getInvoiceBlobPath(clientId, invoice.invoiceNumber);
+            await deletePdf(invoiceBlobPath);
+          }
+          await deleteInvoice(invoice.id);
+        }
+
+        // Delete existing timesheet PDF from blob storage
         if (existing.pdfUrl) {
           const blobPath = getTimesheetBlobPath(clientId, month);
           await deletePdf(blobPath);
         }
-        await deleteTimesheet(existing.id);
+
+        // Delete the timesheet
+        const deleted = await deleteTimesheet(existing.id);
+        if (!deleted) {
+          return NextResponse.json(
+            { error: 'Failed to delete existing timesheet' },
+            { status: 500 }
+          );
+        }
       } else {
         return NextResponse.json(
           {

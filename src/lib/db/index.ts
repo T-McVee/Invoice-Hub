@@ -32,9 +32,11 @@ export {
   getInvoices,
   getInvoiceById,
   getInvoicesByClientId,
+  getInvoicesByTimesheetId,
   listInvoices,
   createInvoice,
   updateInvoice,
+  deleteInvoice,
 } from './repositories/invoice';
 export type { ListInvoicesOptions } from './repositories/invoice';
 

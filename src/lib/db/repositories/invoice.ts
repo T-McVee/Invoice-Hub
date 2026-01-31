@@ -112,6 +112,31 @@ export async function createInvoice(
 }
 
 /**
+ * Get invoices by timesheet ID
+ */
+export async function getInvoicesByTimesheetId(
+  timesheetId: string
+): Promise<Invoice[]> {
+  const invoices = await prisma.invoice.findMany({
+    where: { timesheetId },
+    orderBy: { createdAt: 'desc' },
+  });
+  return invoices.map(toInvoice);
+}
+
+/**
+ * Delete an invoice by ID
+ */
+export async function deleteInvoice(id: string): Promise<boolean> {
+  try {
+    await prisma.invoice.delete({ where: { id } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Update an existing invoice
  */
 export async function updateInvoice(
