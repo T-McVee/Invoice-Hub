@@ -8,8 +8,8 @@
 
 ## 2. Blob Storage
 
-- [ ] 2.1 Add `getInvoiceBlobPath()` helper to `src/lib/blob/client.ts`
-- [ ] 2.2 Write test for `getInvoiceBlobPath()`
+- [x] 2.1 Add `getInvoiceBlobPath()` helper to `src/lib/blob/client.ts`
+- [x] 2.2 Write test for `getInvoiceBlobPath()`
 
 ## 3. Approval Route Integration
 
