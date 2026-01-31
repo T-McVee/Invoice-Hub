@@ -93,7 +93,7 @@ describe('invoice-generator', () => {
         due_date: '10 02 2026', // 14 days later
         items: [
           {
-            name: 'Professional services for January 2026',
+            name: 'Website development services January 2026',
             quantity: 1,
             unit_cost: 4000,
           },

@@ -3,6 +3,14 @@
 
 const INVOICE_GENERATOR_API = 'https://invoice-generator.com'
 
+function getApiKey(): string {
+  const apiKey = process.env.INVOICE_GENERATOR_API_KEY
+  if (!apiKey) {
+    throw new Error('INVOICE_GENERATOR_API_KEY environment variable is not set')
+  }
+  return apiKey
+}
+
 export interface InvoiceItem {
   name: string
   quantity: number
@@ -31,10 +39,13 @@ export interface InvoicePayload {
  * @returns PDF buffer
  */
 export async function generateInvoicePdf(payload: InvoicePayload): Promise<Buffer> {
+  const apiKey = getApiKey()
+
   const response = await fetch(INVOICE_GENERATOR_API, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
   })

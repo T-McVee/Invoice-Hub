@@ -103,7 +103,7 @@ export async function generateInvoice(data: InvoiceData): Promise<GeneratedInvoi
     due_date: formatInvoiceDate(dueDate),
     items: [
       {
-        name: `Professional services for ${formatMonthDisplay(data.month)}`,
+        name: `Website development services for ${formatMonthDisplay(data.month)}`,
         quantity: 1,
         unit_cost: amount,
       },

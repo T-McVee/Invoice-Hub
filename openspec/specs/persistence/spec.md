@@ -334,3 +334,13 @@ The system SHALL provide an authenticated API endpoint for portal users to acces
 - **WHEN** GET /api/portal/[token]/timesheets/[id]/pdf is called
 - **THEN** a 404 error is returned
 
+### Requirement: Invoice Blob Storage Path
+
+The system SHALL provide a helper function to generate consistent blob storage paths for invoice PDFs.
+
+#### Scenario: Generate invoice blob path
+
+- **GIVEN** a client ID and timesheet ID
+- **WHEN** `getInvoiceBlobPath(clientId, timesheetId)` is called
+- **THEN** a path is returned in the format `invoices/{clientId}/{timesheetId}.pdf`
+

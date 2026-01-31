@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyPortalToken } from '@/lib/auth/jwt';
-import { getTimesheetById, updateTimesheet } from '@/lib/db';
+import { getTimesheetById, updateTimesheet, getClientById, createInvoice } from '@/lib/db';
+import { generateInvoice } from '@/lib/invoice-generator';
 
 interface RouteParams {
   params: Promise<{ token: string; id: string }>;
@@ -49,7 +50,52 @@ export async function POST(_request: Request, { params }: RouteParams) {
       approvedAt: new Date(),
     });
 
-    return NextResponse.json({ timesheet: updated });
+    // Generate invoice (fail-open: approval succeeds even if invoice fails)
+    let invoice = null;
+    let invoiceError = null;
+
+    try {
+      // Validate that timesheet has an invoice number
+      if (!timesheet.invoiceNumber) {
+        throw new Error('Timesheet does not have an invoice number');
+      }
+
+      // Fetch client data for invoice
+      const client = await getClientById(timesheet.clientId);
+      if (!client) {
+        throw new Error('Client not found');
+      }
+
+      // Generate invoice PDF and upload to blob storage
+      const generatedInvoice = await generateInvoice({
+        invoiceNumber: String(timesheet.invoiceNumber),
+        month: timesheet.month,
+        totalHours: timesheet.totalHours,
+        client: {
+          id: client.id,
+          name: client.name,
+        },
+      });
+
+      // Create invoice record in database
+      invoice = await createInvoice({
+        clientId: timesheet.clientId,
+        timesheetId: timesheet.id,
+        invoiceNumber: String(timesheet.invoiceNumber),
+        month: timesheet.month,
+        amount: generatedInvoice.amount,
+        status: 'draft',
+        pdfUrl: generatedInvoice.pdfUrl,
+        sentAt: null,
+        paidAt: null,
+      });
+    } catch (error) {
+      // Log error but don't fail the approval
+      console.error('Invoice generation failed:', error);
+      invoiceError = error instanceof Error ? error.message : 'Invoice generation failed';
+    }
+
+    return NextResponse.json({ timesheet: updated, invoice, invoiceError });
   } catch (error) {
     // Check if token expired or invalid
     if (error instanceof Error) {

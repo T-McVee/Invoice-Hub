@@ -10,7 +10,7 @@
   - Update `src/app/(admin)/settings/page.tsx` (text → number input)
   - Update `src/app/api/settings/business-profile/route.ts`
   - Update `src/app/api/settings/business-profile/route.test.ts`
-- [ ] 0.3 Run migrations to apply schema changes
+- [x] 0.3 Run migrations to apply schema changes
 
 ## 1. Invoice Generator Module
 
@@ -25,18 +25,18 @@
 
 ## 3. Approval Route Integration
 
-- [ ] 3.1 Update approval route to trigger invoice generation after status update
-- [ ] 3.2 Update approval route tests for invoice generation scenarios
+- [x] 3.1 Update approval route to trigger invoice generation after status update
+- [x] 3.2 Update approval route tests for invoice generation scenarios
 
 ## 4. Admin Portal Invoices Page
 
-- [ ] 4.1 Add `listInvoices()` to invoice repository with client/status filters
-- [ ] 4.2 Create `/api/invoices` route to fetch invoices
-- [ ] 4.3 Create `src/app/(admin)/invoices/page.tsx` with table view
+- [x] 4.1 Add `listInvoices()` to invoice repository with client/status filters
+- [x] 4.2 Create `/api/invoices` route to fetch invoices
+- [x] 4.3 Create `src/app/(admin)/invoices/page.tsx` with table view
   - Columns: Invoice #, Client, Month, Amount, Status, Created
   - Link to download PDF from blob storage
-- [ ] 4.4 Add invoices link to admin navigation
+- [x] 4.4 Add invoices link to admin navigation
 
 ## 5. Verification
 
-- [ ] 5.1 Manual end-to-end test: approve timesheet → verify invoice created
+- [x] 5.1 Manual end-to-end test: approve timesheet → verify invoice created

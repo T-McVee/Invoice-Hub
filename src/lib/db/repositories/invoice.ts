@@ -15,6 +15,7 @@ function toInvoice(prismaInvoice: PrismaInvoice): Invoice {
     clientId: prismaInvoice.clientId,
     timesheetId: prismaInvoice.timesheetId,
     invoiceNumber: prismaInvoice.invoiceNumber,
+    month: prismaInvoice.month,
     amount: prismaInvoice.amount,
     status: prismaInvoice.status as Invoice['status'],
     pdfUrl: prismaInvoice.pdfUrl,
@@ -29,6 +30,36 @@ function toInvoice(prismaInvoice: PrismaInvoice): Invoice {
  */
 export async function getInvoices(): Promise<Invoice[]> {
   const invoices = await prisma.invoice.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
+  return invoices.map(toInvoice);
+}
+
+/**
+ * Filter options for listing invoices
+ */
+export interface ListInvoicesOptions {
+  clientId?: string;
+  status?: Invoice['status'];
+}
+
+/**
+ * List invoices with optional filters, sorted by creation date (newest first)
+ */
+export async function listInvoices(
+  options: ListInvoicesOptions = {}
+): Promise<Invoice[]> {
+  const where: { clientId?: string; status?: string } = {};
+
+  if (options.clientId) {
+    where.clientId = options.clientId;
+  }
+  if (options.status) {
+    where.status = options.status;
+  }
+
+  const invoices = await prisma.invoice.findMany({
+    where,
     orderBy: { createdAt: 'desc' },
   });
   return invoices.map(toInvoice);
@@ -68,6 +99,7 @@ export async function createInvoice(
       clientId: data.clientId,
       timesheetId: data.timesheetId,
       invoiceNumber: data.invoiceNumber,
+      month: data.month,
       amount: data.amount,
       status: data.status,
       pdfUrl: data.pdfUrl,

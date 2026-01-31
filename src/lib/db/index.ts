@@ -32,9 +32,11 @@ export {
   getInvoices,
   getInvoiceById,
   getInvoicesByClientId,
+  listInvoices,
   createInvoice,
   updateInvoice,
 } from './repositories/invoice';
+export type { ListInvoicesOptions } from './repositories/invoice';
 
 // Prisma client (for advanced use cases)
 export { prisma, disconnect } from './prisma';

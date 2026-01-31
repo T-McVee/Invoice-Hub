@@ -40,6 +40,7 @@ export interface Invoice {
   clientId: string;
   timesheetId: string;
   invoiceNumber: string;
+  month: string; // YYYY-MM format (denormalized from Timesheet for querying)
   amount: number;
   status: 'draft' | 'sent' | 'paid';
   pdfUrl: string | null;

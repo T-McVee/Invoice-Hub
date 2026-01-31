@@ -47,6 +47,7 @@ type DbInvoice = {
   clientId: string;
   timesheetId: string;
   invoiceNumber: string;
+  month: string;
   amount: number;
   status: string;
   pdfUrl: string | null;
@@ -63,11 +64,11 @@ type DbSettings = {
 };
 
 // In-memory stores
-let clients: Map<string, DbClient> = new Map();
-let contacts: Map<string, DbContact> = new Map();
-let timesheets: Map<string, DbTimesheet> = new Map();
-let invoices: Map<string, DbInvoice> = new Map();
-let settings: Map<string, DbSettings> = new Map();
+const clients: Map<string, DbClient> = new Map();
+const contacts: Map<string, DbContact> = new Map();
+const timesheets: Map<string, DbTimesheet> = new Map();
+const invoices: Map<string, DbInvoice> = new Map();
+const settings: Map<string, DbSettings> = new Map();
 
 // Helper to generate UUIDs
 function uuid(): string {
@@ -255,7 +256,16 @@ export const mockPrisma = {
     }),
   },
   invoice: {
-    findMany: vi.fn(async () => Array.from(invoices.values())),
+    findMany: vi.fn(async (args?: { where?: { clientId?: string; status?: string }; orderBy?: unknown }) => {
+      let result = Array.from(invoices.values());
+      if (args?.where?.clientId) {
+        result = result.filter((i) => i.clientId === args.where!.clientId);
+      }
+      if (args?.where?.status) {
+        result = result.filter((i) => i.status === args.where!.status);
+      }
+      return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    }),
     findUnique: vi.fn(async (args: { where: { id: string } }) => invoices.get(args.where.id) || null),
     create: vi.fn(async (args: { data: Record<string, unknown> }) => {
       const id = uuid();
@@ -264,6 +274,7 @@ export const mockPrisma = {
         clientId: args.data.clientId as string,
         timesheetId: args.data.timesheetId as string,
         invoiceNumber: args.data.invoiceNumber as string,
+        month: args.data.month as string,
         amount: args.data.amount as number,
         status: (args.data.status as string) || 'draft',
         pdfUrl: (args.data.pdfUrl as string) || null,
@@ -273,6 +284,13 @@ export const mockPrisma = {
       };
       invoices.set(id, invoice);
       return invoice;
+    }),
+    update: vi.fn(async (args: { where: { id: string }; data: Record<string, unknown> }) => {
+      const invoice = invoices.get(args.where.id);
+      if (!invoice) return null;
+      const updated = { ...invoice, ...args.data };
+      invoices.set(args.where.id, updated as typeof invoice);
+      return updated;
     }),
     deleteMany: vi.fn(async () => {
       const count = invoices.size;
