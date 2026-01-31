@@ -55,13 +55,24 @@ Track these steps as TODOs and complete them one by one.
 2. **Read proposal.md** - Understand what's being built
 3. **Read design.md** (if exists) - Review technical decisions
 4. **Read tasks.md** - Get implementation checklist
-5. **Create beads** - Create a bead for each task (`bd create --title="Task 1.1: ..." --type=task`)
+5. **Create beads** - Create a bead for each task, **including OpenSpec reference in description**:
+   ```bash
+   bd create --title="Task 1.1: Create database schema" --type=task
+   # In description, include: "OpenSpec: <change-id>, Task: 1.1"
+   ```
 6. **Implement tasks sequentially** - Work through beads in order
-7. **Close beads** - Mark each bead complete as you finish (`bd close <id>`)
+7. **Close beads AND update tasks.md** - When completing each bead:
+   ```bash
+   bd close <id>
+   # IMMEDIATELY edit tasks.md: change [ ] to [x] for the completed task
+   ```
+   ⚠️ **A bead is NOT complete until the corresponding tasks.md checkbox is updated**
 8. **Run tests after** - Execute `npm run test:run` again; task is not complete until all tests pass
-9. **Sync tasks.md** - Update checkboxes to `- [x]` as beads close (keep OpenSpec in sync)
 
-**Beads Integration**: This project uses Beads to track individual tasks from `tasks.md`. Each task becomes a bead, allowing work to persist across sessions. When a bead closes, update the corresponding checkbox in `tasks.md`.
+**Beads Integration**: This project uses Beads to track individual tasks from `tasks.md`. Each task becomes a bead with an OpenSpec reference in its description (e.g., "OpenSpec: add-feature-x, Task: 1.2"). This link ensures:
+- Context recovery after compaction (you can find the related proposal)
+- Clear traceability between beads and OpenSpec tasks
+- **Mandatory sync**: When closing a bead, you MUST update the corresponding `tasks.md` checkbox
 
 ### Stage 3: Archiving Changes
 **Prerequisite**: All beads for this change must be closed. Run `bd list` to verify no open beads remain.

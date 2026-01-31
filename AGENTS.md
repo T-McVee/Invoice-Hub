@@ -38,24 +38,23 @@ This project uses **OpenSpec for planning** and **Beads for work tracking**. The
 ┌─────────────────────────────────────────────────────────────┐
 │  2. TRACK (Beads)                                           │
 │     Create bead for each task in tasks.md                   │
+│     Include OpenSpec reference in description:              │
 │     Run: bd create --title="Task 1.1: ..." --type=task      │
+│          Description: "OpenSpec: <change-id>, Task: 1.1"    │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
 │  3. IMPLEMENT                                               │
 │     Work through beads one at a time                        │
 │     Run: bd update <id> --status=in_progress                │
-│     Run: bd close <id> (when done)                          │
+│     When closing a bead, ALWAYS update tasks.md:            │
+│       1. bd close <id>                                      │
+│       2. Edit tasks.md: change [ ] to [x] for that task     │
+│     ⚠️  A bead is NOT complete until tasks.md is updated    │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│  4. SYNC                                                    │
-│     Update tasks.md checkboxes as beads close               │
-│     Keep OpenSpec tasks in sync with bead status            │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│  5. ARCHIVE (OpenSpec)                                      │
+│  4. ARCHIVE (OpenSpec)                                      │
 │     Once ALL beads closed, archive the change               │
 │     Run: openspec archive <id> --yes                        │
 │     Update specs/ if capabilities changed                   │
