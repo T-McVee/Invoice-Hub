@@ -45,10 +45,15 @@ The system SHALL compile invoice data from timesheet, client, and business profi
 
 #### Scenario: Calculate due date from payment terms
 
-- **GIVEN** an invoice date and payment terms string (e.g., "Please pay within 15 days")
-- **WHEN** `calculateDueDate()` is called
-- **THEN** the number of days is extracted from the terms
-- **AND** the due date is calculated by adding those days to the invoice date
+- **GIVEN** an invoice date and payment terms number (e.g., `15`)
+- **WHEN** `calculateDueDate(invoiceDate, paymentTermsDays)` is called
+- **THEN** the due date is calculated by adding the days to the invoice date
+
+#### Scenario: Format payment terms string
+
+- **GIVEN** a payment terms number (e.g., `15`)
+- **WHEN** `formatPaymentTerms(paymentTermsDays)` is called
+- **THEN** a formatted string is returned (e.g., "Please pay within 15 days")
 
 ### Requirement: Invoice Generation on Approval
 

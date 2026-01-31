@@ -14,6 +14,7 @@ When a client approves a timesheet in the portal, the system needs to automatica
 - Automatic invoice generation on timesheet approval
 - PDF stored in blob storage and linked to invoice record
 - Fail-open design: approval succeeds even if invoice generation fails
+- Admin portal page to view and download invoices
 
 **Non-Goals:**
 - Manual invoice regeneration (future enhancement)
@@ -69,6 +70,17 @@ When a client approves a timesheet in the portal, the system needs to automatica
 - Follows existing pattern (`src/lib/toggl/`, `src/lib/blob/`)
 - Separates concerns: API client logic stays out of route handlers
 - Makes invoice generator reusable for future manual regeneration
+
+### 6. Invoice Schema: Include Month Field
+
+**Decision**: Add `month` field to Invoice model (denormalized from Timesheet)
+
+**Rationale**:
+- Invoice is the primary record for historical billing queries
+- Avoids joining through Timesheet just to filter by month
+- Month is immutable, so denormalization has no sync risk
+- Enables direct queries like "show me January 2026 invoices"
+- Timesheet retains its `month` field (it's part of the unique constraint)
 
 ## Invoice Payload Structure
 
