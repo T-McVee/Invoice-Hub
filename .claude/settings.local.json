@@ -32,7 +32,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(openspec archive add-azure-deployment:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run lint:*)",
+      "Bash(grep:*)",
+      "Bash(openspec archive add-invoice-generation:*)"
     ]
   }
 }
