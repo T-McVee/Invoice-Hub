@@ -30,7 +30,7 @@ The system SHALL compile invoice data from timesheet, client, and business profi
 - **WHEN** `compileInvoicePayload()` is called
 - **THEN** a payload is returned with:
   - `from`: Business details (name, business number, GST, phone, email, address)
-  - `to`: Client name
+  - `to`: Client name and billing address (if provided)
   - `number`: Timesheet ID (e.g., "1234")
   - `date`: Current date in "DD MM YYYY" format
   - `due_date`: Calculated based on payment terms
@@ -38,6 +38,19 @@ The system SHALL compile invoice data from timesheet, client, and business profi
   - `tax`: Tax percentage from business profile
   - `terms`: Payment terms from business profile
   - `notes`: Payment details from business profile
+
+#### Scenario: Compile invoice with client billing address
+
+- **GIVEN** a client with a billing address configured
+- **WHEN** an invoice is generated for that client
+- **THEN** the `to` field includes the client name on the first line
+- **AND** the billing address appears on new lines below the name (newline-separated)
+
+#### Scenario: Compile invoice without client billing address
+
+- **GIVEN** a client without a billing address
+- **WHEN** an invoice is generated for that client
+- **THEN** the `to` field contains only the client name
 
 #### Scenario: Calculate invoice amount
 
