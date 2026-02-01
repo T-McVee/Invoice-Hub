@@ -6,7 +6,7 @@ import { getBusinessProfile, getHourlyRate } from '@/lib/settings'
 import { uploadPdf, getInvoiceBlobPath } from '@/lib/blob/client'
 
 // Re-export client types
-export { InvoicePayload, InvoiceItem } from './client'
+export type { InvoicePayload, InvoiceItem } from './client'
 
 export interface InvoiceData {
   invoiceNumber: string
@@ -71,10 +71,10 @@ function buildFromField(profile: {
 
   if (profile.name) parts.push(profile.name)
   if (profile.businessNumber) parts.push(`Business Number: ${profile.businessNumber}`)
-  if (profile.gstNumber) parts.push(`GST Number: ${profile.gstNumber}`)
+  if (profile.gstNumber) parts.push(`GST Number: ${profile.gstNumber}\n`)
   if (profile.phone) parts.push(profile.phone)
   if (profile.email) parts.push(profile.email)
-  if (profile.address) parts.push(profile.address)
+  if (profile.address) parts.push(`\n${profile.address}`)
 
   return parts.join('\n')
 }

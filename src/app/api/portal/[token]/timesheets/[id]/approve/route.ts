@@ -74,6 +74,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
         client: {
           id: client.id,
           name: client.name,
+          billingAddress: client.billingAddress,
         },
       });
 
