@@ -273,7 +273,7 @@ export default function PortalPage() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
               <Shield className="h-4 w-4" />
-              <span className="text-sm font-medium">Secure Portal</span>
+              <span className="text-sm font-medium">T-McVee&apos;s Secure Portal</span>
             </div>
             <h1 className="text-4xl font-bold tracking-tight mb-3">
               Welcome, <span className="text-primary">{data.client.name}</span>

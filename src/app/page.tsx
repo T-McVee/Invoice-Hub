@@ -50,18 +50,18 @@ export default function Home() {
               className="group px-8 py-6 text-base rounded-xl hover-lift glow-sm"
             >
               <Link href="/dashboard" className="flex items-center gap-2">
-                Admin Dashboard
+                Sign in
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button
+            {/* <Button
               asChild
               variant="outline"
               size="lg"
               className="px-8 py-6 text-base rounded-xl glass hover-lift"
             >
               <Link href="/portal">Client Portal</Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
 
