@@ -35,7 +35,8 @@
       "Bash(cat:*)",
       "Bash(npm run lint:*)",
       "Bash(grep:*)",
-      "Bash(openspec archive add-invoice-generation:*)"
+      "Bash(openspec archive add-invoice-generation:*)",
+      "Bash(openspec archive add-client-billing-address:*)"
     ]
   }
 }
