@@ -8,6 +8,7 @@ export interface Client {
   timesheetRecipients: string[]; // Email addresses for timesheet notifications
   invoiceRecipients: string[]; // Email addresses for invoice notifications
   notes: string | null; // Optional notes/metadata
+  billingAddress: string | null; // Multi-line address for invoice "To" field
   portalToken: string | null; // JWT token for client portal access (~45 day expiry)
   contacts: Contact[]; // Legacy contacts (kept for compatibility)
   createdAt: Date;

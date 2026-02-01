@@ -24,7 +24,7 @@ vi.mock('../blob/client', () => ({
 }))
 
 import { setHourlyRate, setBusinessProfile } from '@/lib/settings'
-import { generateInvoice } from './index'
+import { generateInvoice, buildToField } from './index'
 
 describe('invoice-generator', () => {
   beforeEach(async () => {
@@ -128,6 +128,50 @@ describe('invoice-generator', () => {
       await expect(generateInvoice(mockInvoiceData)).rejects.toThrow(
         'Business name not configured'
       )
+    })
+
+    it('includes billing address in to field when provided', async () => {
+      const dataWithAddress = {
+        ...mockInvoiceData,
+        client: {
+          id: 'client-123',
+          name: 'Acme Corp',
+          billingAddress: '123 Business St\nSydney NSW 2000',
+        },
+      }
+
+      await generateInvoice(dataWithAddress)
+
+      expect(mockGenerateInvoicePdf).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: 'Acme Corp\n123 Business St\nSydney NSW 2000',
+        })
+      )
+    })
+  })
+
+  describe('buildToField', () => {
+    it('returns just name when no billing address', () => {
+      const result = buildToField({ name: 'Acme Corp' })
+      expect(result).toBe('Acme Corp')
+    })
+
+    it('returns just name when billing address is null', () => {
+      const result = buildToField({ name: 'Acme Corp', billingAddress: null })
+      expect(result).toBe('Acme Corp')
+    })
+
+    it('returns just name when billing address is empty', () => {
+      const result = buildToField({ name: 'Acme Corp', billingAddress: '' })
+      expect(result).toBe('Acme Corp')
+    })
+
+    it('returns name with billing address on separate lines', () => {
+      const result = buildToField({
+        name: 'Acme Corp',
+        billingAddress: '123 Business St\nSydney NSW 2000',
+      })
+      expect(result).toBe('Acme Corp\n123 Business St\nSydney NSW 2000')
     })
   })
 })

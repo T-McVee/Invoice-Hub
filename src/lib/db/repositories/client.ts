@@ -20,6 +20,7 @@ function toClient(
     timesheetRecipients: JSON.parse(prismaClient.timesheetRecipients),
     invoiceRecipients: JSON.parse(prismaClient.invoiceRecipients),
     notes: prismaClient.notes,
+    billingAddress: prismaClient.billingAddress,
     portalToken: prismaClient.portalToken,
     contacts: (prismaClient.contacts ?? []).map((c) => ({
       id: c.id,
@@ -84,6 +85,7 @@ export async function createClient(
       timesheetRecipients: JSON.stringify(clientData.timesheetRecipients),
       invoiceRecipients: JSON.stringify(clientData.invoiceRecipients),
       notes: clientData.notes,
+      billingAddress: clientData.billingAddress,
       contacts: {
         create: contacts.map((c) => ({
           name: c.name,
@@ -122,6 +124,7 @@ export async function updateClient(
   if (updateData.invoiceRecipients !== undefined)
     data.invoiceRecipients = JSON.stringify(updateData.invoiceRecipients);
   if (updateData.notes !== undefined) data.notes = updateData.notes;
+  if (updateData.billingAddress !== undefined) data.billingAddress = updateData.billingAddress;
 
   // Handle contacts update if provided
   if (contacts !== undefined) {

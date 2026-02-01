@@ -19,6 +19,7 @@ interface FormState {
   timesheetRecipients: string[];
   invoiceRecipients: string[];
   notes: string;
+  billingAddress: string;
 }
 
 function getInitialFormState(client: Client | null): FormState {
@@ -28,6 +29,7 @@ function getInitialFormState(client: Client | null): FormState {
     timesheetRecipients: client?.timesheetRecipients ? [...client.timesheetRecipients] : [],
     invoiceRecipients: client?.invoiceRecipients ? [...client.invoiceRecipients] : [],
     notes: client?.notes ?? '',
+    billingAddress: client?.billingAddress ?? '',
   };
 }
 
@@ -83,6 +85,7 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
       timesheetRecipients: formState.timesheetRecipients.filter((e) => e.trim()),
       invoiceRecipients: formState.invoiceRecipients.filter((e) => e.trim()),
       notes: formState.notes || null,
+      billingAddress: formState.billingAddress || null,
     });
   };
 
@@ -288,7 +291,21 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
                 onChange={(e) => updateField('notes', e.target.value)}
                 placeholder="Optional notes about this client..."
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50 
+                className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50
+                           text-foreground placeholder:text-muted-foreground resize-none
+                           focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              />
+            </div>
+
+            {/* Billing Address */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Billing Address</label>
+              <textarea
+                value={formState.billingAddress}
+                onChange={(e) => updateField('billingAddress', e.target.value)}
+                placeholder="Address to appear on invoices..."
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50
                            text-foreground placeholder:text-muted-foreground resize-none
                            focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />

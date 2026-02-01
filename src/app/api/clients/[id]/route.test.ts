@@ -181,6 +181,55 @@ describe('PATCH /api/clients/[id]', () => {
     expect(response.status).toBe(200)
     expect(data.client.togglProjectId).toBeNull()
   })
+
+  it('updates client with billing address', async () => {
+    const client = await createClient({
+      name: 'Test',
+      togglClientId: null,
+      togglProjectId: null,
+      timesheetRecipients: [],
+      invoiceRecipients: [],
+      notes: null,
+      portalToken: null,
+      contacts: [],
+    })
+
+    const request = new Request(`http://localhost/api/clients/${client.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ billingAddress: '123 Business St\nSydney NSW 2000' }),
+    })
+
+    const response = await PATCH(request, createParams(client.id))
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.client.billingAddress).toBe('123 Business St\nSydney NSW 2000')
+  })
+
+  it('clears billing address when set to empty string', async () => {
+    const client = await createClient({
+      name: 'Test',
+      togglClientId: null,
+      togglProjectId: null,
+      timesheetRecipients: [],
+      invoiceRecipients: [],
+      notes: null,
+      billingAddress: '123 Old St',
+      portalToken: null,
+      contacts: [],
+    })
+
+    const request = new Request(`http://localhost/api/clients/${client.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ billingAddress: '' }),
+    })
+
+    const response = await PATCH(request, createParams(client.id))
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.client.billingAddress).toBeNull()
+  })
 })
 
 describe('DELETE /api/clients/[id]', () => {

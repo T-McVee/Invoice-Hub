@@ -15,6 +15,7 @@ export interface InvoiceData {
   client: {
     id: string
     name: string
+    billingAddress?: string | null
   }
 }
 
@@ -42,6 +43,17 @@ function formatMonthDisplay(month: string): string {
   const [year, monthNum] = month.split('-').map(Number)
   const date = new Date(year, monthNum - 1, 1)
   return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+/**
+ * Build the "to" field for the invoice (client details)
+ * First line: client name, subsequent lines: billing address (if present)
+ */
+export function buildToField(client: { name: string; billingAddress?: string | null }): string {
+  if (client.billingAddress) {
+    return `${client.name}\n${client.billingAddress}`
+  }
+  return client.name
 }
 
 /**
@@ -97,7 +109,7 @@ export async function generateInvoice(data: InvoiceData): Promise<GeneratedInvoi
   // Build invoice payload
   const payload: InvoicePayload = {
     from: buildFromField(businessProfile),
-    to: data.client.name,
+    to: buildToField(data.client),
     number: data.invoiceNumber,
     date: formatInvoiceDate(invoiceDate),
     due_date: formatInvoiceDate(dueDate),

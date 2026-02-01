@@ -32,7 +32,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
 
-    const { name, togglProjectId, timesheetRecipients, invoiceRecipients, notes } = body;
+    const { name, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress } =
+      body;
 
     // Validate email arrays if provided using Zod for robust validation
     // Returns { valid: string[], invalid: string[] } or undefined if not provided
@@ -101,6 +102,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     if (notes !== undefined) {
       updates.notes = notes || null;
+    }
+
+    if (billingAddress !== undefined) {
+      updates.billingAddress = billingAddress || null;
     }
 
     const client = await updateClient(id, updates);
