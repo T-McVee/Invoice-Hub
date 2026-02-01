@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, togglClientId, togglProjectId, timesheetRecipients, invoiceRecipients, notes } =
+    const { name, togglClientId, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress } =
       body;
 
     // Validate required fields
@@ -80,6 +80,7 @@ export async function POST(request: Request) {
       timesheetRecipients: timesheetEmailResult.valid,
       invoiceRecipients: invoiceEmailResult.valid,
       notes: notes || null,
+      billingAddress: billingAddress || null,
       portalToken: null,
       contacts: [],
     });
