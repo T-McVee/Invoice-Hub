@@ -86,7 +86,7 @@ describe('invoice-generator', () => {
       await generateInvoice(mockInvoiceData)
 
       expect(mockGenerateInvoicePdf).toHaveBeenCalledWith({
-        from: 'My Business\nBusiness Number: BN123\nGST Number: GST456\n555-1234\nbilling@mybiz.com\n123 Main St',
+        from: 'My Business\nBusiness Number: BN123\nGST Number: GST456\n\n555-1234\nbilling@mybiz.com\n\n123 Main St',
         to: 'Acme Corp',
         number: '1234',
         date: '27 01 2026',
