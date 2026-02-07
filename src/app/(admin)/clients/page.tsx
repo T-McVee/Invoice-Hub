@@ -1,13 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Users,
-  Download,
-  Loader2,
-  AlertCircle,
-  Building2,
-} from 'lucide-react';
+import { Users, Download, Loader2, AlertCircle, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Client } from '@/types';
 import { useClients, useDeleteClient } from '@/lib/hooks';
@@ -38,9 +32,7 @@ export default function ClientsPage() {
   };
 
   const existingTogglClientIds = new Set(
-    clients
-      .filter((c) => c.togglClientId)
-      .map((c) => c.togglClientId!)
+    clients.filter((c) => c.togglClientId).map((c) => c.togglClientId!)
   );
 
   return (
@@ -60,11 +52,7 @@ export default function ClientsPage() {
         </div>
 
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setImportDialogOpen(true)}
-            className="gap-2"
-          >
+          <Button variant="outline" onClick={() => setImportDialogOpen(true)} className="gap-2">
             <Download className="h-4 w-4" />
             Import from Toggl
           </Button>
@@ -82,9 +70,7 @@ export default function ClientsPage() {
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-destructive">
-                Failed to load clients
-              </p>
+              <p className="font-medium text-destructive">Failed to load clients</p>
               <p className="text-sm text-destructive/80 mt-1">
                 {error instanceof Error ? error.message : 'Unknown error'}
               </p>
@@ -96,17 +82,11 @@ export default function ClientsPage() {
           <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
             <Building2 className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground">
-            No clients yet
-          </h3>
+          <h3 className="text-lg font-semibold text-foreground">No clients yet</h3>
           <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
-            Import clients from Toggl to get started managing timesheets and
-            invoices.
+            Import clients from Toggl to get started managing timesheets and invoices.
           </p>
-          <Button
-            onClick={() => setImportDialogOpen(true)}
-            className="mt-6 gap-2"
-          >
+          <Button onClick={() => setImportDialogOpen(true)} className="mt-6 gap-2">
             <Download className="h-4 w-4" />
             Import from Toggl
           </Button>
@@ -146,15 +126,11 @@ export default function ClientsPage() {
             onClick={() => setDeletingClient(null)}
           />
           <div className="relative glass rounded-2xl w-full max-w-md mx-4 p-6 animate-scale-in">
-            <h3 className="text-lg font-semibold text-foreground">
-              Delete Client
-            </h3>
+            <h3 className="text-lg font-semibold text-foreground">Delete Client</h3>
             <p className="text-muted-foreground mt-2">
               Are you sure you want to delete{' '}
-              <span className="font-medium text-foreground">
-                {deletingClient.name}
-              </span>
-              ? This action cannot be undone.
+              <span className="font-medium text-foreground">{deletingClient.name}</span>? This
+              action cannot be undone.
             </p>
 
             {deleteMutation.isError && (

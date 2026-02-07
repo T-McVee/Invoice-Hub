@@ -27,9 +27,7 @@ export async function GET() {
 
     // Calculate earnings (null if rate not configured)
     const earnings =
-      rateSetting.rate !== null
-        ? hoursResult.data.totalHours * rateSetting.rate
-        : null;
+      rateSetting.rate !== null ? hoursResult.data.totalHours * rateSetting.rate : null;
 
     return NextResponse.json({
       earnings,

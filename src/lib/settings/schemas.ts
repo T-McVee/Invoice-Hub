@@ -5,9 +5,7 @@
 
 import { z } from 'zod';
 
-export const hourlyRateSchema = z
-  .number()
-  .min(0, 'Hourly rate must be 0 or greater');
+export const hourlyRateSchema = z.number().min(0, 'Hourly rate must be 0 or greater');
 
 export const emailSchema = z
   .string()

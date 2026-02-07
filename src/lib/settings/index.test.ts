@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 import {
   hourlyRateSchema,
   emailSchema,
@@ -11,111 +11,111 @@ import {
   setBusinessProfile,
   getBusinessProfile,
   getAndIncrementNextInvoiceNumber,
-} from './index'
+} from './index';
 
 describe('settings', () => {
   describe('hourlyRateSchema', () => {
     it('accepts valid positive numbers', () => {
-      expect(() => hourlyRateSchema.parse(100)).not.toThrow()
-      expect(() => hourlyRateSchema.parse(0)).not.toThrow()
-      expect(() => hourlyRateSchema.parse(150.50)).not.toThrow()
-    })
+      expect(() => hourlyRateSchema.parse(100)).not.toThrow();
+      expect(() => hourlyRateSchema.parse(0)).not.toThrow();
+      expect(() => hourlyRateSchema.parse(150.5)).not.toThrow();
+    });
 
     it('rejects negative numbers', () => {
-      expect(() => hourlyRateSchema.parse(-1)).toThrow()
-      expect(() => hourlyRateSchema.parse(-100)).toThrow()
-    })
+      expect(() => hourlyRateSchema.parse(-1)).toThrow();
+      expect(() => hourlyRateSchema.parse(-100)).toThrow();
+    });
 
     it('rejects non-numbers', () => {
-      expect(() => hourlyRateSchema.parse('100')).toThrow()
-      expect(() => hourlyRateSchema.parse(null)).toThrow()
-    })
-  })
+      expect(() => hourlyRateSchema.parse('100')).toThrow();
+      expect(() => hourlyRateSchema.parse(null)).toThrow();
+    });
+  });
 
   describe('emailSchema', () => {
     it('accepts valid email addresses', () => {
-      expect(() => emailSchema.parse('test@example.com')).not.toThrow()
-      expect(() => emailSchema.parse('user.name@domain.co.uk')).not.toThrow()
-    })
+      expect(() => emailSchema.parse('test@example.com')).not.toThrow();
+      expect(() => emailSchema.parse('user.name@domain.co.uk')).not.toThrow();
+    });
 
     it('accepts empty string (optional field)', () => {
-      expect(() => emailSchema.parse('')).not.toThrow()
-    })
+      expect(() => emailSchema.parse('')).not.toThrow();
+    });
 
     it('accepts undefined (optional field)', () => {
-      expect(() => emailSchema.parse(undefined)).not.toThrow()
-    })
+      expect(() => emailSchema.parse(undefined)).not.toThrow();
+    });
 
     it('rejects invalid email formats', () => {
-      expect(() => emailSchema.parse('not-an-email')).toThrow()
-      expect(() => emailSchema.parse('missing@')).toThrow()
-      expect(() => emailSchema.parse('@nodomain.com')).toThrow()
-    })
-  })
+      expect(() => emailSchema.parse('not-an-email')).toThrow();
+      expect(() => emailSchema.parse('missing@')).toThrow();
+      expect(() => emailSchema.parse('@nodomain.com')).toThrow();
+    });
+  });
 
   describe('taxRateSchema', () => {
     it('accepts valid tax rates (0-100)', () => {
-      expect(() => taxRateSchema.parse(0)).not.toThrow()
-      expect(() => taxRateSchema.parse(15)).not.toThrow()
-      expect(() => taxRateSchema.parse(100)).not.toThrow()
-      expect(() => taxRateSchema.parse(10.5)).not.toThrow()
-    })
+      expect(() => taxRateSchema.parse(0)).not.toThrow();
+      expect(() => taxRateSchema.parse(15)).not.toThrow();
+      expect(() => taxRateSchema.parse(100)).not.toThrow();
+      expect(() => taxRateSchema.parse(10.5)).not.toThrow();
+    });
 
     it('rejects negative tax rates', () => {
-      expect(() => taxRateSchema.parse(-1)).toThrow()
-    })
+      expect(() => taxRateSchema.parse(-1)).toThrow();
+    });
 
     it('rejects tax rates over 100%', () => {
-      expect(() => taxRateSchema.parse(101)).toThrow()
-      expect(() => taxRateSchema.parse(200)).toThrow()
-    })
-  })
+      expect(() => taxRateSchema.parse(101)).toThrow();
+      expect(() => taxRateSchema.parse(200)).toThrow();
+    });
+  });
 
   describe('nextInvoiceNumberSchema', () => {
     it('accepts positive integers', () => {
-      expect(() => nextInvoiceNumberSchema.parse(1)).not.toThrow()
-      expect(() => nextInvoiceNumberSchema.parse(100)).not.toThrow()
-      expect(() => nextInvoiceNumberSchema.parse(9999)).not.toThrow()
-    })
+      expect(() => nextInvoiceNumberSchema.parse(1)).not.toThrow();
+      expect(() => nextInvoiceNumberSchema.parse(100)).not.toThrow();
+      expect(() => nextInvoiceNumberSchema.parse(9999)).not.toThrow();
+    });
 
     it('rejects zero', () => {
-      expect(() => nextInvoiceNumberSchema.parse(0)).toThrow()
-    })
+      expect(() => nextInvoiceNumberSchema.parse(0)).toThrow();
+    });
 
     it('rejects negative numbers', () => {
-      expect(() => nextInvoiceNumberSchema.parse(-1)).toThrow()
-    })
+      expect(() => nextInvoiceNumberSchema.parse(-1)).toThrow();
+    });
 
     it('rejects non-integers', () => {
-      expect(() => nextInvoiceNumberSchema.parse(1.5)).toThrow()
-      expect(() => nextInvoiceNumberSchema.parse(10.1)).toThrow()
-    })
-  })
+      expect(() => nextInvoiceNumberSchema.parse(1.5)).toThrow();
+      expect(() => nextInvoiceNumberSchema.parse(10.1)).toThrow();
+    });
+  });
 
   describe('paymentTermsDaysSchema', () => {
     it('accepts valid payment terms (1-365)', () => {
-      expect(() => paymentTermsDaysSchema.parse(1)).not.toThrow()
-      expect(() => paymentTermsDaysSchema.parse(15)).not.toThrow()
-      expect(() => paymentTermsDaysSchema.parse(30)).not.toThrow()
-      expect(() => paymentTermsDaysSchema.parse(365)).not.toThrow()
-    })
+      expect(() => paymentTermsDaysSchema.parse(1)).not.toThrow();
+      expect(() => paymentTermsDaysSchema.parse(15)).not.toThrow();
+      expect(() => paymentTermsDaysSchema.parse(30)).not.toThrow();
+      expect(() => paymentTermsDaysSchema.parse(365)).not.toThrow();
+    });
 
     it('rejects zero', () => {
-      expect(() => paymentTermsDaysSchema.parse(0)).toThrow()
-    })
+      expect(() => paymentTermsDaysSchema.parse(0)).toThrow();
+    });
 
     it('rejects negative numbers', () => {
-      expect(() => paymentTermsDaysSchema.parse(-1)).toThrow()
-    })
+      expect(() => paymentTermsDaysSchema.parse(-1)).toThrow();
+    });
 
     it('rejects values over 365', () => {
-      expect(() => paymentTermsDaysSchema.parse(366)).toThrow()
-    })
+      expect(() => paymentTermsDaysSchema.parse(366)).toThrow();
+    });
 
     it('rejects non-integers', () => {
-      expect(() => paymentTermsDaysSchema.parse(15.5)).toThrow()
-    })
-  })
+      expect(() => paymentTermsDaysSchema.parse(15.5)).toThrow();
+    });
+  });
 
   describe('businessProfileSchema', () => {
     it('accepts valid complete profile', () => {
@@ -130,31 +130,31 @@ describe('settings', () => {
         taxRate: 15,
         paymentTermsDays: 14,
         nextInvoiceNumber: 100,
-      }
-      expect(() => businessProfileSchema.parse(profile)).not.toThrow()
-    })
+      };
+      expect(() => businessProfileSchema.parse(profile)).not.toThrow();
+    });
 
     it('accepts partial profile (all fields optional)', () => {
-      expect(() => businessProfileSchema.parse({})).not.toThrow()
-      expect(() => businessProfileSchema.parse({ name: 'Just Name' })).not.toThrow()
-    })
+      expect(() => businessProfileSchema.parse({})).not.toThrow();
+      expect(() => businessProfileSchema.parse({ name: 'Just Name' })).not.toThrow();
+    });
 
     it('validates nested email field', () => {
-      expect(() => businessProfileSchema.parse({ email: 'invalid' })).toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ email: 'invalid' })).toThrow();
+    });
 
     it('validates nested taxRate field', () => {
-      expect(() => businessProfileSchema.parse({ taxRate: 150 })).toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ taxRate: 150 })).toThrow();
+    });
 
     it('validates nested nextInvoiceNumber field', () => {
-      expect(() => businessProfileSchema.parse({ nextInvoiceNumber: 0 })).toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ nextInvoiceNumber: 0 })).toThrow();
+    });
 
     it('validates nested paymentTermsDays field', () => {
-      expect(() => businessProfileSchema.parse({ paymentTermsDays: 0 })).toThrow()
-      expect(() => businessProfileSchema.parse({ paymentTermsDays: 400 })).toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: 0 })).toThrow();
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: 400 })).toThrow();
+    });
 
     // Tests for null value handling (form sends null for empty fields)
     it('accepts null for optional string fields', () => {
@@ -167,17 +167,17 @@ describe('settings', () => {
         address: null,
         paymentDetails: null,
         paymentTermsDays: null,
-      }
-      expect(() => businessProfileSchema.parse(profile)).not.toThrow()
-    })
+      };
+      expect(() => businessProfileSchema.parse(profile)).not.toThrow();
+    });
 
     it('accepts null for taxRate', () => {
-      expect(() => businessProfileSchema.parse({ taxRate: null })).not.toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ taxRate: null })).not.toThrow();
+    });
 
     it('accepts null for paymentTermsDays', () => {
-      expect(() => businessProfileSchema.parse({ paymentTermsDays: null })).not.toThrow()
-    })
+      expect(() => businessProfileSchema.parse({ paymentTermsDays: null })).not.toThrow();
+    });
 
     it('accepts data in the exact format the form sends to the API', () => {
       // This mirrors the updateData object in handleSave
@@ -192,9 +192,9 @@ describe('settings', () => {
         taxRate: 10, // User entered a tax rate
         paymentTermsDays: null,
         nextInvoiceNumber: 1,
-      }
-      expect(() => businessProfileSchema.parse(formData)).not.toThrow()
-    })
+      };
+      expect(() => businessProfileSchema.parse(formData)).not.toThrow();
+    });
 
     it('accepts mixed null and values (typical form submission)', () => {
       const formData = {
@@ -208,56 +208,56 @@ describe('settings', () => {
         taxRate: 15,
         paymentTermsDays: 30,
         nextInvoiceNumber: 42,
-      }
-      expect(() => businessProfileSchema.parse(formData)).not.toThrow()
-    })
-  })
+      };
+      expect(() => businessProfileSchema.parse(formData)).not.toThrow();
+    });
+  });
 
   describe('setHourlyRate / getHourlyRate', () => {
     it('stores and retrieves hourly rate', async () => {
-      const result = await setHourlyRate(125)
+      const result = await setHourlyRate(125);
 
-      expect(result.rate).toBe(125)
-      expect(result.updatedAt).toBeInstanceOf(Date)
+      expect(result.rate).toBe(125);
+      expect(result.updatedAt).toBeInstanceOf(Date);
 
-      const retrieved = await getHourlyRate()
-      expect(retrieved.rate).toBe(125)
-    })
+      const retrieved = await getHourlyRate();
+      expect(retrieved.rate).toBe(125);
+    });
 
     it('throws on invalid rate', async () => {
-      await expect(setHourlyRate(-50)).rejects.toThrow()
-    })
-  })
+      await expect(setHourlyRate(-50)).rejects.toThrow();
+    });
+  });
 
   describe('setBusinessProfile / getBusinessProfile', () => {
     it('stores and retrieves business profile', async () => {
       const updates = {
         name: 'Test Corp',
         taxRate: 10,
-      }
+      };
 
-      const result = await setBusinessProfile(updates)
+      const result = await setBusinessProfile(updates);
 
-      expect(result.name).toBe('Test Corp')
-      expect(result.taxRate).toBe(10)
-      expect(result.updatedAt).toBeInstanceOf(Date)
+      expect(result.name).toBe('Test Corp');
+      expect(result.taxRate).toBe(10);
+      expect(result.updatedAt).toBeInstanceOf(Date);
 
-      const retrieved = await getBusinessProfile()
-      expect(retrieved.name).toBe('Test Corp')
-    })
+      const retrieved = await getBusinessProfile();
+      expect(retrieved.name).toBe('Test Corp');
+    });
 
     it('merges partial updates', async () => {
-      await setBusinessProfile({ name: 'First Name' })
-      await setBusinessProfile({ phone: '555-1234' })
+      await setBusinessProfile({ name: 'First Name' });
+      await setBusinessProfile({ phone: '555-1234' });
 
-      const result = await getBusinessProfile()
-      expect(result.name).toBe('First Name')
-      expect(result.phone).toBe('555-1234')
-    })
+      const result = await getBusinessProfile();
+      expect(result.name).toBe('First Name');
+      expect(result.phone).toBe('555-1234');
+    });
 
     it('throws on invalid email in profile', async () => {
-      await expect(setBusinessProfile({ email: 'not-valid' })).rejects.toThrow()
-    })
+      await expect(setBusinessProfile({ email: 'not-valid' })).rejects.toThrow();
+    });
 
     it('accepts null values for optional fields', async () => {
       const updates = {
@@ -270,13 +270,13 @@ describe('settings', () => {
         paymentDetails: null,
         taxRate: null,
         paymentTermsDays: null,
-      }
+      };
 
-      const result = await setBusinessProfile(updates)
+      const result = await setBusinessProfile(updates);
 
-      expect(result.name).toBeNull()
-      expect(result.taxRate).toBeNull()
-    })
+      expect(result.name).toBeNull();
+      expect(result.taxRate).toBeNull();
+    });
 
     it('accepts form submission payload with tax rate change', async () => {
       // This mimics exactly what the form sends when user changes tax rate
@@ -291,27 +291,27 @@ describe('settings', () => {
         taxRate: 10,
         paymentTermsDays: null,
         nextInvoiceNumber: 1,
-      }
+      };
 
-      const result = await setBusinessProfile(updates)
+      const result = await setBusinessProfile(updates);
 
-      expect(result.taxRate).toBe(10)
-      expect(result.nextInvoiceNumber).toBe(1)
-    })
-  })
+      expect(result.taxRate).toBe(10);
+      expect(result.nextInvoiceNumber).toBe(1);
+    });
+  });
 
   describe('getAndIncrementNextInvoiceNumber', () => {
     it('returns current number and increments', async () => {
       // Set a known starting point
-      await setBusinessProfile({ nextInvoiceNumber: 50 })
+      await setBusinessProfile({ nextInvoiceNumber: 50 });
 
-      const first = await getAndIncrementNextInvoiceNumber()
-      const second = await getAndIncrementNextInvoiceNumber()
-      const third = await getAndIncrementNextInvoiceNumber()
+      const first = await getAndIncrementNextInvoiceNumber();
+      const second = await getAndIncrementNextInvoiceNumber();
+      const third = await getAndIncrementNextInvoiceNumber();
 
-      expect(first).toBe(50)
-      expect(second).toBe(51)
-      expect(third).toBe(52)
-    })
-  })
-})
+      expect(first).toBe(50);
+      expect(second).toBe(51);
+      expect(third).toBe(52);
+    });
+  });
+});

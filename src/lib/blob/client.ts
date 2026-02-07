@@ -1,34 +1,34 @@
 // Azure Blob Storage client for PDF persistence
 // Docs: https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-typescript-get-started
 
-import { BlobServiceClient, ContainerClient } from '@azure/storage-blob'
+import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 
 function getStorageConnectionString(): string {
-  const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING
+  const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
   if (!connectionString) {
-    throw new Error('AZURE_STORAGE_CONNECTION_STRING environment variable is not set')
+    throw new Error('AZURE_STORAGE_CONNECTION_STRING environment variable is not set');
   }
-  return connectionString
+  return connectionString;
 }
 
 function getContainerName(): string {
-  const containerName = process.env.AZURE_STORAGE_CONTAINER
+  const containerName = process.env.AZURE_STORAGE_CONTAINER;
   if (!containerName) {
-    throw new Error('AZURE_STORAGE_CONTAINER environment variable is not set')
+    throw new Error('AZURE_STORAGE_CONTAINER environment variable is not set');
   }
-  return containerName
+  return containerName;
 }
 
 function getContainerClient(): ContainerClient {
-  const connectionString = getStorageConnectionString()
-  const containerName = getContainerName()
-  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
-  return blobServiceClient.getContainerClient(containerName)
+  const connectionString = getStorageConnectionString();
+  const containerName = getContainerName();
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+  return blobServiceClient.getContainerClient(containerName);
 }
 
 export interface UploadResult {
-  url: string
-  blobName: string
+  url: string;
+  blobName: string;
 }
 
 /**
@@ -38,19 +38,19 @@ export interface UploadResult {
  * @returns The URL and blob name of the uploaded file
  */
 export async function uploadPdf(buffer: Buffer, blobPath: string): Promise<UploadResult> {
-  const containerClient = getContainerClient()
-  const blockBlobClient = containerClient.getBlockBlobClient(blobPath)
+  const containerClient = getContainerClient();
+  const blockBlobClient = containerClient.getBlockBlobClient(blobPath);
 
   await blockBlobClient.upload(buffer, buffer.length, {
     blobHTTPHeaders: {
       blobContentType: 'application/pdf',
     },
-  })
+  });
 
   return {
     url: blockBlobClient.url,
     blobName: blobPath,
-  }
+  };
 }
 
 /**
@@ -59,22 +59,22 @@ export async function uploadPdf(buffer: Buffer, blobPath: string): Promise<Uploa
  * @returns The PDF file as a Buffer
  */
 export async function downloadPdf(blobPath: string): Promise<Buffer> {
-  const containerClient = getContainerClient()
-  const blockBlobClient = containerClient.getBlockBlobClient(blobPath)
+  const containerClient = getContainerClient();
+  const blockBlobClient = containerClient.getBlockBlobClient(blobPath);
 
-  const downloadResponse = await blockBlobClient.download(0)
+  const downloadResponse = await blockBlobClient.download(0);
 
   if (!downloadResponse.readableStreamBody) {
-    throw new Error('No readable stream body in download response')
+    throw new Error('No readable stream body in download response');
   }
 
   // Convert stream to buffer
-  const chunks: Buffer[] = []
+  const chunks: Buffer[] = [];
   for await (const chunk of downloadResponse.readableStreamBody) {
-    chunks.push(Buffer.from(chunk))
+    chunks.push(Buffer.from(chunk));
   }
 
-  return Buffer.concat(chunks)
+  return Buffer.concat(chunks);
 }
 
 /**
@@ -83,11 +83,11 @@ export async function downloadPdf(blobPath: string): Promise<Buffer> {
  * @returns true if deleted, false if blob didn't exist
  */
 export async function deletePdf(blobPath: string): Promise<boolean> {
-  const containerClient = getContainerClient()
-  const blockBlobClient = containerClient.getBlockBlobClient(blobPath)
+  const containerClient = getContainerClient();
+  const blockBlobClient = containerClient.getBlockBlobClient(blobPath);
 
-  const response = await blockBlobClient.deleteIfExists()
-  return response.succeeded
+  const response = await blockBlobClient.deleteIfExists();
+  return response.succeeded;
 }
 
 /**
@@ -96,9 +96,9 @@ export async function deletePdf(blobPath: string): Promise<boolean> {
  * @returns true if exists, false otherwise
  */
 export async function blobExists(blobPath: string): Promise<boolean> {
-  const containerClient = getContainerClient()
-  const blockBlobClient = containerClient.getBlockBlobClient(blobPath)
-  return blockBlobClient.exists()
+  const containerClient = getContainerClient();
+  const blockBlobClient = containerClient.getBlockBlobClient(blobPath);
+  return blockBlobClient.exists();
 }
 
 /**
@@ -108,7 +108,7 @@ export async function blobExists(blobPath: string): Promise<boolean> {
  * @returns The blob path (e.g., "timesheets/abc-123/2024-01.pdf")
  */
 export function getTimesheetBlobPath(clientId: string, month: string): string {
-  return `timesheets/${clientId}/${month}.pdf`
+  return `timesheets/${clientId}/${month}.pdf`;
 }
 
 /**
@@ -118,5 +118,5 @@ export function getTimesheetBlobPath(clientId: string, month: string): string {
  * @returns The blob path (e.g., "invoices/abc-123/1234.pdf")
  */
 export function getInvoiceBlobPath(clientId: string, invoiceNumber: string): string {
-  return `invoices/${clientId}/${invoiceNumber}.pdf`
+  return `invoices/${clientId}/${invoiceNumber}.pdf`;
 }

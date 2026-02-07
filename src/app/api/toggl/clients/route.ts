@@ -7,8 +7,7 @@ export async function GET() {
     const clients = await fetchClients();
     return NextResponse.json({ clients });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to fetch Toggl clients';
+    const message = error instanceof Error ? error.message : 'Failed to fetch Toggl clients';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

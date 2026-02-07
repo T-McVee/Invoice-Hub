@@ -1,10 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import {
-  createClient,
-  createTimesheet,
-  createInvoice,
-  listInvoices,
-} from '@/lib/db';
+import { createClient, createTimesheet, createInvoice, listInvoices } from '@/lib/db';
 
 describe('invoice repository', () => {
   describe('listInvoices', () => {
@@ -69,10 +64,7 @@ describe('invoice repository', () => {
       const invoices = await listInvoices();
 
       expect(invoices).toHaveLength(2);
-      expect(invoices.map((i) => i.invoiceNumber).sort()).toEqual([
-        'INV-1001',
-        'INV-1002',
-      ]);
+      expect(invoices.map((i) => i.invoiceNumber).sort()).toEqual(['INV-1001', 'INV-1002']);
     });
 
     it('filters by clientId', async () => {

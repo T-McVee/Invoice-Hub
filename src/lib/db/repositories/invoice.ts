@@ -46,9 +46,7 @@ export interface ListInvoicesOptions {
 /**
  * List invoices with optional filters, sorted by creation date (newest first)
  */
-export async function listInvoices(
-  options: ListInvoicesOptions = {}
-): Promise<Invoice[]> {
+export async function listInvoices(options: ListInvoicesOptions = {}): Promise<Invoice[]> {
   const where: { clientId?: string; status?: string } = {};
 
   if (options.clientId) {
@@ -78,9 +76,7 @@ export async function getInvoiceById(id: string): Promise<Invoice | undefined> {
 /**
  * Get invoices by client ID
  */
-export async function getInvoicesByClientId(
-  clientId: string
-): Promise<Invoice[]> {
+export async function getInvoicesByClientId(clientId: string): Promise<Invoice[]> {
   const invoices = await prisma.invoice.findMany({
     where: { clientId },
     orderBy: { createdAt: 'desc' },
@@ -91,9 +87,7 @@ export async function getInvoicesByClientId(
 /**
  * Create a new invoice
  */
-export async function createInvoice(
-  data: Omit<Invoice, 'id' | 'createdAt'>
-): Promise<Invoice> {
+export async function createInvoice(data: Omit<Invoice, 'id' | 'createdAt'>): Promise<Invoice> {
   const invoice = await prisma.invoice.create({
     data: {
       clientId: data.clientId,
@@ -114,9 +108,7 @@ export async function createInvoice(
 /**
  * Get invoices by timesheet ID
  */
-export async function getInvoicesByTimesheetId(
-  timesheetId: string
-): Promise<Invoice[]> {
+export async function getInvoicesByTimesheetId(timesheetId: string): Promise<Invoice[]> {
   const invoices = await prisma.invoice.findMany({
     where: { timesheetId },
     orderBy: { createdAt: 'desc' },
@@ -149,10 +141,8 @@ export async function updateInvoice(
   const data: Parameters<typeof prisma.invoice.update>[0]['data'] = {};
 
   if (updates.clientId !== undefined) data.clientId = updates.clientId;
-  if (updates.timesheetId !== undefined)
-    data.timesheetId = updates.timesheetId;
-  if (updates.invoiceNumber !== undefined)
-    data.invoiceNumber = updates.invoiceNumber;
+  if (updates.timesheetId !== undefined) data.timesheetId = updates.timesheetId;
+  if (updates.invoiceNumber !== undefined) data.invoiceNumber = updates.invoiceNumber;
   if (updates.amount !== undefined) data.amount = updates.amount;
   if (updates.status !== undefined) data.status = updates.status;
   if (updates.pdfUrl !== undefined) data.pdfUrl = updates.pdfUrl;

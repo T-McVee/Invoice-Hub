@@ -38,9 +38,7 @@ export function RecentActivityCard() {
     <div className="glass rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
         <h2 className="text-lg font-semibold text-foreground">Recent Activity</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Your latest timesheets and invoices
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Your latest timesheets and invoices</p>
       </div>
       <div className="p-6">
         {isLoading ? (

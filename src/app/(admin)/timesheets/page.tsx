@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  FileSpreadsheet,
-  Loader2,
-  AlertCircle,
-  Clock,
-  ExternalLink,
-  FileText,
-} from 'lucide-react';
+import { FileSpreadsheet, Loader2, AlertCircle, Clock, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTimesheets, useClients } from '@/lib/hooks';
 import { Timesheet } from '@/types';
@@ -61,9 +54,7 @@ export default function TimesheetsPage() {
             </div>
             Timesheets
           </h1>
-          <p className="text-muted-foreground mt-2">
-            View and manage client timesheets.
-          </p>
+          <p className="text-muted-foreground mt-2">View and manage client timesheets.</p>
         </div>
       </div>
 
@@ -78,9 +69,7 @@ export default function TimesheetsPage() {
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-destructive">
-                Failed to load timesheets
-              </p>
+              <p className="font-medium text-destructive">Failed to load timesheets</p>
               <p className="text-sm text-destructive/80 mt-1">
                 {error instanceof Error ? error.message : 'Unknown error'}
               </p>
@@ -92,9 +81,7 @@ export default function TimesheetsPage() {
           <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
             <FileText className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground">
-            No timesheets yet
-          </h3>
+          <h3 className="text-lg font-semibold text-foreground">No timesheets yet</h3>
           <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
             Create a timesheet from the dashboard to get started.
           </p>
@@ -161,12 +148,7 @@ export default function TimesheetsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       {timesheet.pdfUrl ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                          className="gap-1.5"
-                        >
+                        <Button variant="ghost" size="sm" asChild className="gap-1.5">
                           <a
                             href={`/api/timesheets/${timesheet.id}/pdf`}
                             target="_blank"
@@ -177,9 +159,7 @@ export default function TimesheetsPage() {
                           </a>
                         </Button>
                       ) : (
-                        <span className="text-sm text-muted-foreground">
-                          No PDF
-                        </span>
+                        <span className="text-sm text-muted-foreground">No PDF</span>
                       )}
                     </td>
                   </tr>

@@ -81,9 +81,7 @@ interface RegenerateTokenResponse {
   expiresAt: string | null;
 }
 
-async function regenerateClientToken(
-  clientId: string
-): Promise<RegenerateTokenResponse> {
+async function regenerateClientToken(clientId: string): Promise<RegenerateTokenResponse> {
   const response = await fetch(`/api/clients/${clientId}/regenerate-token`, {
     method: 'POST',
   });

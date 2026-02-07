@@ -29,9 +29,7 @@ function parseConnectionConfig() {
     port: serverMatch[2] ? parseInt(serverMatch[2], 10) : 1433,
     database: databaseMatch[1],
     authentication: authMatch ? authMatch[1] : 'ActiveDirectoryDefault',
-    trustServerCertificate: trustCertMatch
-      ? trustCertMatch[1].toLowerCase() === 'true'
-      : false,
+    trustServerCertificate: trustCertMatch ? trustCertMatch[1].toLowerCase() === 'true' : false,
   };
 }
 

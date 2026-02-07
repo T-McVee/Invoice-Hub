@@ -37,9 +37,7 @@ export async function getTimesheets(): Promise<Timesheet[]> {
 /**
  * Get a timesheet by ID
  */
-export async function getTimesheetById(
-  id: string
-): Promise<Timesheet | undefined> {
+export async function getTimesheetById(id: string): Promise<Timesheet | undefined> {
   const timesheet = await prisma.timesheet.findUnique({
     where: { id },
   });
@@ -64,9 +62,7 @@ export async function getTimesheetByClientAndMonth(
 /**
  * Get all timesheets for a specific client
  */
-export async function getTimesheetsByClientId(
-  clientId: string
-): Promise<Timesheet[]> {
+export async function getTimesheetsByClientId(clientId: string): Promise<Timesheet[]> {
   const timesheets = await prisma.timesheet.findMany({
     where: { clientId },
     orderBy: { createdAt: 'desc' },
@@ -113,8 +109,7 @@ export async function updateTimesheet(
   if (updates.status !== undefined) data.status = updates.status;
   if (updates.pdfUrl !== undefined) data.pdfUrl = updates.pdfUrl;
   if (updates.totalHours !== undefined) data.totalHours = updates.totalHours;
-  if (updates.invoiceNumber !== undefined)
-    data.invoiceNumber = updates.invoiceNumber;
+  if (updates.invoiceNumber !== undefined) data.invoiceNumber = updates.invoiceNumber;
   if (updates.sentAt !== undefined) data.sentAt = updates.sentAt;
   if (updates.approvedAt !== undefined) data.approvedAt = updates.approvedAt;
 

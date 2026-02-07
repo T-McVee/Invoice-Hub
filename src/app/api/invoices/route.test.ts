@@ -121,9 +121,7 @@ describe('GET /api/invoices', () => {
       paidAt: null,
     });
 
-    const request = createRequest(
-      `http://localhost/api/invoices?clientId=${client1.id}`
-    );
+    const request = createRequest(`http://localhost/api/invoices?clientId=${client1.id}`);
     const response = await GET(request);
     const data = await response.json();
 
@@ -303,9 +301,7 @@ describe('GET /api/invoices', () => {
   });
 
   it('returns empty array when no invoices match filters', async () => {
-    const request = createRequest(
-      'http://localhost/api/invoices?clientId=non-existent'
-    );
+    const request = createRequest('http://localhost/api/invoices?clientId=non-existent');
     const response = await GET(request);
     const data = await response.json();
 
@@ -314,9 +310,7 @@ describe('GET /api/invoices', () => {
   });
 
   it('rejects invalid status', async () => {
-    const request = createRequest(
-      'http://localhost/api/invoices?status=invalid'
-    );
+    const request = createRequest('http://localhost/api/invoices?status=invalid');
     const response = await GET(request);
     const data = await response.json();
 

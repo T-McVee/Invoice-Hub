@@ -1,22 +1,22 @@
 // JWT utilities for portal token authentication
 // Tokens are used for client portal access with ~45 day expiry
 
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
-const TOKEN_EXPIRY_DAYS = 45
+const TOKEN_EXPIRY_DAYS = 45;
 
 function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET
+  const secret = process.env.JWT_SECRET;
   if (!secret) {
-    throw new Error('JWT_SECRET environment variable is not set')
+    throw new Error('JWT_SECRET environment variable is not set');
   }
-  return secret
+  return secret;
 }
 
 export interface PortalTokenPayload {
-  clientId: string
-  iat: number
-  exp: number
+  clientId: string;
+  iat: number;
+  exp: number;
 }
 
 /**
@@ -25,11 +25,11 @@ export interface PortalTokenPayload {
  * @returns The signed JWT token
  */
 export function signPortalToken(clientId: string): string {
-  const secret = getJwtSecret()
+  const secret = getJwtSecret();
 
   return jwt.sign({ clientId }, secret, {
     expiresIn: `${TOKEN_EXPIRY_DAYS}d`,
-  })
+  });
 }
 
 /**
@@ -39,15 +39,15 @@ export function signPortalToken(clientId: string): string {
  * @throws Error if token is invalid or expired
  */
 export function verifyPortalToken(token: string): PortalTokenPayload {
-  const secret = getJwtSecret()
+  const secret = getJwtSecret();
 
-  const decoded = jwt.verify(token, secret) as PortalTokenPayload
+  const decoded = jwt.verify(token, secret) as PortalTokenPayload;
 
   if (!decoded.clientId) {
-    throw new Error('Invalid token: missing clientId')
+    throw new Error('Invalid token: missing clientId');
   }
 
-  return decoded
+  return decoded;
 }
 
 /**
@@ -56,13 +56,13 @@ export function verifyPortalToken(token: string): PortalTokenPayload {
  * @returns The decoded payload or null if invalid format
  */
 export function decodePortalToken(token: string): PortalTokenPayload | null {
-  const decoded = jwt.decode(token) as PortalTokenPayload | null
+  const decoded = jwt.decode(token) as PortalTokenPayload | null;
 
   if (!decoded || !decoded.clientId) {
-    return null
+    return null;
   }
 
-  return decoded
+  return decoded;
 }
 
 /**
@@ -71,14 +71,14 @@ export function decodePortalToken(token: string): PortalTokenPayload | null {
  * @returns true if expired, false if valid or invalid format
  */
 export function isTokenExpired(token: string): boolean {
-  const decoded = decodePortalToken(token)
+  const decoded = decodePortalToken(token);
 
   if (!decoded || !decoded.exp) {
-    return true
+    return true;
   }
 
-  const now = Math.floor(Date.now() / 1000)
-  return decoded.exp < now
+  const now = Math.floor(Date.now() / 1000);
+  return decoded.exp < now;
 }
 
 /**
@@ -87,11 +87,11 @@ export function isTokenExpired(token: string): boolean {
  * @returns The expiry Date or null if invalid
  */
 export function getTokenExpiry(token: string): Date | null {
-  const decoded = decodePortalToken(token)
+  const decoded = decodePortalToken(token);
 
   if (!decoded || !decoded.exp) {
-    return null
+    return null;
   }
 
-  return new Date(decoded.exp * 1000)
+  return new Date(decoded.exp * 1000);
 }

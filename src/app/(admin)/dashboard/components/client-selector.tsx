@@ -9,11 +9,7 @@ interface ClientSelectorProps {
   disabled?: boolean;
 }
 
-export function ClientSelector({
-  value,
-  onChange,
-  disabled,
-}: ClientSelectorProps) {
+export function ClientSelector({ value, onChange, disabled }: ClientSelectorProps) {
   const { clients, isLoading, error } = useClients();
 
   if (error) {

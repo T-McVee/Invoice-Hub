@@ -90,7 +90,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockGetTimesheetById.mockResolvedValue(timesheet);
     mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -138,7 +141,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockGetTimesheetById.mockResolvedValue(timesheet);
     mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
 
     expect(response.status).toBe(200);
   });
@@ -148,7 +154,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       throw new Error('jwt expired');
     });
 
-    const response = await POST(new Request('http://localhost'), createParams('expired-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('expired-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -161,7 +170,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       throw new Error('invalid signature');
     });
 
-    const response = await POST(new Request('http://localhost'), createParams('invalid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('invalid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -172,7 +184,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(null);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', 'nonexistent'));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', 'nonexistent')
+    );
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -190,7 +205,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(timesheet);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -209,7 +227,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(timesheet);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(400);
@@ -227,7 +248,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(timesheet);
 
-    const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await POST(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(400);
@@ -250,7 +274,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       mockGetTimesheetById.mockResolvedValue(timesheet);
       mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
 
-      const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -275,7 +302,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
       mockGetClientById.mockResolvedValue(null);
 
-      const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -300,7 +330,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
       mockGenerateInvoice.mockRejectedValue(new Error('Hourly rate not configured'));
 
-      const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -325,7 +358,10 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
       mockCreateInvoice.mockRejectedValue(new Error('Database connection failed'));
 
-      const response = await POST(new Request('http://localhost'), createParams('valid-token', timesheetId));
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
       const data = await response.json();
 
       expect(response.status).toBe(200);

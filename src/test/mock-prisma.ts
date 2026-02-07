@@ -80,9 +80,7 @@ export const mockPrisma = {
   client: {
     findMany: vi.fn(async (args?: { include?: { contacts?: boolean }; orderBy?: unknown }) => {
       const clientsArray = Array.from(clients.values());
-      const sorted = clientsArray.sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-      );
+      const sorted = clientsArray.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       if (args?.include?.contacts) {
         return sorted.map((c) => ({
           ...c,
@@ -92,7 +90,10 @@ export const mockPrisma = {
       return sorted;
     }),
     findUnique: vi.fn(
-      async (args: { where: { id?: string; togglClientId?: string }; include?: { contacts?: boolean } }) => {
+      async (args: {
+        where: { id?: string; togglClientId?: string };
+        include?: { contacts?: boolean };
+      }) => {
         let client;
         if (args.where.id) {
           client = clients.get(args.where.id);
@@ -111,49 +112,65 @@ export const mockPrisma = {
         return client;
       }
     ),
-    create: vi.fn(async (args: { data: Record<string, unknown>; include?: { contacts?: boolean } }) => {
-      const id = (args.data.id as string) || uuid();
-      const now = new Date();
-      const client = {
-        id,
-        name: args.data.name as string,
-        togglClientId: (args.data.togglClientId as string) || null,
-        togglProjectId: (args.data.togglProjectId as string) || null,
-        timesheetRecipients: (args.data.timesheetRecipients as string) || '[]',
-        invoiceRecipients: (args.data.invoiceRecipients as string) || '[]',
-        notes: (args.data.notes as string) || null,
-        createdAt: (args.data.createdAt as Date) || now,
-        updatedAt: (args.data.updatedAt as Date) || now,
-        contacts: [] as DbContact[],
-      };
-      clients.set(id, client);
-
-      // Handle nested contacts creation
-      const contactsData = args.data.contacts as { create?: Array<{ id?: string; name: string; email: string; role: string }> } | undefined;
-      if (contactsData?.create) {
-        for (const c of contactsData.create) {
-          const contactId = c.id || uuid();
-          const contact: DbContact = { id: contactId, clientId: id, name: c.name, email: c.email, role: c.role };
-          contacts.set(contactId, contact);
-          client.contacts.push(contact);
-        }
-      }
-
-      return client;
-    }),
-    update: vi.fn(async (args: { where: { id: string }; data: Record<string, unknown>; include?: { contacts?: boolean } }) => {
-      const client = clients.get(args.where.id);
-      if (!client) return null;
-      const updated = { ...client, ...args.data, updatedAt: new Date() };
-      clients.set(args.where.id, updated as typeof client);
-      if (args.include?.contacts) {
-        return {
-          ...updated,
-          contacts: Array.from(contacts.values()).filter((c) => c.clientId === args.where.id),
+    create: vi.fn(
+      async (args: { data: Record<string, unknown>; include?: { contacts?: boolean } }) => {
+        const id = (args.data.id as string) || uuid();
+        const now = new Date();
+        const client = {
+          id,
+          name: args.data.name as string,
+          togglClientId: (args.data.togglClientId as string) || null,
+          togglProjectId: (args.data.togglProjectId as string) || null,
+          timesheetRecipients: (args.data.timesheetRecipients as string) || '[]',
+          invoiceRecipients: (args.data.invoiceRecipients as string) || '[]',
+          notes: (args.data.notes as string) || null,
+          createdAt: (args.data.createdAt as Date) || now,
+          updatedAt: (args.data.updatedAt as Date) || now,
+          contacts: [] as DbContact[],
         };
+        clients.set(id, client);
+
+        // Handle nested contacts creation
+        const contactsData = args.data.contacts as
+          | { create?: Array<{ id?: string; name: string; email: string; role: string }> }
+          | undefined;
+        if (contactsData?.create) {
+          for (const c of contactsData.create) {
+            const contactId = c.id || uuid();
+            const contact: DbContact = {
+              id: contactId,
+              clientId: id,
+              name: c.name,
+              email: c.email,
+              role: c.role,
+            };
+            contacts.set(contactId, contact);
+            client.contacts.push(contact);
+          }
+        }
+
+        return client;
       }
-      return updated;
-    }),
+    ),
+    update: vi.fn(
+      async (args: {
+        where: { id: string };
+        data: Record<string, unknown>;
+        include?: { contacts?: boolean };
+      }) => {
+        const client = clients.get(args.where.id);
+        if (!client) return null;
+        const updated = { ...client, ...args.data, updatedAt: new Date() };
+        clients.set(args.where.id, updated as typeof client);
+        if (args.include?.contacts) {
+          return {
+            ...updated,
+            contacts: Array.from(contacts.values()).filter((c) => c.clientId === args.where.id),
+          };
+        }
+        return updated;
+      }
+    ),
     delete: vi.fn(async (args: { where: { id: string } }) => {
       const client = clients.get(args.where.id);
       clients.delete(args.where.id);
@@ -178,13 +195,17 @@ export const mockPrisma = {
       contacts.clear();
       return { count };
     }),
-    createMany: vi.fn(async (args: { data: Array<{ clientId: string; name: string; email: string; role: string }> }) => {
-      for (const c of args.data) {
-        const id = uuid();
-        contacts.set(id, { id, ...c });
+    createMany: vi.fn(
+      async (args: {
+        data: Array<{ clientId: string; name: string; email: string; role: string }>;
+      }) => {
+        for (const c of args.data) {
+          const id = uuid();
+          contacts.set(id, { id, ...c });
+        }
+        return { count: args.data.length };
       }
-      return { count: args.data.length };
-    }),
+    ),
   },
   timesheet: {
     findMany: vi.fn(async (args?: { where?: { clientId: string }; orderBy?: unknown }) => {
@@ -195,7 +216,9 @@ export const mockPrisma = {
       return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }),
     findUnique: vi.fn(
-      async (args: { where: { id?: string; clientId_month?: { clientId: string; month: string } } }) => {
+      async (args: {
+        where: { id?: string; clientId_month?: { clientId: string; month: string } };
+      }) => {
         if (args.where.id) {
           return timesheets.get(args.where.id) || null;
         }
@@ -237,9 +260,8 @@ export const mockPrisma = {
     }),
     count: vi.fn(async (args?: { where?: { clientId: string } }) => {
       if (args?.where?.clientId) {
-        return Array.from(timesheets.values()).filter(
-          (t) => t.clientId === args.where!.clientId
-        ).length;
+        return Array.from(timesheets.values()).filter((t) => t.clientId === args.where!.clientId)
+          .length;
       }
       return timesheets.size;
     }),
@@ -256,17 +278,21 @@ export const mockPrisma = {
     }),
   },
   invoice: {
-    findMany: vi.fn(async (args?: { where?: { clientId?: string; status?: string }; orderBy?: unknown }) => {
-      let result = Array.from(invoices.values());
-      if (args?.where?.clientId) {
-        result = result.filter((i) => i.clientId === args.where!.clientId);
+    findMany: vi.fn(
+      async (args?: { where?: { clientId?: string; status?: string }; orderBy?: unknown }) => {
+        let result = Array.from(invoices.values());
+        if (args?.where?.clientId) {
+          result = result.filter((i) => i.clientId === args.where!.clientId);
+        }
+        if (args?.where?.status) {
+          result = result.filter((i) => i.status === args.where!.status);
+        }
+        return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       }
-      if (args?.where?.status) {
-        result = result.filter((i) => i.status === args.where!.status);
-      }
-      return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    }),
-    findUnique: vi.fn(async (args: { where: { id: string } }) => invoices.get(args.where.id) || null),
+    ),
+    findUnique: vi.fn(
+      async (args: { where: { id: string } }) => invoices.get(args.where.id) || null
+    ),
     create: vi.fn(async (args: { data: Record<string, unknown> }) => {
       const id = uuid();
       const invoice: DbInvoice = {
@@ -299,7 +325,9 @@ export const mockPrisma = {
     }),
   },
   settings: {
-    findUnique: vi.fn(async (args: { where: { key: string } }) => settings.get(args.where.key) || null),
+    findUnique: vi.fn(
+      async (args: { where: { key: string } }) => settings.get(args.where.key) || null
+    ),
     upsert: vi.fn(
       async (args: {
         where: { key: string };
@@ -313,7 +341,12 @@ export const mockPrisma = {
           settings.set(args.where.key, updated);
           return updated;
         }
-        const created = { id: uuid(), key: args.create.key, value: args.create.value, updatedAt: now };
+        const created = {
+          id: uuid(),
+          key: args.create.key,
+          value: args.create.value,
+          updatedAt: now,
+        };
         settings.set(args.create.key, created);
         return created;
       }

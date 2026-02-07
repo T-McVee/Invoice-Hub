@@ -24,10 +24,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
     const client = await updateClientPortalToken(id, token);
 
     if (!client) {
-      return NextResponse.json(
-        { error: 'Failed to update client' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to update client' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -35,8 +32,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
       expiresAt: expiresAt?.toISOString() ?? null,
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to regenerate token';
+    const message = error instanceof Error ? error.message : 'Failed to regenerate token';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

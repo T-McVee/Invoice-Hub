@@ -52,9 +52,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update hourly rate' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update hourly rate' }, { status: 500 });
   }
 }

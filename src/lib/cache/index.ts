@@ -77,10 +77,7 @@ class MemoryCache {
     } catch (error) {
       // Return stale data if available
       if (cached) {
-        console.warn(
-          `Cache fetch failed for key "${key}", returning stale data:`,
-          error
-        );
+        console.warn(`Cache fetch failed for key "${key}", returning stale data:`, error);
         return {
           ...cached,
           isStale: true,

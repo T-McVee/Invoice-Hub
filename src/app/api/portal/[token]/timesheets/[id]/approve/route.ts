@@ -31,17 +31,11 @@ export async function POST(_request: Request, { params }: RouteParams) {
 
     // Check timesheet can be approved (must be pending or sent)
     if (timesheet.status === 'approved') {
-      return NextResponse.json(
-        { error: 'Timesheet is already approved' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Timesheet is already approved' }, { status: 400 });
     }
 
     if (timesheet.status === 'rejected') {
-      return NextResponse.json(
-        { error: 'Cannot approve a rejected timesheet' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Cannot approve a rejected timesheet' }, { status: 400 });
     }
 
     // Update timesheet status to approved
@@ -101,22 +95,13 @@ export async function POST(_request: Request, { params }: RouteParams) {
     // Check if token expired or invalid
     if (error instanceof Error) {
       if (error.message.includes('expired')) {
-        return NextResponse.json(
-          { error: 'Token expired', expired: true },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: 'Token expired', expired: true }, { status: 401 });
       }
-      if (
-        error.message.includes('invalid') ||
-        error.message.includes('malformed')
-      ) {
+      if (error.message.includes('invalid') || error.message.includes('malformed')) {
         return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
       }
     }
 
-    return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
   }
 }

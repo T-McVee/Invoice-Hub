@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Create hoisted mock functions
-const { mockVerifyPortalToken, mockGetTimesheetById, mockDownloadPdf, mockGetTimesheetBlobPath } = vi.hoisted(() => ({
-  mockVerifyPortalToken: vi.fn(),
-  mockGetTimesheetById: vi.fn(),
-  mockDownloadPdf: vi.fn(),
-  mockGetTimesheetBlobPath: vi.fn(),
-}));
+const { mockVerifyPortalToken, mockGetTimesheetById, mockDownloadPdf, mockGetTimesheetBlobPath } =
+  vi.hoisted(() => ({
+    mockVerifyPortalToken: vi.fn(),
+    mockGetTimesheetById: vi.fn(),
+    mockDownloadPdf: vi.fn(),
+    mockGetTimesheetBlobPath: vi.fn(),
+  }));
 
 // Mock using relative paths (7 levels up from pdf/ to src/)
 vi.mock('../../../../../../../lib/auth/jwt', () => ({
@@ -58,7 +59,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
     mockGetTimesheetBlobPath.mockReturnValue('timesheets/client-123/2026-01.pdf');
     mockDownloadPdf.mockResolvedValue(pdfBuffer);
 
-    const response = await GET(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('application/pdf');
@@ -74,7 +78,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
       throw new Error('jwt expired');
     });
 
-    const response = await GET(new Request('http://localhost'), createParams('expired-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('expired-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -87,7 +94,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
       throw new Error('invalid signature');
     });
 
-    const response = await GET(new Request('http://localhost'), createParams('invalid-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('invalid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -99,7 +109,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
       throw new Error('jwt malformed');
     });
 
-    const response = await GET(new Request('http://localhost'), createParams('malformed-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('malformed-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -110,7 +123,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(null);
 
-    const response = await GET(new Request('http://localhost'), createParams('valid-token', 'nonexistent'));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('valid-token', 'nonexistent')
+    );
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -129,7 +145,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(timesheet);
 
-    const response = await GET(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -149,7 +168,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
     mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
     mockGetTimesheetById.mockResolvedValue(timesheet);
 
-    const response = await GET(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -170,7 +192,10 @@ describe('GET /api/portal/[token]/timesheets/[id]/pdf', () => {
     mockGetTimesheetBlobPath.mockReturnValue('timesheets/client-123/2026-01.pdf');
     mockDownloadPdf.mockRejectedValue(new Error('Blob storage error'));
 
-    const response = await GET(new Request('http://localhost'), createParams('valid-token', timesheetId));
+    const response = await GET(
+      new Request('http://localhost'),
+      createParams('valid-token', timesheetId)
+    );
     const data = await response.json();
 
     expect(response.status).toBe(500);

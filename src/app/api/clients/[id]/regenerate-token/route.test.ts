@@ -28,10 +28,9 @@ describe('POST /api/clients/[id]/regenerate-token', () => {
       contacts: [],
     });
 
-    const request = new Request(
-      `http://localhost/api/clients/${client.id}/regenerate-token`,
-      { method: 'POST' }
-    );
+    const request = new Request(`http://localhost/api/clients/${client.id}/regenerate-token`, {
+      method: 'POST',
+    });
 
     const response = await POST(request, createParams(client.id));
     const data = await response.json();
@@ -47,10 +46,9 @@ describe('POST /api/clients/[id]/regenerate-token', () => {
   });
 
   it('returns 404 when client not found', async () => {
-    const request = new Request(
-      'http://localhost/api/clients/non-existent/regenerate-token',
-      { method: 'POST' }
-    );
+    const request = new Request('http://localhost/api/clients/non-existent/regenerate-token', {
+      method: 'POST',
+    });
 
     const response = await POST(request, createParams('non-existent'));
     const data = await response.json();
@@ -75,10 +73,9 @@ describe('POST /api/clients/[id]/regenerate-token', () => {
     expect(client.portalToken).toBeFalsy();
 
     // Generate token
-    const request = new Request(
-      `http://localhost/api/clients/${client.id}/regenerate-token`,
-      { method: 'POST' }
-    );
+    const request = new Request(`http://localhost/api/clients/${client.id}/regenerate-token`, {
+      method: 'POST',
+    });
     const response = await POST(request, createParams(client.id));
     const data = await response.json();
 
@@ -103,10 +100,9 @@ describe('POST /api/clients/[id]/regenerate-token', () => {
       contacts: [],
     });
 
-    const request = new Request(
-      `http://localhost/api/clients/${client.id}/regenerate-token`,
-      { method: 'POST' }
-    );
+    const request = new Request(`http://localhost/api/clients/${client.id}/regenerate-token`, {
+      method: 'POST',
+    });
 
     const response = await POST(request, createParams(client.id));
     const data = await response.json();

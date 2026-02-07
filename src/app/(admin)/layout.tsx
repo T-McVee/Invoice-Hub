@@ -38,10 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-7xl mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2.5 group"
-            >
+            <Link href="/dashboard" className="flex items-center gap-2.5 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md group-hover:blur-lg transition-all" />
                 <div className="relative h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
@@ -68,10 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     className={cn(
                       'relative px-4 py-2 rounded-lg transition-all duration-300',
                       'hover:bg-accent/80',
-                      isActive && [
-                        'bg-card text-foreground shadow-sm',
-                        'hover:bg-card',
-                      ]
+                      isActive && ['bg-card text-foreground shadow-sm', 'hover:bg-card']
                     )}
                   >
                     <Link href={item.href} className="flex items-center gap-2">
@@ -81,10 +75,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           isActive ? 'text-primary' : 'text-muted-foreground'
                         )}
                       />
-                      <span className={cn(
-                        'font-medium',
-                        isActive ? 'text-foreground' : 'text-muted-foreground'
-                      )}>
+                      <span
+                        className={cn(
+                          'font-medium',
+                          isActive ? 'text-foreground' : 'text-muted-foreground'
+                        )}
+                      >
                         {item.label}
                       </span>
                       {isActive && (

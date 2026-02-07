@@ -34,22 +34,13 @@ export async function GET(_request: Request, { params }: RouteParams) {
     // Check if token expired or invalid
     if (error instanceof Error) {
       if (error.message.includes('expired')) {
-        return NextResponse.json(
-          { error: 'Token expired', expired: true },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: 'Token expired', expired: true }, { status: 401 });
       }
-      if (
-        error.message.includes('invalid') ||
-        error.message.includes('malformed')
-      ) {
+      if (error.message.includes('invalid') || error.message.includes('malformed')) {
         return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
       }
     }
 
-    return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
   }
 }

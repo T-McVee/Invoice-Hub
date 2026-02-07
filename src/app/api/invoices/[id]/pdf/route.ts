@@ -38,9 +38,6 @@ export async function GET(_request: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Error downloading PDF:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve PDF' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to retrieve PDF' }, { status: 500 });
   }
 }

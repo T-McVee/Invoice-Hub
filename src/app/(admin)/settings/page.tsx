@@ -561,7 +561,8 @@ function BusinessProfileCard() {
       formState.address !== (data.address ?? '') ||
       formState.paymentDetails !== (data.paymentDetails ?? '') ||
       formState.taxRate !== (data.taxRate !== null ? data.taxRate.toString() : '') ||
-      formState.paymentTermsDays !== (data.paymentTermsDays !== null ? data.paymentTermsDays.toString() : '') ||
+      formState.paymentTermsDays !==
+        (data.paymentTermsDays !== null ? data.paymentTermsDays.toString() : '') ||
       formState.nextInvoiceNumber !== data.nextInvoiceNumber.toString()
     : false;
 

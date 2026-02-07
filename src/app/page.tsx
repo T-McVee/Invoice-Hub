@@ -1,14 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import {
-  FileSpreadsheet,
-  Receipt,
-  Clock,
-  ArrowRight,
-  Sparkles,
-  Zap,
-  Shield,
-} from 'lucide-react';
+import { FileSpreadsheet, Receipt, Clock, ArrowRight, Sparkles, Zap, Shield } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -38,8 +30,8 @@ export default function Home() {
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto mb-10 animate-fade-up stagger-2">
-            Transform your Toggl time entries into beautiful timesheets and invoices.
-            Automated, accurate, and effortlessly professional.
+            Transform your Toggl time entries into beautiful timesheets and invoices. Automated,
+            accurate, and effortlessly professional.
           </p>
 
           {/* CTA Buttons */}

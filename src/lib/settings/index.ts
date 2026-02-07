@@ -4,10 +4,7 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
-import {
-  hourlyRateSchema,
-  businessProfileSchema,
-} from './schemas';
+import { hourlyRateSchema, businessProfileSchema } from './schemas';
 
 // Re-export schemas from the separate schemas file (client-safe)
 export {
@@ -165,23 +162,16 @@ export async function setBusinessProfile(
   const newProfile = {
     name: updates.name !== undefined ? updates.name : current.name,
     businessNumber:
-      updates.businessNumber !== undefined
-        ? updates.businessNumber
-        : current.businessNumber,
-    gstNumber:
-      updates.gstNumber !== undefined ? updates.gstNumber : current.gstNumber,
+      updates.businessNumber !== undefined ? updates.businessNumber : current.businessNumber,
+    gstNumber: updates.gstNumber !== undefined ? updates.gstNumber : current.gstNumber,
     phone: updates.phone !== undefined ? updates.phone : current.phone,
     email: updates.email !== undefined ? updates.email : current.email,
     address: updates.address !== undefined ? updates.address : current.address,
     paymentDetails:
-      updates.paymentDetails !== undefined
-        ? updates.paymentDetails
-        : current.paymentDetails,
+      updates.paymentDetails !== undefined ? updates.paymentDetails : current.paymentDetails,
     taxRate: updates.taxRate !== undefined ? updates.taxRate : current.taxRate,
     paymentTermsDays:
-      updates.paymentTermsDays !== undefined
-        ? updates.paymentTermsDays
-        : current.paymentTermsDays,
+      updates.paymentTermsDays !== undefined ? updates.paymentTermsDays : current.paymentTermsDays,
     nextInvoiceNumber:
       updates.nextInvoiceNumber !== undefined
         ? updates.nextInvoiceNumber

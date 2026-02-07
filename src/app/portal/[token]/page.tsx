@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   FileText,
@@ -83,7 +77,11 @@ function TimesheetCard({
         <div className="flex items-center gap-2 flex-shrink-0">
           {timesheet.pdfUrl && (
             <Button variant="outline" size="sm" asChild className="gap-1.5">
-              <a href={`/api/portal/${token}/timesheets/${timesheet.id}/pdf`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`/api/portal/${token}/timesheets/${timesheet.id}/pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-4 w-4" />
                 View PDF
               </a>
@@ -125,9 +123,7 @@ function ExpiredTokenView() {
                 <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
               <CardTitle>Link Expired</CardTitle>
-              <CardDescription>
-                This portal link has expired or is no longer valid.
-              </CardDescription>
+              <CardDescription>This portal link has expired or is no longer valid.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-muted-foreground">
@@ -196,9 +192,7 @@ export default function PortalPage() {
         if (!prev) return prev;
         return {
           ...prev,
-          timesheets: prev.timesheets.map((ts) =>
-            ts.id === timesheetId ? result.timesheet : ts
-          ),
+          timesheets: prev.timesheets.map((ts) => (ts.id === timesheetId ? result.timesheet : ts)),
         };
       });
     } catch (err) {
@@ -278,9 +272,7 @@ export default function PortalPage() {
             <h1 className="text-4xl font-bold tracking-tight mb-3">
               Welcome, <span className="text-primary">{data.client.name}</span>
             </h1>
-            <p className="text-muted-foreground">
-              Review and approve your timesheets below
-            </p>
+            <p className="text-muted-foreground">Review and approve your timesheets below</p>
           </div>
 
           {/* Pending Timesheets */}
@@ -291,9 +283,7 @@ export default function PortalPage() {
                   <FileText className="h-5 w-5 text-primary" />
                   Pending Approval
                 </CardTitle>
-                <CardDescription>
-                  These timesheets are waiting for your review
-                </CardDescription>
+                <CardDescription>These timesheets are waiting for your review</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {pendingTimesheets.map((timesheet) => (
@@ -321,9 +311,7 @@ export default function PortalPage() {
               <CardContent>
                 <div className="text-center py-6">
                   <CheckCircle2 className="h-12 w-12 text-green-500/50 mx-auto mb-3" />
-                  <p className="text-muted-foreground">
-                    No timesheets pending approval
-                  </p>
+                  <p className="text-muted-foreground">No timesheets pending approval</p>
                 </div>
               </CardContent>
             </Card>
@@ -340,11 +328,7 @@ export default function PortalPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {historyTimesheets.map((timesheet) => (
-                  <TimesheetCard
-                    key={timesheet.id}
-                    timesheet={timesheet}
-                    token={token}
-                  />
+                  <TimesheetCard key={timesheet.id} timesheet={timesheet} token={token} />
                 ))}
               </CardContent>
             </Card>

@@ -15,8 +15,15 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, togglClientId, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress } =
-      body;
+    const {
+      name,
+      togglClientId,
+      togglProjectId,
+      timesheetRecipients,
+      invoiceRecipients,
+      notes,
+      billingAddress,
+    } = body;
 
     // Validate required fields
     if (!name || typeof name !== 'string' || name.trim() === '') {

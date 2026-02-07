@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Create hoisted mock functions
-const { mockVerifyPortalToken, mockGetClientById, mockGetTimesheetsByClientId } = vi.hoisted(() => ({
-  mockVerifyPortalToken: vi.fn(),
-  mockGetClientById: vi.fn(),
-  mockGetTimesheetsByClientId: vi.fn(),
-}));
+const { mockVerifyPortalToken, mockGetClientById, mockGetTimesheetsByClientId } = vi.hoisted(
+  () => ({
+    mockVerifyPortalToken: vi.fn(),
+    mockGetClientById: vi.fn(),
+    mockGetTimesheetsByClientId: vi.fn(),
+  })
+);
 
 // Mock using relative paths
 vi.mock('../../../../lib/auth/jwt', () => ({
@@ -93,7 +95,10 @@ describe('GET /api/portal/[token]', () => {
   });
 
   it('returns 404 when client not found', async () => {
-    mockVerifyPortalToken.mockReturnValue({ clientId: 'nonexistent', exp: Date.now() / 1000 + 3600 });
+    mockVerifyPortalToken.mockReturnValue({
+      clientId: 'nonexistent',
+      exp: Date.now() / 1000 + 3600,
+    });
     mockGetClientById.mockResolvedValue(null);
 
     const response = await GET(new Request('http://localhost'), createParams('valid-token'));

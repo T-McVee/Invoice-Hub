@@ -43,7 +43,9 @@
       "Bash(node -e:*)",
       "mcp__chrome-devtools__list_pages",
       "mcp__chrome-devtools__navigate_page",
-      "Bash(bd search:*)"
+      "Bash(bd search:*)",
+      "Bash(find:*)",
+      "Bash(npm run format:*)"
     ]
   }
 }
