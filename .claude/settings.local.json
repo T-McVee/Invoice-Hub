@@ -36,7 +36,14 @@
       "Bash(npm run lint:*)",
       "Bash(grep:*)",
       "Bash(openspec archive add-invoice-generation:*)",
-      "Bash(openspec archive add-client-billing-address:*)"
+      "Bash(openspec archive add-client-billing-address:*)",
+      "Bash(for id in invoice-hub-gn0 invoice-hub-e6c invoice-hub-4zc invoice-hub-b8k invoice-hub-89l invoice-hub-bhe invoice-hub-cw0 invoice-hub-737 invoice-hub-qcf invoice-hub-2hc invoice-hub-1xv invoice-hub-qdg)",
+      "Bash(do echo \"=== $id ===\")",
+      "Bash(npx prettier:*)",
+      "Bash(node -e:*)",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__navigate_page",
+      "Bash(bd search:*)"
     ]
   }
 }

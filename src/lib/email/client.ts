@@ -21,6 +21,7 @@ export interface SendEmailOptions {
   cc?: string[];
   subject: string;
   text: string;
+  html?: string;
 }
 
 export interface SendEmailResult {
@@ -39,6 +40,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     cc: options.cc,
     subject: options.subject,
     text: options.text,
+    html: options.html,
   });
 
   if (error) {

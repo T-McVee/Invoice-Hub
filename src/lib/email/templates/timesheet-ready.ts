@@ -28,10 +28,20 @@ export function buildTimesheetReadyEmail(params: TimesheetReadyParams): SendEmai
   const portalLink = `${appUrl}/portal/${portalToken}`;
   const formattedMonth = formatMonth(month);
 
+  const text = `Hi ${primaryContactName},\n\nMy ${formattedMonth} timesheet is ready for review and approval in your portal: ${portalLink}\n\nThanks again, Tim.`;
+
+  const html = `<p>Hi ${primaryContactName},</p>
+<p>My ${formattedMonth} timesheet is ready for review and approval in your portal:</p>
+<p style="margin: 24px 0;">
+  <a href="${portalLink}" style="background-color: #e54a00; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Review Timesheet</a>
+</p>
+<p>Thanks again, Tim.</p>`;
+
   return {
     to,
     cc: cc && cc.length > 0 ? cc : undefined,
     subject: `${formattedMonth} timesheet`,
-    text: `Hi ${primaryContactName},\n\nPlease find my ${formattedMonth} timesheet is ready for review and approval in your portal: ${portalLink}\n\nThanks again, Tim.`,
+    text,
+    html,
   };
 }

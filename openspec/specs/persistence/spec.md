@@ -72,38 +72,24 @@ The system SHALL persist all application data to the database, ensuring data sur
 
 ### Requirement: Client Repository
 
-The system SHALL provide database-backed CRUD operations for Client entities.
+The system SHALL store persistent data for clients and their contacts.
 
-#### Scenario: Create client
+#### Scenario: Contact Schema Update
+- **GIVEN** the `Contact` model
+- **THEN** it must include an `isPrimaryApprover` boolean field (defaulting to false)
+- **AND** it must include an `isPrimaryBilling` boolean field (defaulting to false)
 
-- **WHEN** a new client is created with valid data
-- **THEN** the client is persisted to the database
-- **AND** timestamps (createdAt, updatedAt) are automatically set
+#### Scenario: Primary Approver Uniqueness
+- **GIVEN** a client with multiple contacts
+- **WHEN** a contact is set as `isPrimaryApprover=true`
+- **THEN** at most one contact per client can have `isPrimaryApprover=true`
+- **AND** the contact's role must be `approver` or `both`
 
-#### Scenario: Read clients
-
-- **WHEN** clients are requested
-- **THEN** all clients are returned from the database
-- **AND** results are sorted by creation date (newest first)
-
-#### Scenario: Update client
-
-- **WHEN** a client is updated
-- **THEN** the changes are persisted to the database
-- **AND** the updatedAt timestamp is automatically updated
-
-#### Scenario: Delete client with no dependencies
-
-- **GIVEN** a client with no associated timesheets
-- **WHEN** the client is deleted
-- **THEN** the client is removed from the database
-
-#### Scenario: Delete client with dependencies blocked
-
-- **GIVEN** a client with associated timesheets
-- **WHEN** deletion is attempted
-- **THEN** the deletion is rejected
-- **AND** an appropriate error message is returned
+#### Scenario: Primary Billing Uniqueness
+- **GIVEN** a client with multiple contacts
+- **WHEN** a contact is set as `isPrimaryBilling=true`
+- **THEN** at most one contact per client can have `isPrimaryBilling=true`
+- **AND** the contact's role must be `billing` or `both`
 
 ### Requirement: Timesheet Repository
 

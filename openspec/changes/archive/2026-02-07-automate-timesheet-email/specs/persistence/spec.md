@@ -2,7 +2,7 @@
 
 ## MODIFIED Requirements
 
-### Requirement: Client Data Model
+### Requirement: Client Repository
 
 The system SHALL store persistent data for clients and their contacts.
 

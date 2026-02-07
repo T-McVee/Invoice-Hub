@@ -41,9 +41,11 @@ npx vitest src/lib/cache/index.test.ts  # Run single test file
 
 # Database (Prisma)
 npx prisma generate      # Generate Prisma client
-npx prisma migrate dev   # Create new migration
-npx prisma migrate deploy # Apply pending migrations
 npx prisma studio        # Database browser GUI
+# Migrations: `prisma migrate dev/deploy` cannot run locally due to Azure
+# Managed Identity auth. Write migration SQL files in prisma/migrations/
+# and apply them manually against Azure SQL (e.g. Azure Portal query editor,
+# SSMS, or sqlcmd). Then run `npx prisma generate` locally.
 ```
 
 ## Workflow Requirements

@@ -56,7 +56,7 @@ describe('buildTimesheetReadyEmail', () => {
     expect(email.cc).toBeUndefined();
   });
 
-  it('includes portal link in body', () => {
+  it('includes portal link in text body', () => {
     const email = buildTimesheetReadyEmail({
       primaryContactName: 'Alice',
       to: 'alice@example.com',
@@ -65,6 +65,18 @@ describe('buildTimesheetReadyEmail', () => {
     });
 
     expect(email.text).toContain('https://app.example.com/portal/abc123');
+  });
+
+  it('includes portal link as button in html body', () => {
+    const email = buildTimesheetReadyEmail({
+      primaryContactName: 'Alice',
+      to: 'alice@example.com',
+      month: '2026-01',
+      portalToken: 'abc123',
+    });
+
+    expect(email.html).toContain('href="https://app.example.com/portal/abc123"');
+    expect(email.html).toContain('Review Timesheet');
   });
 
   it('greets primary contact by name', () => {
@@ -76,6 +88,7 @@ describe('buildTimesheetReadyEmail', () => {
     });
 
     expect(email.text).toMatch(/^Hi Alice,/);
+    expect(email.html).toContain('Hi Alice,');
   });
 
   it('throws when NEXT_PUBLIC_APP_URL not set', () => {
