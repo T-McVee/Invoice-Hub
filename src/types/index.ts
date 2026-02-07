@@ -21,6 +21,8 @@ export interface Contact {
   name: string;
   email: string;
   role: 'approver' | 'billing' | 'both';
+  isPrimaryApprover: boolean;
+  isPrimaryBilling: boolean;
 }
 
 export interface Timesheet {

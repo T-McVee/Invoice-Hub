@@ -9,6 +9,9 @@ import {
   AlertCircle,
   Sparkles,
   AlertTriangle,
+  Mail,
+  MailX,
+  RotateCw,
 } from 'lucide-react';
 import { MonthPicker } from './month-picker';
 import { ClientSelector } from './client-selector';
@@ -27,6 +30,7 @@ import {
 
 interface CreateTimesheetResponse {
   timesheet: Timesheet;
+  emailStatus: 'sent' | 'failed' | 'skipped';
   summary: {
     totalHours: number;
     entryCount: number;
@@ -94,6 +98,8 @@ export function CreateTimesheetForm() {
   const [lastCreated, setLastCreated] = useState<CreateTimesheetResponse | null>(
     null
   );
+  const [emailStatus, setEmailStatus] = useState<'sent' | 'failed' | 'skipped' | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [existingTimesheet, setExistingTimesheet] =
     useState<ExistingTimesheetInfo | null>(null);
@@ -105,6 +111,7 @@ export function CreateTimesheetForm() {
     mutationFn: createTimesheet,
     onSuccess: (data) => {
       setLastCreated(data);
+      setEmailStatus(data.emailStatus);
       setShowConfirmDialog(false);
       setExistingTimesheet(null);
       // Invalidate timesheets query to refresh any lists
@@ -119,6 +126,7 @@ export function CreateTimesheetForm() {
     if (!clientId || !month) return;
 
     setLastCreated(null);
+    setEmailStatus(null);
     mutation.reset();
 
     // Check for existing timesheet first
@@ -148,6 +156,22 @@ export function CreateTimesheetForm() {
   const handleCancelReplace = () => {
     setShowConfirmDialog(false);
     setExistingTimesheet(null);
+  };
+
+  const handleRetryEmail = async () => {
+    if (!lastCreated) return;
+    setIsRetrying(true);
+    try {
+      const response = await fetch(`/api/timesheets/${lastCreated.timesheet.id}/notify`, {
+        method: 'POST',
+      });
+      const result = await response.json();
+      setEmailStatus(result.emailStatus);
+    } catch {
+      // Keep failed status
+    } finally {
+      setIsRetrying(false);
+    }
   };
 
   const isDisabled = mutation.isPending || isChecking || !clientId;
@@ -211,7 +235,7 @@ export function CreateTimesheetForm() {
 
       {/* Success message */}
       {lastCreated && (
-        <div className="px-6 pb-6 animate-scale-in">
+        <div className="px-6 pb-6 animate-scale-in space-y-3">
           <div className="rounded-xl bg-success/10 border border-success/20 p-4">
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-lg bg-success/20 flex items-center justify-center flex-shrink-0">
@@ -240,6 +264,47 @@ export function CreateTimesheetForm() {
               </div>
             </div>
           </div>
+
+          {/* Email status */}
+          {emailStatus === 'sent' && (
+            <div className="rounded-xl bg-success/10 border border-success/20 p-3">
+              <div className="flex items-center gap-2 text-sm text-success">
+                <Mail className="h-4 w-4" />
+                Email notification sent
+              </div>
+            </div>
+          )}
+          {emailStatus === 'failed' && (
+            <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-destructive">
+                  <MailX className="h-4 w-4" />
+                  Email notification failed
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRetryEmail}
+                  disabled={isRetrying}
+                  className="flex items-center gap-1.5 text-sm font-medium text-destructive hover:text-destructive/80 disabled:opacity-50"
+                >
+                  {isRetrying ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <RotateCw className="h-3.5 w-3.5" />
+                  )}
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
+          {emailStatus === 'skipped' && (
+            <div className="rounded-xl bg-muted/50 border border-border/50 p-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Mail className="h-4 w-4" />
+                Email skipped (no primary approver configured)
+              </div>
+            </div>
+          )}
         </div>
       )}
 

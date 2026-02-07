@@ -34,11 +34,13 @@ model Client {
 
 // Contact entity - people at a client who receive emails
 model Contact {
-  id       String @id @default(uuid())
-  clientId String
-  name     String
-  email    String
-  role     String // 'approver' | 'billing' | 'both'
+  id                String  @id @default(uuid())
+  clientId          String
+  name              String
+  email             String
+  role              String // 'approver' | 'billing' | 'both'
+  isPrimaryApprover Boolean @default(false)
+  isPrimaryBilling  Boolean @default(false)
 
   // Relations
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)

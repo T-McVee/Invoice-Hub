@@ -28,6 +28,8 @@ function toClient(
       name: c.name,
       email: c.email,
       role: c.role as Contact['role'],
+      isPrimaryApprover: c.isPrimaryApprover,
+      isPrimaryBilling: c.isPrimaryBilling,
     })),
     createdAt: prismaClient.createdAt,
     updatedAt: prismaClient.updatedAt,
@@ -91,6 +93,8 @@ export async function createClient(
           name: c.name,
           email: c.email,
           role: c.role,
+          isPrimaryApprover: c.isPrimaryApprover ?? false,
+          isPrimaryBilling: c.isPrimaryBilling ?? false,
         })),
       },
     },
@@ -137,6 +141,8 @@ export async function updateClient(
           name: c.name,
           email: c.email,
           role: c.role,
+          isPrimaryApprover: c.isPrimaryApprover ?? false,
+          isPrimaryBilling: c.isPrimaryBilling ?? false,
         })),
       });
     }

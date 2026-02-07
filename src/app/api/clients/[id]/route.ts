@@ -32,7 +32,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
 
-    const { name, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress } =
+    const { name, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress, contacts } =
       body;
 
     // Validate email arrays if provided using Zod for robust validation
@@ -79,6 +79,36 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       );
     }
 
+    // Validate contacts if provided
+    if (contacts !== undefined) {
+      if (!Array.isArray(contacts)) {
+        return NextResponse.json({ error: 'contacts must be an array' }, { status: 400 });
+      }
+
+      const invalidContactEmails: string[] = [];
+      for (const c of contacts) {
+        if (!c.name?.trim()) {
+          return NextResponse.json({ error: 'All contacts must have a name' }, { status: 400 });
+        }
+        if (!emailSchema.safeParse(c.email?.trim()).success) {
+          invalidContactEmails.push(c.email || '(empty)');
+        }
+        if (!['approver', 'billing', 'both'].includes(c.role)) {
+          return NextResponse.json(
+            { error: `Invalid contact role: ${c.role}` },
+            { status: 400 }
+          );
+        }
+      }
+
+      if (invalidContactEmails.length > 0) {
+        return NextResponse.json(
+          { error: 'Invalid contact email(s)', invalidEmails: invalidContactEmails },
+          { status: 400 }
+        );
+      }
+    }
+
     const updates: Parameters<typeof updateClient>[1] = {};
 
     if (name !== undefined) {
@@ -106,6 +136,18 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     if (billingAddress !== undefined) {
       updates.billingAddress = billingAddress || null;
+    }
+
+    if (contacts !== undefined) {
+      updates.contacts = contacts.map((c: { name: string; email: string; role: string; isPrimaryApprover?: boolean; isPrimaryBilling?: boolean }) => ({
+        id: '',
+        clientId: id,
+        name: c.name.trim(),
+        email: c.email.trim(),
+        role: c.role as 'approver' | 'billing' | 'both',
+        isPrimaryApprover: c.isPrimaryApprover ?? false,
+        isPrimaryBilling: c.isPrimaryBilling ?? false,
+      }));
     }
 
     const client = await updateClient(id, updates);

@@ -13,6 +13,7 @@ import { fetchTimeEntries, fetchTimesheetPdf } from '@/lib/toggl/client';
 import { uploadPdf, getTimesheetBlobPath, getInvoiceBlobPath, deletePdf } from '@/lib/blob/client';
 import { signPortalToken } from '@/lib/auth/jwt';
 import { getAndIncrementNextInvoiceNumber } from '@/lib/settings';
+import { sendTimesheetNotification } from './notify-helper';
 
 // GET /api/timesheets - List all timesheets
 export async function GET() {
@@ -130,9 +131,15 @@ export async function POST(request: NextRequest) {
     const portalToken = signPortalToken(clientId);
     await updateClientPortalToken(clientId, portalToken);
 
+    // Send email notification (non-critical)
+    let emailStatus: 'sent' | 'failed' | 'skipped' = 'skipped';
+    const emailResult = await sendTimesheetNotification(client, month, portalToken);
+    emailStatus = emailResult.status;
+
     return NextResponse.json(
       {
         timesheet,
+        emailStatus,
         summary: {
           totalHours: timeEntries.totalHours,
           entryCount: timeEntries.entries.length,
