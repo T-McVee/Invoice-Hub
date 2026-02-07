@@ -190,10 +190,10 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
   if (!open || !client) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative glass rounded-2xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col animate-scale-in">
+      <div className="relative glass rounded-2xl w-full max-w-lg mx-auto my-[5vh] max-h-[90vh] flex flex-col animate-scale-in">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
           <div>
@@ -238,6 +238,22 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
                 onChange={(e) => updateField('togglProjectId', e.target.value)}
                 placeholder="e.g., 123456789"
                 className={inputClass}
+              />
+            </div>
+
+            {/* Billing Address */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Billing Address
+              </label>
+              <textarea
+                value={formState.billingAddress}
+                onChange={(e) => updateField('billingAddress', e.target.value)}
+                placeholder="Address to appear on invoices..."
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50
+                           text-foreground placeholder:text-muted-foreground resize-none
+                           focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -356,22 +372,6 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
                 value={formState.notes}
                 onChange={(e) => updateField('notes', e.target.value)}
                 placeholder="Optional notes about this client..."
-                rows={3}
-                className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50
-                           text-foreground placeholder:text-muted-foreground resize-none
-                           focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-              />
-            </div>
-
-            {/* Billing Address */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Billing Address
-              </label>
-              <textarea
-                value={formState.billingAddress}
-                onChange={(e) => updateField('billingAddress', e.target.value)}
-                placeholder="Address to appear on invoices..."
                 rows={3}
                 className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border/50
                            text-foreground placeholder:text-muted-foreground resize-none

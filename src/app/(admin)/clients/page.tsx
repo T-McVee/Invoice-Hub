@@ -36,7 +36,7 @@ export default function ClientsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-[calc(100vh-10rem)]">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
