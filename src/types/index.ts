@@ -51,4 +51,3 @@ export interface Invoice {
   paidAt: Date | null;
   createdAt: Date;
 }
-

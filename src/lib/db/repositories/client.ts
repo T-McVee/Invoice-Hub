@@ -4,14 +4,15 @@
 
 import { prisma } from '../prisma';
 import type { Client, Contact } from '@/types';
-import type { ClientModel as PrismaClient, ContactModel as PrismaContact } from '@/generated/prisma/models';
+import type {
+  ClientModel as PrismaClient,
+  ContactModel as PrismaContact,
+} from '@/generated/prisma/models';
 
 /**
  * Transform Prisma Client to application Client type
  */
-function toClient(
-  prismaClient: PrismaClient & { contacts?: PrismaContact[] }
-): Client {
+function toClient(prismaClient: PrismaClient & { contacts?: PrismaContact[] }): Client {
   return {
     id: prismaClient.id,
     name: prismaClient.name,
@@ -61,9 +62,7 @@ export async function getClientById(id: string): Promise<Client | undefined> {
 /**
  * Get a client by Toggl client ID
  */
-export async function getClientByTogglClientId(
-  togglClientId: string
-): Promise<Client | undefined> {
+export async function getClientByTogglClientId(togglClientId: string): Promise<Client | undefined> {
   const client = await prisma.client.findUnique({
     where: { togglClientId },
     include: { contacts: true },
@@ -119,10 +118,8 @@ export async function updateClient(
   const data: Parameters<typeof prisma.client.update>[0]['data'] = {};
 
   if (updateData.name !== undefined) data.name = updateData.name;
-  if (updateData.togglClientId !== undefined)
-    data.togglClientId = updateData.togglClientId;
-  if (updateData.togglProjectId !== undefined)
-    data.togglProjectId = updateData.togglProjectId;
+  if (updateData.togglClientId !== undefined) data.togglClientId = updateData.togglClientId;
+  if (updateData.togglProjectId !== undefined) data.togglProjectId = updateData.togglProjectId;
   if (updateData.timesheetRecipients !== undefined)
     data.timesheetRecipients = JSON.stringify(updateData.timesheetRecipients);
   if (updateData.invoiceRecipients !== undefined)

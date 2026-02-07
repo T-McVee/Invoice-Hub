@@ -32,8 +32,15 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });
     }
 
-    const { name, togglProjectId, timesheetRecipients, invoiceRecipients, notes, billingAddress, contacts } =
-      body;
+    const {
+      name,
+      togglProjectId,
+      timesheetRecipients,
+      invoiceRecipients,
+      notes,
+      billingAddress,
+      contacts,
+    } = body;
 
     // Validate email arrays if provided using Zod for robust validation
     // Returns { valid: string[], invalid: string[] } or undefined if not provided
@@ -94,10 +101,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
           invalidContactEmails.push(c.email || '(empty)');
         }
         if (!['approver', 'billing', 'both'].includes(c.role)) {
-          return NextResponse.json(
-            { error: `Invalid contact role: ${c.role}` },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: `Invalid contact role: ${c.role}` }, { status: 400 });
         }
       }
 
@@ -139,15 +143,23 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (contacts !== undefined) {
-      updates.contacts = contacts.map((c: { name: string; email: string; role: string; isPrimaryApprover?: boolean; isPrimaryBilling?: boolean }) => ({
-        id: '',
-        clientId: id,
-        name: c.name.trim(),
-        email: c.email.trim(),
-        role: c.role as 'approver' | 'billing' | 'both',
-        isPrimaryApprover: c.isPrimaryApprover ?? false,
-        isPrimaryBilling: c.isPrimaryBilling ?? false,
-      }));
+      updates.contacts = contacts.map(
+        (c: {
+          name: string;
+          email: string;
+          role: string;
+          isPrimaryApprover?: boolean;
+          isPrimaryBilling?: boolean;
+        }) => ({
+          id: '',
+          clientId: id,
+          name: c.name.trim(),
+          email: c.email.trim(),
+          role: c.role as 'approver' | 'billing' | 'both',
+          isPrimaryApprover: c.isPrimaryApprover ?? false,
+          isPrimaryBilling: c.isPrimaryBilling ?? false,
+        })
+      );
     }
 
     const client = await updateClient(id, updates);

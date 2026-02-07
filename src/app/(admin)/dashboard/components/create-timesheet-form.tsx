@@ -53,9 +53,7 @@ async function checkExistingTimesheet(
   clientId: string,
   month: string
 ): Promise<CheckTimesheetResponse> {
-  const response = await fetch(
-    `/api/timesheets/check?clientId=${clientId}&month=${month}`
-  );
+  const response = await fetch(`/api/timesheets/check?clientId=${clientId}&month=${month}`);
 
   if (!response.ok) {
     throw new Error('Failed to check for existing timesheet');
@@ -95,14 +93,11 @@ function getDefaultMonth(): string {
 export function CreateTimesheetForm() {
   const [clientId, setClientId] = useState('');
   const [month, setMonth] = useState(getDefaultMonth);
-  const [lastCreated, setLastCreated] = useState<CreateTimesheetResponse | null>(
-    null
-  );
+  const [lastCreated, setLastCreated] = useState<CreateTimesheetResponse | null>(null);
   const [emailStatus, setEmailStatus] = useState<'sent' | 'failed' | 'skipped' | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [existingTimesheet, setExistingTimesheet] =
-    useState<ExistingTimesheetInfo | null>(null);
+  const [existingTimesheet, setExistingTimesheet] = useState<ExistingTimesheetInfo | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
   const queryClient = useQueryClient();
@@ -193,17 +188,9 @@ export function CreateTimesheetForm() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
-        <ClientSelector
-          value={clientId}
-          onChange={setClientId}
-          disabled={mutation.isPending}
-        />
+        <ClientSelector value={clientId} onChange={setClientId} disabled={mutation.isPending} />
 
-        <MonthPicker
-          value={month}
-          onChange={setMonth}
-          disabled={mutation.isPending}
-        />
+        <MonthPicker value={month} onChange={setMonth} disabled={mutation.isPending} />
 
         <button
           type="submit"
@@ -242,9 +229,7 @@ export function CreateTimesheetForm() {
                 <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="font-semibold text-success">
-                  Timesheet created successfully!
-                </p>
+                <p className="font-semibold text-success">Timesheet created successfully!</p>
                 <div className="mt-2 text-sm text-success/80 space-y-1">
                   <p>
                     <span className="font-medium">Total Hours:</span>{' '}
@@ -256,9 +241,7 @@ export function CreateTimesheetForm() {
                   </p>
                   <p>
                     <span className="font-medium">Status:</span>{' '}
-                    <span className="capitalize">
-                      {lastCreated.timesheet.status}
-                    </span>
+                    <span className="capitalize">{lastCreated.timesheet.status}</span>
                   </p>
                 </div>
               </div>
@@ -317,12 +300,8 @@ export function CreateTimesheetForm() {
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <p className="font-semibold text-destructive">
-                  Failed to create timesheet
-                </p>
-                <p className="mt-1 text-sm text-destructive/80">
-                  {mutation.error.message}
-                </p>
+                <p className="font-semibold text-destructive">Failed to create timesheet</p>
+                <p className="mt-1 text-sm text-destructive/80">{mutation.error.message}</p>
               </div>
             </div>
           </div>
@@ -350,19 +329,12 @@ export function CreateTimesheetForm() {
                   {new Date(existingTimesheet.createdAt).toLocaleDateString()}
                 </span>
               )}
-              <span className="block mt-2">
-                Do you want to replace it with a new timesheet?
-              </span>
+              <span className="block mt-2">Do you want to replace it with a new timesheet?</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelReplace}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmReplace}
-              variant="destructive"
-            >
+            <AlertDialogCancel onClick={handleCancelReplace}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmReplace} variant="destructive">
               {mutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />

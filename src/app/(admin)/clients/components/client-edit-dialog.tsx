@@ -33,13 +33,14 @@ function getInitialFormState(client: Client | null): FormState {
   return {
     name: client?.name ?? '',
     togglProjectId: client?.togglProjectId ?? '',
-    contacts: client?.contacts?.map((c) => ({
-      name: c.name,
-      email: c.email,
-      role: c.role,
-      isPrimaryApprover: c.isPrimaryApprover,
-      isPrimaryBilling: c.isPrimaryBilling,
-    })) ?? [],
+    contacts:
+      client?.contacts?.map((c) => ({
+        name: c.name,
+        email: c.email,
+        role: c.role,
+        isPrimaryApprover: c.isPrimaryApprover,
+        isPrimaryBilling: c.isPrimaryBilling,
+      })) ?? [],
     notes: client?.notes ?? '',
     billingAddress: client?.billingAddress ?? '',
   };
@@ -143,7 +144,13 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
   const addContact = () => {
     updateField('contacts', [
       ...formState.contacts,
-      { name: '', email: '', role: 'approver' as const, isPrimaryApprover: false, isPrimaryBilling: false },
+      {
+        name: '',
+        email: '',
+        role: 'approver' as const,
+        isPrimaryApprover: false,
+        isPrimaryBilling: false,
+      },
     ]);
   };
 
@@ -191,9 +198,7 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
         <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Edit Client</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Update client details and contacts
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Update client details and contacts</p>
           </div>
           <Button
             variant="ghost"
@@ -253,9 +258,7 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
               </div>
               <div className="space-y-3">
                 {formState.contacts.length === 0 ? (
-                  <p className="text-sm text-muted-foreground/60 italic py-2">
-                    No contacts added
-                  </p>
+                  <p className="text-sm text-muted-foreground/60 italic py-2">No contacts added</p>
                 ) : (
                   formState.contacts.map((contact, index) => {
                     const canBeApprover = contact.role === 'approver' || contact.role === 'both';
@@ -295,32 +298,44 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
                           />
                           <select
                             value={contact.role}
-                            onChange={(e) => updateContact(index, { role: e.target.value as Contact['role'] })}
+                            onChange={(e) =>
+                              updateContact(index, { role: e.target.value as Contact['role'] })
+                            }
                             className={`px-3 py-2 rounded-lg bg-muted/50 border border-border/50
                                        text-foreground text-sm
                                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent`}
                           >
                             {roleOptions.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
                             ))}
                           </select>
                         </div>
                         <div className="flex gap-4 px-1">
-                          <label className={`flex items-center gap-2 text-xs ${canBeApprover ? 'text-foreground' : 'text-muted-foreground/40'}`}>
+                          <label
+                            className={`flex items-center gap-2 text-xs ${canBeApprover ? 'text-foreground' : 'text-muted-foreground/40'}`}
+                          >
                             <input
                               type="checkbox"
                               checked={contact.isPrimaryApprover}
-                              onChange={(e) => updateContact(index, { isPrimaryApprover: e.target.checked })}
+                              onChange={(e) =>
+                                updateContact(index, { isPrimaryApprover: e.target.checked })
+                              }
                               disabled={!canBeApprover}
                               className="rounded"
                             />
                             Primary Approver
                           </label>
-                          <label className={`flex items-center gap-2 text-xs ${canBeBilling ? 'text-foreground' : 'text-muted-foreground/40'}`}>
+                          <label
+                            className={`flex items-center gap-2 text-xs ${canBeBilling ? 'text-foreground' : 'text-muted-foreground/40'}`}
+                          >
                             <input
                               type="checkbox"
                               checked={contact.isPrimaryBilling}
-                              onChange={(e) => updateContact(index, { isPrimaryBilling: e.target.checked })}
+                              onChange={(e) =>
+                                updateContact(index, { isPrimaryBilling: e.target.checked })
+                              }
                               disabled={!canBeBilling}
                               className="rounded"
                             />
@@ -350,7 +365,9 @@ export function ClientEditDialog({ client, open, onClose }: ClientEditDialogProp
 
             {/* Billing Address */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Billing Address</label>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Billing Address
+              </label>
               <textarea
                 value={formState.billingAddress}
                 onChange={(e) => updateField('billingAddress', e.target.value)}

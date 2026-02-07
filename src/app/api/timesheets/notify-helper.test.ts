@@ -45,7 +45,15 @@ describe('sendTimesheetNotification', () => {
 
   it('skips when no primary approver exists', async () => {
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'approver', isPrimaryApprover: false, isPrimaryBilling: false },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'approver',
+        isPrimaryApprover: false,
+        isPrimaryBilling: false,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
@@ -55,7 +63,15 @@ describe('sendTimesheetNotification', () => {
 
   it('skips when no approver contacts exist', async () => {
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'billing', isPrimaryApprover: false, isPrimaryBilling: true },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'billing',
+        isPrimaryApprover: false,
+        isPrimaryBilling: true,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
@@ -66,9 +82,33 @@ describe('sendTimesheetNotification', () => {
     mockSendEmail.mockResolvedValueOnce({ success: true, messageId: 'msg-1' });
 
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'approver', isPrimaryApprover: true, isPrimaryBilling: false },
-      { id: '2', clientId: 'client-1', name: 'Bob', email: 'bob@example.com', role: 'both', isPrimaryApprover: false, isPrimaryBilling: true },
-      { id: '3', clientId: 'client-1', name: 'Carol', email: 'carol@example.com', role: 'billing', isPrimaryApprover: false, isPrimaryBilling: false },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'approver',
+        isPrimaryApprover: true,
+        isPrimaryBilling: false,
+      },
+      {
+        id: '2',
+        clientId: 'client-1',
+        name: 'Bob',
+        email: 'bob@example.com',
+        role: 'both',
+        isPrimaryApprover: false,
+        isPrimaryBilling: true,
+      },
+      {
+        id: '3',
+        clientId: 'client-1',
+        name: 'Carol',
+        email: 'carol@example.com',
+        role: 'billing',
+        isPrimaryApprover: false,
+        isPrimaryBilling: false,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
@@ -88,7 +128,15 @@ describe('sendTimesheetNotification', () => {
     mockSendEmail.mockResolvedValueOnce({ success: false, error: 'API error' });
 
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'approver', isPrimaryApprover: true, isPrimaryBilling: false },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'approver',
+        isPrimaryApprover: true,
+        isPrimaryBilling: false,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
@@ -100,7 +148,15 @@ describe('sendTimesheetNotification', () => {
     mockSendEmail.mockRejectedValueOnce(new Error('Network error'));
 
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'approver', isPrimaryApprover: true, isPrimaryBilling: false },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'approver',
+        isPrimaryApprover: true,
+        isPrimaryBilling: false,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
@@ -112,7 +168,15 @@ describe('sendTimesheetNotification', () => {
     mockSendEmail.mockResolvedValueOnce({ success: true, messageId: 'msg-1' });
 
     const client = makeClient([
-      { id: '1', clientId: 'client-1', name: 'Alice', email: 'alice@example.com', role: 'both', isPrimaryApprover: true, isPrimaryBilling: true },
+      {
+        id: '1',
+        clientId: 'client-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        role: 'both',
+        isPrimaryApprover: true,
+        isPrimaryBilling: true,
+      },
     ]);
 
     const result = await sendTimesheetNotification(client, '2026-01', 'token');
