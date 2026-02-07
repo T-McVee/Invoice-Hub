@@ -56,6 +56,18 @@ export async function POST(request: NextRequest) {
     let existingInvoiceNumber: number | null = null;
     if (existing) {
       if (force) {
+        // Block force-regeneration of approved timesheets to preserve invoice integrity
+        if (existing.status === 'approved') {
+          return NextResponse.json(
+            {
+              error:
+                'Cannot regenerate an approved timesheet. Revoke or delete the associated invoice first.',
+              existingTimesheetId: existing.id,
+            },
+            { status: 409 }
+          );
+        }
+
         // Capture existing invoice number to reuse
         existingInvoiceNumber = existing.invoiceNumber;
 
