@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { verifyPortalToken } from '@/lib/auth/jwt';
-import { getTimesheetById, updateTimesheet, getClientById, createInvoice } from '@/lib/db';
+import { getTimesheetById, updateTimesheet, getClientById, createInvoice, updateInvoice } from '@/lib/db';
 import { generateInvoice } from '@/lib/invoice-generator';
+import { sendInvoiceEmail } from '@/lib/email/send-invoice';
 
 interface RouteParams {
   params: Promise<{ token: string; id: string }>;
@@ -90,7 +91,21 @@ export async function POST(_request: Request, { params }: RouteParams) {
       invoiceError = error instanceof Error ? error.message : 'Invoice generation failed';
     }
 
-    return NextResponse.json({ timesheet: updated, invoice, invoiceError });
+    // Send invoice email (fail-open: approval succeeds even if email fails)
+    let invoiceEmailError = null;
+    if (invoice) {
+      const client = await getClientById(invoice.clientId);
+      if (client) {
+        const emailResult = await sendInvoiceEmail(client, invoice);
+        if (emailResult.status === 'sent') {
+          invoice = (await updateInvoice(invoice.id, { status: 'sent', sentAt: new Date() })) ?? invoice;
+        } else if (emailResult.status === 'failed') {
+          invoiceEmailError = emailResult.error ?? 'Email send failed';
+        }
+      }
+    }
+
+    return NextResponse.json({ timesheet: updated, invoice, invoiceError, invoiceEmailError });
   } catch (error) {
     // Check if token expired or invalid
     if (error instanceof Error) {

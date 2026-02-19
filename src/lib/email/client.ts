@@ -16,12 +16,18 @@ function getFromEmail(): string {
   return email;
 }
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+}
+
 export interface SendEmailOptions {
   to: string;
   cc?: string[];
   subject: string;
   text: string;
   html?: string;
+  attachments?: EmailAttachment[];
 }
 
 export interface SendEmailResult {
@@ -41,6 +47,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     subject: options.subject,
     text: options.text,
     html: options.html,
+    attachments: options.attachments,
   });
 
   if (error) {

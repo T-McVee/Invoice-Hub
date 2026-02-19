@@ -7,14 +7,18 @@ const {
   mockUpdateTimesheet,
   mockGetClientById,
   mockCreateInvoice,
+  mockUpdateInvoice,
   mockGenerateInvoice,
+  mockSendInvoiceEmail,
 } = vi.hoisted(() => ({
   mockVerifyPortalToken: vi.fn(),
   mockGetTimesheetById: vi.fn(),
   mockUpdateTimesheet: vi.fn(),
   mockGetClientById: vi.fn(),
   mockCreateInvoice: vi.fn(),
+  mockUpdateInvoice: vi.fn(),
   mockGenerateInvoice: vi.fn(),
+  mockSendInvoiceEmail: vi.fn(),
 }));
 
 // Mock using relative paths (7 levels up from approve/ to src/)
@@ -27,10 +31,15 @@ vi.mock('../../../../../../../lib/db', () => ({
   updateTimesheet: mockUpdateTimesheet,
   getClientById: mockGetClientById,
   createInvoice: mockCreateInvoice,
+  updateInvoice: mockUpdateInvoice,
 }));
 
 vi.mock('../../../../../../../lib/invoice-generator', () => ({
   generateInvoice: mockGenerateInvoice,
+}));
+
+vi.mock('../../../../../../../lib/email/send-invoice', () => ({
+  sendInvoiceEmail: mockSendInvoiceEmail,
 }));
 
 // Import route after mocks are set up
@@ -63,6 +72,21 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       ...data,
       createdAt: new Date('2026-01-24T12:00:00Z'),
     }));
+    mockUpdateInvoice.mockImplementation(async (id, updates) => ({
+      id,
+      clientId,
+      timesheetId,
+      invoiceNumber: '1001',
+      month: '2026-01',
+      amount: 4000,
+      pdfUrl: 'https://blob.storage/invoices/client-123/1001.pdf',
+      sentAt: null,
+      paidAt: null,
+      createdAt: new Date('2026-01-24T12:00:00Z'),
+      ...updates,
+    }));
+    // Default: email sends successfully
+    mockSendInvoiceEmail.mockResolvedValue({ status: 'sent' });
   });
 
   afterEach(() => {
@@ -103,6 +127,7 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
     expect(data.invoice.invoiceNumber).toBe('1001');
     expect(data.invoice.amount).toBe(4000);
     expect(data.invoiceError).toBeNull();
+    expect(data.invoiceEmailError).toBeNull();
     expect(mockUpdateTimesheet).toHaveBeenCalledWith(timesheetId, {
       status: 'approved',
       approvedAt: expect.any(Date),
@@ -342,6 +367,35 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       expect(data.invoiceError).toBe('Hourly rate not configured');
     });
 
+    it('updates invoice status to sent and sets sentAt after successful email', async () => {
+      const timesheet = {
+        id: timesheetId,
+        clientId,
+        month: '2026-01',
+        status: 'pending',
+        totalHours: 40,
+        invoiceNumber: 1001,
+      };
+      const updatedTimesheet = { ...timesheet, status: 'approved', approvedAt: new Date() };
+
+      mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
+      mockGetTimesheetById.mockResolvedValue(timesheet);
+      mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
+
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.invoiceEmailError).toBeNull();
+      expect(mockUpdateInvoice).toHaveBeenCalledWith('invoice-789', {
+        status: 'sent',
+        sentAt: expect.any(Date),
+      });
+    });
+
     it('returns invoiceError when database insert fails', async () => {
       const timesheet = {
         id: timesheetId,
@@ -368,6 +422,69 @@ describe('POST /api/portal/[token]/timesheets/[id]/approve', () => {
       expect(data.timesheet.status).toBe('approved');
       expect(data.invoice).toBeNull();
       expect(data.invoiceError).toBe('Database connection failed');
+    });
+  });
+
+  describe('invoice email sending', () => {
+    const baseTimesheet = {
+      id: timesheetId,
+      clientId,
+      month: '2026-01',
+      status: 'pending',
+      totalHours: 40,
+      invoiceNumber: 1001,
+    };
+    const updatedTimesheet = { ...baseTimesheet, status: 'approved', approvedAt: new Date() };
+
+    beforeEach(() => {
+      mockVerifyPortalToken.mockReturnValue({ clientId, exp: Date.now() / 1000 + 3600 });
+      mockGetTimesheetById.mockResolvedValue(baseTimesheet);
+      mockUpdateTimesheet.mockResolvedValue(updatedTimesheet);
+    });
+
+    it('sets invoiceEmailError and does not update invoice when email fails', async () => {
+      mockSendInvoiceEmail.mockResolvedValue({ status: 'failed', error: 'SMTP timeout' });
+
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.invoiceEmailError).toBe('SMTP timeout');
+      expect(mockUpdateInvoice).not.toHaveBeenCalled();
+    });
+
+    it('sets invoiceEmailError to null when email is skipped (no billing contact)', async () => {
+      mockSendInvoiceEmail.mockResolvedValue({
+        status: 'skipped',
+        error: 'No primary billing contact configured',
+      });
+
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.invoiceEmailError).toBeNull();
+      expect(mockUpdateInvoice).not.toHaveBeenCalled();
+    });
+
+    it('does not attempt email when invoice creation fails', async () => {
+      mockCreateInvoice.mockRejectedValue(new Error('DB error'));
+
+      const response = await POST(
+        new Request('http://localhost'),
+        createParams('valid-token', timesheetId)
+      );
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.invoiceError).toBe('DB error');
+      expect(mockSendInvoiceEmail).not.toHaveBeenCalled();
     });
   });
 });
