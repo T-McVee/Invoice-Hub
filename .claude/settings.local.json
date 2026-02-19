@@ -45,7 +45,8 @@
       "mcp__chrome-devtools__navigate_page",
       "Bash(bd search:*)",
       "Bash(find:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(openspec archive:*)"
     ]
   }
 }
