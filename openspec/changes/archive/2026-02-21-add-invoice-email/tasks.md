@@ -10,5 +10,5 @@
 
 ## 3. Admin Manual Send
 - [x] 3.1 Create `POST /api/invoices/[id]/send` endpoint for manual sending
-- [ ] 3.2 Add "Send Invoice" / "Resend" button to admin invoices page
+- [x] 3.2 Add "Send Invoice" / "Resend" button to admin invoices page
 - [x] 3.3 Write tests for the send endpoint
