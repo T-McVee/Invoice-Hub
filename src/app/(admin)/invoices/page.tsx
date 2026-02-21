@@ -1,8 +1,8 @@
 'use client';
 
-import { FileText, Loader2, AlertCircle, ExternalLink, Receipt } from 'lucide-react';
+import { FileText, Loader2, AlertCircle, ExternalLink, Receipt, Send, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useInvoices, useClients } from '@/lib/hooks';
+import { useInvoices, useClients, useSendInvoice } from '@/lib/hooks';
 import { Invoice } from '@/types';
 
 function formatMonth(month: string): string {
@@ -39,6 +39,35 @@ function StatusBadge({ status }: { status: Invoice['status'] }) {
     >
       {status}
     </span>
+  );
+}
+
+function SendInvoiceButton({ invoice }: { invoice: Invoice }) {
+  const { mutate, isPending, error } = useSendInvoice();
+  const isSent = invoice.status !== 'draft';
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1.5"
+        disabled={isPending}
+        onClick={() => mutate(invoice.id)}
+      >
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : isSent ? (
+          <RefreshCw className="h-4 w-4" />
+        ) : (
+          <Send className="h-4 w-4" />
+        )}
+        {isSent ? 'Resend' : 'Send Invoice'}
+      </Button>
+      {error && (
+        <p className="text-xs text-destructive">{error instanceof Error ? error.message : 'Failed'}</p>
+      )}
+    </div>
   );
 }
 
@@ -151,21 +180,24 @@ export default function InvoicesPage() {
                     <td className="px-6 py-4 text-muted-foreground text-sm">
                       {formatDate(invoice.createdAt)}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {invoice.pdfUrl ? (
-                        <Button variant="ghost" size="sm" asChild className="gap-1.5">
-                          <a
-                            href={`/api/invoices/${invoice.id}/pdf`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            View PDF
-                          </a>
-                        </Button>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">No PDF</span>
-                      )}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        {invoice.pdfUrl ? (
+                          <Button variant="ghost" size="sm" asChild className="gap-1.5">
+                            <a
+                              href={`/api/invoices/${invoice.id}/pdf`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              View PDF
+                            </a>
+                          </Button>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">No PDF</span>
+                        )}
+                        {invoice.pdfUrl && <SendInvoiceButton invoice={invoice} />}
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -32,11 +32,11 @@ export function buildInvoiceReadyEmail(params: InvoiceReadyParams): SendEmailOpt
     content: pdfBuffer,
   };
 
-  const text = `Hi ${primaryContactName},\n\nPlease find attached invoice #${invoiceNumber} for ${formattedMonth}.\n\nThanks, Tim.`;
+  const text = `Hi ${primaryContactName},\n\nPlease find my ${formattedMonth} invoice attached.\n\nRegards, Tim.`;
 
   const html = `<p>Hi ${primaryContactName},</p>
-<p>Please find attached invoice #${invoiceNumber} for ${formattedMonth}.</p>
-<p>Thanks, Tim.</p>`;
+<p>Please find my ${formattedMonth} invoice attached.</p>
+<p>Regards, Tim.</p>`;
 
   return {
     to,

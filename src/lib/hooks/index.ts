@@ -17,6 +17,7 @@ export {
 export {
   useInvoices,
   useInvalidateInvoices,
+  useSendInvoice,
   INVOICES_QUERY_KEY,
   type InvoicesResponse,
 } from './use-invoices';

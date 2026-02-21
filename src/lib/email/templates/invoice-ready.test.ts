@@ -94,7 +94,7 @@ describe('buildInvoiceReadyEmail', () => {
     expect(email.subject).toBe('Invoice #7 - December 2025');
   });
 
-  it('includes invoice number in text body', () => {
+  it('includes month in text body', () => {
     const email = buildInvoiceReadyEmail({
       primaryContactName: 'Alice',
       to: 'alice@example.com',
@@ -103,7 +103,6 @@ describe('buildInvoiceReadyEmail', () => {
       pdfBuffer,
     });
 
-    expect(email.text).toContain('invoice #42');
     expect(email.text).toContain('January 2026');
   });
 });

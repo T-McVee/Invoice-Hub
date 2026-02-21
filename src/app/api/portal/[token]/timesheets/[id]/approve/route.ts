@@ -97,12 +97,17 @@ export async function POST(_request: Request, { params }: RouteParams) {
       const client = await getClientById(invoice.clientId);
       if (client) {
         const emailResult = await sendInvoiceEmail(client, invoice);
+        console.log(`[approve] invoice email result for ${invoice.invoiceNumber}:`, emailResult);
         if (emailResult.status === 'sent') {
           invoice = (await updateInvoice(invoice.id, { status: 'sent', sentAt: new Date() })) ?? invoice;
         } else if (emailResult.status === 'failed') {
           invoiceEmailError = emailResult.error ?? 'Email send failed';
         }
+      } else {
+        console.warn(`[approve] client ${invoice.clientId} not found for email step`);
       }
+    } else {
+      console.log('[approve] skipping email: invoice was not created (invoiceError:', invoiceError, ')');
     }
 
     return NextResponse.json({ timesheet: updated, invoice, invoiceError, invoiceEmailError });
