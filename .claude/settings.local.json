@@ -46,7 +46,9 @@
       "Bash(bd search:*)",
       "Bash(find:*)",
       "Bash(npm run format:*)",
-      "Bash(openspec archive:*)"
+      "Bash(openspec archive:*)",
+      "Bash(convert:*)",
+      "Bash(magick:*)"
     ]
   }
 }
