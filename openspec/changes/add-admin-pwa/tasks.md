@@ -11,5 +11,5 @@
 - [x] 3.3 Add service worker registration script to the admin layout (client component)
 
 ## 4. Validation
-- [ ] 4.1 Run Lighthouse PWA audit and verify installability criteria are met
-- [ ] 4.2 Test offline fallback page renders when network is disconnected
+- [x] 4.1 Run Lighthouse PWA audit and verify installability criteria are met
+- [x] 4.2 Test offline fallback page renders when network is disconnected
