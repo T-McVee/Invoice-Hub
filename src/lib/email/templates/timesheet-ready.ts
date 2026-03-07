@@ -5,7 +5,7 @@ function getAppUrl(): string {
   if (!url) {
     throw new Error('NEXT_PUBLIC_APP_URL environment variable is not set');
   }
-  return url;
+  return url.replace(/\/+$/, '');
 }
 
 function formatMonth(month: string): string {
