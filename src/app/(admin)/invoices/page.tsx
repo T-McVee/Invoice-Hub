@@ -83,7 +83,7 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
               <Receipt className="h-5 w-5 text-primary" />
             </div>
@@ -127,25 +127,25 @@ export default function InvoicesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Invoice #
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Client
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Month
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Amount
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Status
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Created
                   </th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-right px-3 py-3 sm:px-6 sm:py-4 text-sm font-medium text-muted-foreground">
                     Actions
                   </th>
                 </tr>
@@ -156,31 +156,31 @@ export default function InvoicesPage() {
                     key={invoice.id}
                     className="border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4">
                       <span className="font-mono text-sm text-muted-foreground">
                         {invoice.invoiceNumber}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4">
                       <span className="font-medium text-foreground">
                         {clientNames.get(invoice.clientId) || 'Unknown Client'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-muted-foreground">
                       {formatMonth(invoice.month)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4">
                       <span className="font-medium text-foreground">
                         {formatCurrency(invoice.amount)}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4">
                       <StatusBadge status={invoice.status} />
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground text-sm">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4 text-muted-foreground text-sm">
                       {formatDate(invoice.createdAt)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-3 sm:px-6 sm:py-4">
                       <div className="flex items-center justify-end gap-2">
                         {invoice.pdfUrl ? (
                           <Button variant="ghost" size="sm" asChild className="gap-1.5">
