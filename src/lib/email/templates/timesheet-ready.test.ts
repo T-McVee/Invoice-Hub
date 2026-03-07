@@ -91,6 +91,20 @@ describe('buildTimesheetReadyEmail', () => {
     expect(email.html).toContain('Hi Alice,');
   });
 
+  it('strips trailing slash from app URL to avoid double-slash portal links', () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.example.com/');
+
+    const email = buildTimesheetReadyEmail({
+      primaryContactName: 'Alice',
+      to: 'alice@example.com',
+      month: '2026-01',
+      portalToken: 'abc123',
+    });
+
+    expect(email.text).toContain('https://app.example.com/portal/abc123');
+    expect(email.text).not.toContain('//portal');
+  });
+
   it('throws when NEXT_PUBLIC_APP_URL not set', () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', '');
 
