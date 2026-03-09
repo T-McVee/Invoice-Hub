@@ -134,3 +134,5 @@ This is a single Next.js 16 application (no monorepo). All external services (Az
 
 - After `npm install`, you must run `npx prisma generate` to regenerate the Prisma client at `src/generated/prisma`. The update script handles this automatically.
 - The `.env.local` file must exist for the dev server to start without crashing. Placeholder values suffice for running the UI and tests; real Azure credentials are only needed for data operations.
+- **Database auth**: `DATABASE_URL` uses `ActiveDirectoryDefault` authentication, which requires Azure CLI (`az login`) or a managed identity. In the Cloud VM, `az` is not installed, so all database-dependent features (clients CRUD, settings, invoices) will return 500 errors. The Toggl API endpoints (`/api/metrics/hours-mtd`, `/api/toggl/clients`) work fine with just the `TOGGL_API_TOKEN`.
+- **Turbopack cache corruption**: If you see panics in `turbo-persistence`, delete `.next/` and restart the dev server.
