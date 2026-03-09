@@ -111,3 +111,26 @@ bd sync                          # Push to remote
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+
+## Cursor Cloud specific instructions
+
+### Services overview
+
+This is a single Next.js 16 application (no monorepo). All external services (Azure SQL, Toggl API, Azure Blob Storage, Resend email) are cloud-hosted SaaS — there are no local containers or Docker dependencies.
+
+### Running the app
+
+- `npm run dev` starts the dev server on port 3000. See `CLAUDE.md` for all available commands.
+- Admin auth (Azure Easy Auth) is disabled locally — all admin routes are unprotected in dev.
+- Data-dependent pages will show fetch errors without valid Azure credentials. The UI still renders and navigation works.
+
+### Testing
+
+- `npm run test:run` — all 269 tests use mocked external services (no credentials or running services needed).
+- `npm run lint` — ESLint (warnings only, no errors expected).
+- `npm run build` — production build, also validates TypeScript.
+
+### Gotchas
+
+- After `npm install`, you must run `npx prisma generate` to regenerate the Prisma client at `src/generated/prisma`. The update script handles this automatically.
+- The `.env.local` file must exist for the dev server to start without crashing. Placeholder values suffice for running the UI and tests; real Azure credentials are only needed for data operations.
