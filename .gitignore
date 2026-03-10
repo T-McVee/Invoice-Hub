@@ -44,3 +44,7 @@ next-env.d.ts
 
 # prisma (generated client output)
 /src/generated/prisma/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
