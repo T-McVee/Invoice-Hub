@@ -136,6 +136,7 @@ This is a single Next.js 16 application (no monorepo). All external services (Az
 - The `.env.local` file must exist for the dev server to start without crashing. Placeholder values suffice for running the UI and tests; real Azure credentials are only needed for data operations.
 - **Database auth**: `DATABASE_URL` uses `ActiveDirectoryDefault` authentication, which requires Azure CLI (`az login`) or a managed identity. In the Cloud VM, `az` is not installed, so all database-dependent features (clients CRUD, settings, invoices) will return 500 errors. The Toggl API endpoints (`/api/metrics/hours-mtd`, `/api/toggl/clients`) work fine with just the `TOGGL_API_TOKEN`.
 - **Turbopack cache corruption**: If you see panics in `turbo-persistence`, delete `.next/` and restart the dev server.
+- **Beads (bd) setup**: The `bd` CLI and Dolt are installed in the VM. On first use, run `bd dolt start` then `bd doctor --fix --yes` to bootstrap the Dolt database from the committed JSONL. The `bd` binary is at `/home/ubuntu/.local/bin/bd` (added to PATH via `~/.bashrc`).
 
 <!-- BEGIN BEADS INTEGRATION -->
 ## Issue Tracking with bd (beads)
